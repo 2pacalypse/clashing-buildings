@@ -278,18 +278,6 @@ function renderAllSelectedSamples() {
         }
     });
     
-    // Fit camera
-    if (buildingMeshes.length > 0) {
-        const box = new THREE.Box3().setFromObject(buildingMeshes[0]);
-        buildingMeshes.forEach(m => box.expandByObject(m));
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        
-        camera.position.set(center.x + maxDim, maxDim * 0.8, center.z + maxDim);
-        controls.target.copy(center);
-    }
-    
     // Update legend
     updateLegend();
 }
