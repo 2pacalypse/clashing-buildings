@@ -1,4 +1,4 @@
-export const sampleBuildings = {
+export const sampleInputOne = {
     type: "FeatureCollection",
     features: [
         {

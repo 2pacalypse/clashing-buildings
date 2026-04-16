@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { sampleBuildings } from './data.js';
+import { sampleInputOne } from './data.js';
 
 // Color palette for buildings
 const buildingColors = [
@@ -266,9 +266,9 @@ function visualizeInput() {
 }
 
 function loadSample() {
-    document.getElementById('geojsonInput').value = JSON.stringify(sampleBuildings, null, 2);
+    document.getElementById('geojsonInput').value = JSON.stringify(sampleInputOne, null, 2);
     document.querySelector('.sample-btn').classList.add('active');
-    renderGeoJSON(sampleBuildings);
+    renderGeoJSON(sampleInputOne);
 }
 
 function clearInput() {
