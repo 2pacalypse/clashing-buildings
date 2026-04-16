@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { sampleInputOne, sampleInputTwo, sampleInputThree, samples } from './data.js';
+import { sampleInputOne, sampleInputTwo, samples } from './data.js';
 
 // Color palette for buildings
 const buildingColors = [
