@@ -2,11 +2,15 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { sampleInputOne, sampleInputTwo, samples } from './data.js';
 
-// Color palette for buildings
+// Color palette for buildings (light background friendly)
 const buildingColors = [
-    0x4a90d9, 0x50c878, 0xf4a460, 0x9370db, 0x20b2aa,
-    0xff6b6b, 0x4ecdc4, 0xffe66d, 0x95e1d3, 0xf38181
+    0x3498db, 0x2ecc71, 0xe67e22, 0x9b59b6, 0x1abc9c,
+    0xe74c3c, 0x34495e, 0xf39c12, 0x16a085, 0x8e44ad
 ];
+
+// Color for intersections (red)
+const intersectionColor = 0xe74c3c;
+const intersectionEdgeColor = 0xc0392b;
 
 // Global state
 let scene, camera, renderer, controls;
@@ -21,7 +25,7 @@ function init() {
     const canvas = document.getElementById('three-canvas');
     
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a1a2e);
+    scene.background = new THREE.Color(0xe8e8e8);
     
     camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
     camera.position.set(50, 40, 50);
@@ -41,7 +45,7 @@ function init() {
     scene.add(directionalLight);
     
     // Grid and axes
-    scene.add(new THREE.GridHelper(100, 20, 0x444444, 0x222222));
+    scene.add(new THREE.GridHelper(100, 20, 0xbbbbbb, 0xdddddd));
     scene.add(new THREE.AxesHelper(10));
     
     // Event listeners
@@ -78,9 +82,10 @@ function onMouseMove(event) {
     const overlay = document.getElementById('overlay-info');
     if (intersects.length > 0) {
         const data = intersects[0].object.userData;
-        if (data.type === 'building') {
+        if (data.type === 'building' || data.type === 'output') {
             const f = data.feature;
-            overlay.innerHTML = `<strong>${f.id}</strong><br>Height: ${f.properties.height}m<br>Elevation: ${f.properties.elevation}m`;
+            const label = data.type === 'output' ? 'Intersection' : f.id;
+            overlay.innerHTML = `<strong>${label}</strong><br>Height: ${f.properties.height}m<br>Elevation: ${f.properties.elevation}m`;
             overlay.style.display = 'block';
         } else if (data.type === 'overlap') {
             const f = data.feature;
@@ -92,7 +97,7 @@ function onMouseMove(event) {
     }
 }
 
-function createBuildingMesh(feature, index = 0) {
+function createBuildingMesh(feature, index = 0, isOutput = false) {
     const coords = feature.geometry.coordinates[0];
     
     let minX = Infinity, maxX = -Infinity;
@@ -111,20 +116,35 @@ function createBuildingMesh(feature, index = 0) {
     const elevation = feature.properties.elevation;
     
     const geometry = new THREE.BoxGeometry(width, height, depth);
-    const color = buildingColors[index % buildingColors.length];
+    
+    let color, edgeColor, opacity;
+    
+    if (isOutput) {
+        color = intersectionColor;
+        edgeColor = intersectionEdgeColor;
+        opacity = 0.8;
+    } else {
+        color = buildingColors[index % buildingColors.length];
+        // Darker version for edge
+        edgeColor = color - 0x202020;
+        opacity = 0.4;
+    }
+    
     const material = new THREE.MeshPhongMaterial({
         color: color,
         transparent: true,
-        opacity: 0.7,
-        side: THREE.DoubleSide
+        opacity: opacity,
+        side: THREE.DoubleSide,
+        blending: isOutput ? THREE.AdditiveBlending : THREE.NormalBlending,
+        depthWrite: false
     });
     
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set((minX + maxX) / 2, elevation + height / 2, (minY + maxY) / 2);
-    mesh.userData = { type: 'building', feature, color };
+    mesh.userData = { type: isOutput ? 'output' : 'building', feature, color };
     
     const edges = new THREE.EdgesGeometry(geometry);
-    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: color + 0x303030 }));
+    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: edgeColor }));
     mesh.add(line);
     
     return mesh;
@@ -243,17 +263,17 @@ function renderAllSelectedSamples() {
         return;
     }
     
-    let featureIndex = 0;
     let colorIndex = 0;
     
     selectedSamples.forEach(key => {
         const sample = samples[key];
+        const isOutput = key.toLowerCase().includes('output');
+        
         if (sample && sample.features) {
-            sample.features.forEach(f => {
-                const mesh = createBuildingMesh(f, colorIndex++);
+            sample.features.forEach((f, idx) => {
+                const mesh = createBuildingMesh(f, colorIndex++, isOutput);
                 scene.add(mesh);
                 buildingMeshes.push(mesh);
-                featureIndex++;
             });
         }
     });
@@ -280,12 +300,26 @@ function updateLegend() {
     
     selectedSamples.forEach(key => {
         const sample = samples[key];
+        const isOutput = key.toLowerCase().includes('output');
+        
         if (sample && sample.features) {
             sample.features.forEach(f => {
-                const color = '#' + buildingColors[colorIndex++ % buildingColors.length].toString(16).padStart(6, '0');
+                const label = isOutput ? 'Intersection' : f.id;
+                let bgColor, borderColor;
+                
+                if (isOutput) {
+                    bgColor = 'rgba(231, 76, 60, 0.8)';
+                    borderColor = '#c0392b';
+                } else {
+                    const color = buildingColors[colorIndex % buildingColors.length];
+                    bgColor = '#' + color.toString(16).padStart(6, '0');
+                    borderColor = '#' + (color - 0x202020).toString(16).padStart(6, '0');
+                    colorIndex++;
+                }
+                
                 legendHtml += `<div class="legend-item">
-                    <div class="legend-color" style="background: ${color};"></div>
-                    <span>${f.id} (${f.properties.height}m @ ${f.properties.elevation}m)</span>
+                    <div class="legend-color" style="background: ${bgColor}; border: 1px solid ${borderColor};"></div>
+                    <span>${label} (${f.properties.height}m @ ${f.properties.elevation}m)</span>
                 </div>`;
             });
         }
