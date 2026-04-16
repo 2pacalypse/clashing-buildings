@@ -23,17 +23,17 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
     job_id = str(uuid.uuid4())
     
     # Compute content hash for caching
-    content_hash = request.content_hash()
+    # content_hash = request.content_hash()
     
     # Check cache first
-    cached_result = await get_cache(content_hash)
-    if cached_result:
-        return ClashDetectionResponse(
-            job_id=job_id,
-            status=JobStatus.COMPLETED,
-            result=cached_result,
-            from_cache=True
-        )
+    # cached_result = await get_cache(content_hash)
+    # if cached_result:
+    #     return ClashDetectionResponse(
+    #         job_id=job_id,
+    #         status=JobStatus.COMPLETED,
+    #         result=cached_result,
+    #         from_cache=True
+    #     )
     
     # Process synchronously (for smaller inputs)
     # For larger inputs, integrate with Celery here
@@ -41,7 +41,7 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
     result = detect_clashes(buildings)
     
     # Cache the result
-    await set_cache(content_hash, result)
+    # await set_cache(content_hash, result)
     
     return ClashDetectionResponse(
         job_id=job_id,
