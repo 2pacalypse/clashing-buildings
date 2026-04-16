@@ -66,6 +66,10 @@ button {
 .sample-btn:hover { background: #1a4a7a; }
 .sample-btn.active { background: #00d4ff; color: #1a1a2e; }
 
+/* Arrange sample input/output buttons in pairs per row */
+.sample-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.sample-row .sample-btn { flex: 1 1 0; text-align: center; padding: 8px; }
+
 .legend { font-size: 0.8rem; }
 .legend-item { display: flex; align-items: center; margin-bottom: 6px; }
 .legend-color { width: 14px; height: 14px; margin-right: 6px; border-radius: 3px; }
