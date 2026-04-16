@@ -4,7 +4,8 @@ from app.models.schemas import (
     ClashDetectionRequest, 
     ClashDetectionResponse,
     ClashResultFeatureCollection,
-    GeoJSONFeatureCollection
+    GeoJSONFeatureCollection,
+    JobStatus
 )
 from app.core.cache import get_cache, set_cache, compute_content_hash
 from app.services.clash_detector import detect_clashes
@@ -29,7 +30,7 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
     if cached_result:
         return ClashDetectionResponse(
             job_id=job_id,
-            status="completed",
+            status=JobStatus.COMPLETED,
             result=cached_result,
             from_cache=True
         )
@@ -44,7 +45,7 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
     
     return ClashDetectionResponse(
         job_id=job_id,
-        status="completed",
+        status=JobStatus.COMPLETED,
         result=result,
         from_cache=False
     )
@@ -55,7 +56,7 @@ async def get_results(job_id: str):
     # TODO: Implement Redis-based job status polling
     return ClashDetectionResponse(
         job_id=job_id,
-        status="pending",
+        status=JobStatus.PENDING,
         result=None,
         from_cache=False,
         task_id=None
