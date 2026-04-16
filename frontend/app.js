@@ -14,6 +14,7 @@ let buildingMeshes = [];
 let overlapMeshes = [];
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
+let selectedSamples = new Set();
 
 // Initialize Three.js
 function init() {
@@ -49,9 +50,6 @@ function init() {
     
     // Start animation loop
     animate();
-    
-    // Load default sample
-    loadSample();
 }
 
 function animate() {
@@ -261,25 +259,125 @@ function visualizeInput() {
         return;
     }
     
-    document.querySelector('.sample-btn').classList.add('active');
+    // Clear sample selections when user provides custom input
+    selectedSamples.clear();
+    document.querySelectorAll('.sample-btn').forEach(btn => btn.classList.remove('active'));
     renderGeoJSON(geojson);
 }
 
-function loadSample(sampleKey = 'sampleInputOne') {
+function loadSample(sampleKey) {
     const sample = samples[sampleKey] || sampleInputOne;
-    document.getElementById('geojsonInput').value = JSON.stringify(sample, null, 2);
     
-    // Update active button state
-    document.querySelectorAll('.sample-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`[data-sample="${sampleKey}"]`).classList.add('active');
+    // Toggle selection
+    if (selectedSamples.has(sampleKey)) {
+        selectedSamples.delete(sampleKey);
+        document.querySelector(`[data-sample="${sampleKey}"]`).classList.remove('active');
+    } else {
+        selectedSamples.add(sampleKey);
+        document.querySelector(`[data-sample="${sampleKey}"]`).classList.add('active');
+    }
     
-    renderGeoJSON(sample);
+    // Update textarea with all selected samples merged
+    updateInputFromSelection();
+    
+    // Render all selected samples
+    renderAllSelectedSamples();
+}
+
+function updateInputFromSelection() {
+    if (selectedSamples.size === 0) {
+        document.getElementById('geojsonInput').value = '';
+        return;
+    }
+    
+    const allFeatures = [];
+    let featureIndex = 0;
+    
+    selectedSamples.forEach(key => {
+        const sample = samples[key];
+        if (sample && sample.features) {
+            sample.features.forEach(f => {
+                // Create a copy with unique ID
+                allFeatures.push({
+                    ...f,
+                    id: `${key}_${featureIndex++}`
+                });
+            });
+        }
+    });
+    
+    const merged = {
+        type: "FeatureCollection",
+        features: allFeatures
+    };
+    
+    document.getElementById('geojsonInput').value = JSON.stringify(merged, null, 2);
+}
+
+function renderAllSelectedSamples() {
+    clearScene();
+    
+    if (selectedSamples.size === 0) {
+        document.getElementById('legend').innerHTML = '';
+        return;
+    }
+    
+    let featureIndex = 0;
+    let colorIndex = 0;
+    
+    selectedSamples.forEach(key => {
+        const sample = samples[key];
+        if (sample && sample.features) {
+            sample.features.forEach(f => {
+                const mesh = createBuildingMesh(f, colorIndex++);
+                scene.add(mesh);
+                buildingMeshes.push(mesh);
+                featureIndex++;
+            });
+        }
+    });
+    
+    // Fit camera
+    if (buildingMeshes.length > 0) {
+        const box = new THREE.Box3().setFromObject(buildingMeshes[0]);
+        buildingMeshes.forEach(m => box.expandByObject(m));
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        
+        camera.position.set(center.x + maxDim, maxDim * 0.8, center.z + maxDim);
+        controls.target.copy(center);
+    }
+    
+    // Update legend
+    updateLegend();
+}
+
+function updateLegend() {
+    let legendHtml = '';
+    let colorIndex = 0;
+    
+    selectedSamples.forEach(key => {
+        const sample = samples[key];
+        if (sample && sample.features) {
+            sample.features.forEach(f => {
+                const color = '#' + buildingColors[colorIndex++ % buildingColors.length].toString(16).padStart(6, '0');
+                legendHtml += `<div class="legend-item">
+                    <div class="legend-color" style="background: ${color};"></div>
+                    <span>${f.id} (${f.properties.height}m @ ${f.properties.elevation}m)</span>
+                </div>`;
+            });
+        }
+    });
+    
+    document.getElementById('legend').innerHTML = legendHtml;
 }
 
 function clearInput() {
     document.getElementById('geojsonInput').value = '';
     document.getElementById('error').style.display = 'none';
-    document.querySelector('.sample-btn').classList.remove('active');
+    document.querySelectorAll('.sample-btn').forEach(btn => btn.classList.remove('active'));
+    selectedSamples.clear();
     clearScene();
     document.getElementById('legend').innerHTML = '';
 }

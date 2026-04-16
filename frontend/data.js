@@ -151,8 +151,141 @@ export const sampleInputTwo = {
   ]
 }
 
+export const sampleOutputOne = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "elevation": 2,
+        "height": 2,
+        "buildings": ["building_0", "building_1"]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [0, 40],
+            [20, 40],
+            [20, 60],
+            [0, 60],
+            [0, 40]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "elevation": 4,
+        "height": 2,
+        "buildings": ["building_1", "building_2"]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [40, 40],
+            [60, 40],
+            [60, 60],
+            [40, 60],
+            [40, 40]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "elevation": 6,
+        "height": 2,
+        "buildings": ["building_2", "building_3"]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [40, 0],
+            [60, 0],
+            [60, 20],
+            [40, 20],
+            [40, 0]
+          ]
+        ]
+      }
+    }
+  ]
+};
+
+export const sampleOutputTwo = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "elevation": 0,
+        "height": 4,
+        "buildings": ["building_0", "building_1"]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [20, 20],
+            [40, 20],
+            [40, 40],
+            [20, 40],
+            [20, 20]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "elevation": 0,
+        "height": 4,
+        "buildings": ["building_0", "building_2"]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [20, 20],
+            [40, 20],
+            [40, 40],
+            [20, 40],
+            [20, 20]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "elevation": 0,
+        "height": 4,
+        "buildings": ["building_1", "building_2"]
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [20, 20],
+            [40, 20],
+            [40, 40],
+            [20, 40],
+            [20, 20]
+          ]
+        ]
+      }
+    }
+  ]
+};
 
 export const samples = {
     sampleInputOne,
     sampleInputTwo,
+    sampleOutputOne,
+    sampleOutputTwo
 };
