@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { sampleInputOne } from './data.js';
+import { sampleInputOne, sampleInputTwo, sampleInputThree, samples } from './data.js';
 
 // Color palette for buildings
 const buildingColors = [
@@ -265,10 +265,15 @@ function visualizeInput() {
     renderGeoJSON(geojson);
 }
 
-function loadSample() {
-    document.getElementById('geojsonInput').value = JSON.stringify(sampleInputOne, null, 2);
-    document.querySelector('.sample-btn').classList.add('active');
-    renderGeoJSON(sampleInputOne);
+function loadSample(sampleKey = 'sampleInputOne') {
+    const sample = samples[sampleKey] || sampleInputOne;
+    document.getElementById('geojsonInput').value = JSON.stringify(sample, null, 2);
+    
+    // Update active button state
+    document.querySelectorAll('.sample-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[data-sample="${sampleKey}"]`).classList.add('active');
+    
+    renderGeoJSON(sample);
 }
 
 function clearInput() {
