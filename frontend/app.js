@@ -225,16 +225,21 @@ function renderGeoJSON(geojson, overlaps = null) {
     // Update legend
     const legendHtml = geojson.features.map((f, i) => {
         const color = '#' + buildingColors[i % buildingColors.length].toString(16).padStart(6, '0');
+        const labelText = f.id;
+        const fullLabel = `${labelText} (${f.properties.height}m @ ${f.properties.elevation}m)`;
+        const shortLabel = labelText.slice(0, 3);
         return `<div class="legend-item">
             <div class="legend-color" style="background: ${color};"></div>
-            <span>${f.id} (${f.properties.height}m @ ${f.properties.elevation}m)</span>
+            <span class="legend-label" title="${fullLabel}">${shortLabel}</span>
         </div>`;
     }).join('');
-    
+
+    const overlapsShort = 'Ove';
+    const overlapsFull = 'Overlaps';
     document.getElementById('legend').innerHTML = legendHtml + 
         `<div class="legend-item" style="margin-top:10px;">
             <div class="legend-color" style="background: #e94560;"></div>
-            <span>Overlaps</span>
+            <span class="legend-label" title="${overlapsFull}">${overlapsShort}</span>
         </div>`;
 }
 
@@ -304,9 +309,12 @@ function updateLegend() {
                     colorIndex++;
                 }
                 
+                const labelText = label;
+                const fullLabel = `${labelText} (${f.properties.height}m @ ${f.properties.elevation}m)`;
+                const shortLabel = labelText.slice(0,3);
                 legendHtml += `<div class="legend-item">
                     <div class="legend-color" style="background: ${bgColor}; border: 1px solid ${borderColor};"></div>
-                    <span>${label} (${f.properties.height}m @ ${f.properties.elevation}m)</span>
+                    <span class="legend-label" title="${fullLabel}">${shortLabel}</span>
                 </div>`;
             });
         }
@@ -372,6 +380,31 @@ window.sendInputFromForm = function() {
     if (!ta) return;
     alert('Input sent.');
 }
+
+// Toggle legend visibility based on sidebar checkbox
+function updateLegendVisibility() {
+    const cb = document.getElementById('show-legend-checkbox');
+    const legend = document.getElementById('legend');
+    if (!legend || !cb) return;
+    const footerInner = document.querySelector('.footer-inner');
+    if (cb.checked) {
+        legend.style.display = 'flex';
+        if (footerInner) footerInner.classList.add('legend-visible');
+    } else {
+        legend.style.display = 'none';
+        if (footerInner) footerInner.classList.remove('legend-visible');
+    }
+}
+
+// Attach checkbox listener
+document.addEventListener('DOMContentLoaded', () => {
+    const cb = document.getElementById('show-legend-checkbox');
+    if (cb) {
+        cb.addEventListener('change', updateLegendVisibility);
+    }
+    // ensure initial state
+    updateLegendVisibility();
+});
 
 // Initialize on load
 init();

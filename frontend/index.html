@@ -38,10 +38,7 @@
                 </div>
             </div>
             
-            <div class="section">
-                <h2>Legend</h2>
-                <div id="legend" class="legend"></div>
-            </div>
+            
             
         </div>
         
@@ -50,6 +47,12 @@
             <div id="overlay-info" class="overlay-info"></div>
         </div>
     </div>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div id="legend" class="legend footer-legend" style="display:none;"></div>
+        </div>
+    </footer>
 
     <div class="controls floating-controls">
         <strong>Controls:</strong>
@@ -61,6 +64,10 @@
         <button onclick="resetCamera()" class="view-btn">Reset Camera</button>
         <button onclick="topDownView()" class="view-btn">Top-Down View</button>
         <button onclick="sideView()" class="view-btn">Side View</button>
+        <label class="control-checkbox" style="display:flex; align-items:center; gap:8px; margin-top:8px; font-size:0.9rem; align-self:flex-end;">
+            <input id="show-legend-checkbox" type="checkbox">
+            Show legend
+        </label>
     </div>
 
     <script type="module" src="app.js"></script>

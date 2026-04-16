@@ -68,7 +68,11 @@ button {
 
 .legend { font-size: 0.8rem; }
 .legend-item { display: flex; align-items: center; margin-bottom: 6px; }
-.legend-color { width: 18px; height: 18px; margin-right: 8px; border-radius: 3px; }
+.legend-color { width: 14px; height: 14px; margin-right: 6px; border-radius: 3px; }
+
+/* Footer-specific legend: compact two-row layout (no scrollbar) */
+.footer-legend { display: none; width: 100%; gap: 8px; align-items: center; flex-wrap: wrap; overflow: hidden; padding-bottom: 4px; height: 100%; }
+.footer-legend .legend-item { flex: 0 0 auto; margin-bottom: 4px; padding: 4px 8px; background: rgba(255,255,255,0.03); border-radius: 6px; color: #eee; display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; }
 
 .stats { font-size: 0.8rem; color: #aaa; margin-top: 10px; }
 
@@ -123,6 +127,30 @@ button {
 .floating-controls .controls-desc { margin-top:6px; color: #cbd5e1; font-size:0.72rem; line-height:1.25; }
 .floating-controls .view-btn { margin-top:6px; padding:6px 8px; font-size:0.75rem; border-radius:4px; }
 
+/* Align the checkbox to the end of the floating controls */
+.floating-controls { display: flex; flex-direction: column; }
+.control-checkbox { align-self: flex-end; }
+
+/* Smaller checkbox label font inside floating controls */
+.floating-controls .control-checkbox { font-size: 0.72rem !important; gap: 6px; }
+.floating-controls .control-checkbox input { transform: scale(0.95); }
+
 @media (max-width: 720px) {
     .floating-controls { right: 8px; left: 8px; bottom: 8px; width: auto; font-size:0.72rem; }
+}
+
+.footer { position: fixed; left: 0; right: 0; bottom: 0; background: transparent; color: #111; padding: 8px 16px; z-index: 50; }
+.footer-inner { margin-left: calc(380px + 8px); margin-right: calc(160px + 24px); display: flex; align-items: center; gap: 10px; background: transparent; padding: 6px 12px; }
+
+/* Visible state: add background and border only when legend is visible */
+.footer-inner.legend-visible { background: #1a1a2e; border-top: 1px solid #0f3460; border-radius: 6px 6px 0 0; color: #eee; box-shadow: none; }
+.footer-legend { display: none; width: 100%; gap: 8px; align-items: center; flex-wrap: wrap; overflow: visible; padding-bottom: 4px; }
+
+/* Compact label showing only short text; full name available via title */
+.legend-label { display: inline-block; max-width: 3ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Small responsive tweak so footer doesn't overlap too much */
+@media (max-width: 900px) {
+    .sidebar { width: 320px; }
+    .footer-inner { margin-left: calc(320px + 8px); margin-right: 12px; padding-left: 8px; padding-right: 8px; }
 }
