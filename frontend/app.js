@@ -117,17 +117,6 @@ function createBuildingMesh(feature, index = 0, isOutput = false) {
     
     const geometry = new THREE.BoxGeometry(width, height, depth);
     
-    let color, edgeColor;
-    
-    if (isOutput) {
-        color = intersectionColor;
-        edgeColor = intersectionEdgeColor;
-    } else {
-        color = buildingColors[index % buildingColors.length];
-        // Darker version for edge
-        edgeColor = color - 0x202020;
-    }
-    
     let color, edgeColor, opacity;
     
     if (isOutput) {
