@@ -1,5 +1,6 @@
 import uuid
 from fastapi import APIRouter, HTTPException, BackgroundTasks
+from app.core.db import get_db
 from app.models.schemas import (
     ClashDetectionRequest, 
     ClashDetectionResponse,
@@ -61,3 +62,14 @@ async def get_results(job_id: str):
         from_cache=False,
         task_id=None
     )
+
+
+@router.get("/db-test")
+async def db_test():
+    """Simple endpoint to verify DB connectivity by inserting a doc."""
+    try:
+        db = get_db()
+        result = db.test_collection.insert_one({"test": "ok"})
+        return {"inserted_id": str(result.inserted_id)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
