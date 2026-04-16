@@ -38,8 +38,9 @@
                 <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Paste a FeatureCollection GeoJSON (see samples)</p>
                 <textarea id="input-json" placeholder="Paste GeoJSON here"></textarea>
                 <div class="btn-row">
-                    <button class="btn-primary" onclick="sendInputFromForm()">Send</button>
+                    <button id="send-btn" class="btn-primary" onclick="sendInputFromForm()">Send</button>
                 </div>
+                <p id="input-status" class="stats"></p>
             </div>
             
             

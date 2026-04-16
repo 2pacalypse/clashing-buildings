@@ -375,15 +375,20 @@ window.sideView = sideView;
 
 // Accept JSON pasted into the textarea and render it
 
-window.sendInputFromForm = function() {
+window.sendInputFromForm = async function() {
     const ta = document.getElementById('input-json');
     if (!ta) return;
+    const statusEl = document.getElementById('input-status');
+    const sendBtn = document.getElementById('send-btn');
+    if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Sending...'; }
+    if (statusEl) { statusEl.textContent = 'Sending...'; statusEl.style.color = '#aaa'; }
     let parsed;
     try {
         parsed = JSON.parse(ta.value);
         if (!parsed || !parsed.features) throw new Error('Not a FeatureCollection');
     } catch (err) {
-        alert('Invalid JSON: ' + err.message);
+        if (statusEl) { statusEl.textContent = 'Invalid JSON: ' + err.message; statusEl.style.color = '#ff8080'; }
+        if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
         return;
     }
 
@@ -427,6 +432,30 @@ window.sendInputFromForm = function() {
     } catch (e) {
         console.error('Failed to register new sample:', e);
     }
+
+    // Send to backend (fire-and-log). Update status UI with result.
+    if (window.postInputToServer) {
+        try {
+            const resp = await window.postInputToServer(parsed);
+            console.log('Backend response for detect-clashes:', resp);
+            if (statusEl) {
+                if (resp && resp.job_id) {
+                    statusEl.textContent = `Sent — job ${resp.job_id} (${resp.status})`;
+                } else {
+                    statusEl.textContent = `Sent — ${resp.status || 'done'}`;
+                }
+                statusEl.style.color = '#7fff7f';
+            }
+        } catch (err) {
+            console.error('Failed to POST input to server:', err);
+            if (statusEl) { statusEl.textContent = 'Server error: ' + err.message; statusEl.style.color = '#ff8080'; }
+        } finally {
+            if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
+        }
+    } else {
+        if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
+        if (statusEl) { statusEl.textContent = 'Local sample added.'; statusEl.style.color = '#7fff7f'; }
+    }
 }
 
 // Toggle legend visibility based on sidebar checkbox
@@ -453,6 +482,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // ensure initial state
     updateLegendVisibility();
 });
+
+// POST GeoJSON to backend clash detection endpoint.
+// Not wired to UI yet — call `postInputToServer(geojson)` when ready.
+async function postInputToServer(geojson) {
+    const url = '/api/v1/detect-clashes';
+    try {
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(geojson)
+        });
+
+        if (!resp.ok) {
+            const text = await resp.text();
+            throw new Error(`Server responded ${resp.status}: ${text}`);
+        }
+
+        const data = await resp.json();
+        return data; // Caller handles the response
+    } catch (err) {
+        console.error('postInputToServer error:', err);
+        throw err;
+    }
+}
+
+window.postInputToServer = postInputToServer;
 
 // Initialize on load
 init();
