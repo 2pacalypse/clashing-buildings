@@ -138,9 +138,7 @@ function createBuildingMesh(feature, index = 0, isOutput = false) {
     
     const mesh = new THREE.Mesh(geometry, material);
     
-    // Offset outputs slightly upward to avoid z-fighting
-    const yOffset = isOutput ? 0.5 : 0;
-    mesh.position.set((minX + maxX) / 2, elevation + height / 2 + yOffset, (minY + maxY) / 2);
+    mesh.position.set((minX + maxX) / 2, elevation + height / 2, (minY + maxY) / 2);
     mesh.userData = { type: isOutput ? 'output' : 'building', feature, color };
     
     const edges = new THREE.EdgesGeometry(geometry);
