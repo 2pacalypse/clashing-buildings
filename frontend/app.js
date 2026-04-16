@@ -219,52 +219,6 @@ function renderGeoJSON(geojson, overlaps = null) {
         </div>`;
 }
 
-function validateGeoJSON(geojson) {
-    if (!geojson || typeof geojson !== 'object') return 'Invalid JSON format';
-    if (geojson.type !== 'FeatureCollection') return 'Root must be a FeatureCollection';
-    if (!Array.isArray(geojson.features) || geojson.features.length === 0) return 'FeatureCollection must have at least one feature';
-    
-    for (let i = 0; i < geojson.features.length; i++) {
-        const f = geojson.features[i];
-        if (f.type !== 'Feature') return `Feature ${i}: must have type "Feature"`;
-        if (!f.id) return `Feature ${i}: must have an "id" field`;
-        if (!f.geometry || f.geometry.type !== 'Polygon') return `Feature ${i}: geometry must be a Polygon`;
-        if (!f.properties || f.properties.height == null || f.properties.elevation == null) {
-            return `Feature ${i}: properties must include height and elevation`;
-        }
-    }
-    return null;
-}
-
-function visualizeInput() {
-    document.getElementById('error').style.display = 'none';
-    const input = document.getElementById('geojsonInput').value.trim();
-    
-    if (!input) {
-        showError('Please enter a GeoJSON');
-        return;
-    }
-    
-    let geojson;
-    try {
-        geojson = JSON.parse(input);
-    } catch (e) {
-        showError('Invalid JSON: ' + e.message);
-        return;
-    }
-    
-    const error = validateGeoJSON(geojson);
-    if (error) {
-        showError(error);
-        return;
-    }
-    
-    // Clear sample selections when user provides custom input
-    selectedSamples.clear();
-    document.querySelectorAll('.sample-btn').forEach(btn => btn.classList.remove('active'));
-    renderGeoJSON(geojson);
-}
-
 function loadSample(sampleKey) {
     const sample = samples[sampleKey] || sampleInputOne;
     
@@ -277,41 +231,8 @@ function loadSample(sampleKey) {
         document.querySelector(`[data-sample="${sampleKey}"]`).classList.add('active');
     }
     
-    // Update textarea with all selected samples merged
-    updateInputFromSelection();
-    
     // Render all selected samples
     renderAllSelectedSamples();
-}
-
-function updateInputFromSelection() {
-    if (selectedSamples.size === 0) {
-        document.getElementById('geojsonInput').value = '';
-        return;
-    }
-    
-    const allFeatures = [];
-    let featureIndex = 0;
-    
-    selectedSamples.forEach(key => {
-        const sample = samples[key];
-        if (sample && sample.features) {
-            sample.features.forEach(f => {
-                // Create a copy with unique ID
-                allFeatures.push({
-                    ...f,
-                    id: `${key}_${featureIndex++}`
-                });
-            });
-        }
-    });
-    
-    const merged = {
-        type: "FeatureCollection",
-        features: allFeatures
-    };
-    
-    document.getElementById('geojsonInput').value = JSON.stringify(merged, null, 2);
 }
 
 function renderAllSelectedSamples() {
@@ -374,18 +295,10 @@ function updateLegend() {
 }
 
 function clearInput() {
-    document.getElementById('geojsonInput').value = '';
-    document.getElementById('error').style.display = 'none';
     document.querySelectorAll('.sample-btn').forEach(btn => btn.classList.remove('active'));
     selectedSamples.clear();
     clearScene();
     document.getElementById('legend').innerHTML = '';
-}
-
-function showError(msg) {
-    const el = document.getElementById('error');
-    el.textContent = msg;
-    el.style.display = 'block';
 }
 
 function resetCamera() {
@@ -425,7 +338,6 @@ function sideView() {
 }
 
 // Expose functions globally
-window.visualizeInput = visualizeInput;
 window.loadSample = loadSample;
 window.clearInput = clearInput;
 window.resetCamera = resetCamera;
