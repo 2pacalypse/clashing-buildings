@@ -102,3 +102,27 @@ button {
     font-size: 0.8rem;
     display: none;
 }
+
+/* Floating controls positioned at the right-side corner */
+.floating-controls {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    width: 160px;
+    background: rgba(26,26,46,0.95);
+    color: #eee;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #0f3460;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.32);
+    z-index: 1100;
+    font-size: 0.78rem;
+}
+
+.floating-controls strong { color: #00d4ff; display:block; margin-bottom:6px; font-size:0.85rem; }
+.floating-controls .controls-desc { margin-top:6px; color: #cbd5e1; font-size:0.72rem; line-height:1.25; }
+.floating-controls .view-btn { margin-top:6px; padding:6px 8px; font-size:0.75rem; border-radius:4px; }
+
+@media (max-width: 720px) {
+    .floating-controls { right: 8px; left: 8px; bottom: 8px; width: auto; font-size:0.72rem; }
+}

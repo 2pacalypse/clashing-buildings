@@ -34,21 +34,24 @@
                 <div id="legend" class="legend"></div>
             </div>
             
-            <div class="controls">
-                <strong>Controls:</strong><br>
-                🖱️ Left drag: Rotate<br>
-                🖱️ Right drag: Pan<br>
-                🔍 Scroll: Zoom<br>
-                <button onclick="resetCamera()" class="view-btn">Reset Camera</button>
-                <button onclick="topDownView()" class="view-btn">Top-Down View</button>
-                <button onclick="sideView()" class="view-btn">Side View</button>
-            </div>
         </div>
         
         <div id="canvas-container">
             <canvas id="three-canvas"></canvas>
             <div id="overlay-info" class="overlay-info"></div>
         </div>
+    </div>
+
+    <div class="controls floating-controls">
+        <strong>Controls:</strong>
+        <div class="controls-desc">
+            🖱️ Left drag: Rotate<br>
+            🖱️ Right drag: Pan<br>
+            🔍 Scroll: Zoom
+        </div>
+        <button onclick="resetCamera()" class="view-btn">Reset Camera</button>
+        <button onclick="topDownView()" class="view-btn">Top-Down View</button>
+        <button onclick="sideView()" class="view-btn">Side View</button>
     </div>
 
     <script type="module" src="app.js"></script>
