@@ -117,30 +117,41 @@ function createBuildingMesh(feature, index = 0, isOutput = false) {
     
     const geometry = new THREE.BoxGeometry(width, height, depth);
     
+    let color, edgeColor;
+    
+    if (isOutput) {
+        color = intersectionColor;
+        edgeColor = intersectionEdgeColor;
+    } else {
+        color = buildingColors[index % buildingColors.length];
+        // Darker version for edge
+        edgeColor = color - 0x202020;
+    }
+    
     let color, edgeColor, opacity;
     
     if (isOutput) {
         color = intersectionColor;
         edgeColor = intersectionEdgeColor;
-        opacity = 0.8;
+        opacity = 0.9;
     } else {
         color = buildingColors[index % buildingColors.length];
-        // Darker version for edge
         edgeColor = color - 0x202020;
-        opacity = 0.4;
+        opacity = 0.5;
     }
     
     const material = new THREE.MeshPhongMaterial({
         color: color,
         transparent: true,
         opacity: opacity,
-        side: THREE.DoubleSide,
-        blending: isOutput ? THREE.AdditiveBlending : THREE.NormalBlending,
-        depthWrite: false
+        side: THREE.DoubleSide
     });
     
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set((minX + maxX) / 2, elevation + height / 2, (minY + maxY) / 2);
+    
+    // Offset outputs slightly upward to avoid z-fighting
+    const yOffset = isOutput ? 0.5 : 0;
+    mesh.position.set((minX + maxX) / 2, elevation + height / 2 + yOffset, (minY + maxY) / 2);
     mesh.userData = { type: isOutput ? 'output' : 'building', feature, color };
     
     const edges = new THREE.EdgesGeometry(geometry);
@@ -296,7 +307,7 @@ function updateLegend() {
                 let bgColor, borderColor;
                 
                 if (isOutput) {
-                    bgColor = 'rgba(231, 76, 60, 0.8)';
+                    bgColor = '#e74c3c';
                     borderColor = '#c0392b';
                 } else {
                     const color = buildingColors[colorIndex % buildingColors.length];
