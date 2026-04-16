@@ -401,25 +401,28 @@ window.sendInputFromForm = async function() {
     const key = 'sampleInput' + nextIndex;
 
     // Register new sample in the samples object so loadSample can find it
+    // Declare these here so they are available after the POST response
+    let outKey;
+    let inBtn, outBtn, row;
     try {
         samples[key] = parsed;
-        const outKey = 'sampleOutput' + nextIndex;
+        outKey = 'sampleOutput' + nextIndex;
         // create a dummy empty FeatureCollection for the paired output
         samples[outKey] = { type: 'FeatureCollection', features: [] };
 
         // Create paired buttons and insert into the Sample Inputs section
         const section = document.getElementById('sample-section');
         if (section) {
-            const row = document.createElement('div');
+            row = document.createElement('div');
             row.className = 'sample-row';
 
-            const inBtn = document.createElement('button');
+            inBtn = document.createElement('button');
             inBtn.className = 'sample-btn';
             inBtn.dataset.sample = key;
             inBtn.textContent = `Sample Input ${nextIndex}`;
             inBtn.addEventListener('click', () => loadSample(key));
 
-            const outBtn = document.createElement('button');
+            outBtn = document.createElement('button');
             outBtn.className = 'sample-btn';
             outBtn.dataset.sample = outKey;
             outBtn.textContent = `Sample Output ${nextIndex}`;
@@ -438,6 +441,18 @@ window.sendInputFromForm = async function() {
         try {
             const resp = await window.postInputToServer(parsed);
             console.log('Backend response for detect-clashes:', resp);
+            // Replace the dummy output sample with the server response when available
+            try {
+                if (resp && resp.result && outKey) {
+                    samples[outKey] = resp.result;
+                    if (outBtn) {
+                        outBtn.classList.add('ready');
+                        outBtn.title = 'Server result ready';
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to apply server result to sample output:', e);
+            }
             if (statusEl) {
                 if (resp && resp.job_id) {
                     statusEl.textContent = `Sent — job ${resp.job_id} (${resp.status})`;

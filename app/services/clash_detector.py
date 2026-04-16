@@ -8,7 +8,7 @@ def detect_clashes(buildings: List[Dict[str, Any]]) -> Dict[str, Any]:
     Expected input format:
     {
         "type": "Feature",
-        "id": "building_0",
+        "id": "building_0", 
         "properties": {"height": 4, "elevation": 0},
         "geometry": {"type": "Polygon", "coordinates": [...]}
     }
