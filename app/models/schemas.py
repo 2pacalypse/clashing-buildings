@@ -30,8 +30,8 @@ class GeoJSONFeatureCollection(BaseModel):
             raise ValueError("FeatureCollection must have at least one feature")
         return v
 
-class ClashDetectionRequest(BaseModel):
-    buildings: GeoJSONFeatureCollection
+class ClashDetectionRequest(GeoJSONFeatureCollection):
+    """Request schema for clash detection - accepts GeoJSON FeatureCollection directly."""
 
     def content_hash(self) -> str:
         """Generate content-based hash for caching."""

@@ -35,7 +35,7 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
     
     # Process synchronously (for smaller inputs)
     # For larger inputs, integrate with Celery here
-    buildings = [f.model_dump() for f in request.buildings.features]
+    buildings = [f.model_dump() for f in request.features]
     result = detect_clashes(buildings)
     
     # Cache the result
