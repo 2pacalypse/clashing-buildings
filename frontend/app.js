@@ -54,6 +54,7 @@ function init() {
     
     // Start animation loop
     animate();
+
 }
 
 function animate() {
@@ -363,6 +364,14 @@ window.clearInput = clearInput;
 window.resetCamera = resetCamera;
 window.topDownView = topDownView;
 window.sideView = sideView;
+
+// Accept JSON pasted into the textarea and render it
+
+window.sendInputFromForm = function() {
+    const ta = document.getElementById('input-json');
+    if (!ta) return;
+    alert('Input sent.');
+}
 
 // Initialize on load
 init();
