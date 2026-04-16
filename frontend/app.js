@@ -378,7 +378,55 @@ window.sideView = sideView;
 window.sendInputFromForm = function() {
     const ta = document.getElementById('input-json');
     if (!ta) return;
-    alert('Input sent.');
+    let parsed;
+    try {
+        parsed = JSON.parse(ta.value);
+        if (!parsed || !parsed.features) throw new Error('Not a FeatureCollection');
+    } catch (err) {
+        alert('Invalid JSON: ' + err.message);
+        return;
+    }
+
+    // Determine next input sample index (count existing sample-input buttons)
+    const existingInputBtns = Array.from(document.querySelectorAll('.sample-btn')).filter(b => {
+        const ds = b.dataset && b.dataset.sample ? b.dataset.sample.toLowerCase() : '';
+        return ds.includes('input');
+    });
+    const nextIndex = existingInputBtns.length + 1;
+    const key = 'sampleInput' + nextIndex;
+
+    // Register new sample in the samples object so loadSample can find it
+    try {
+        samples[key] = parsed;
+        const outKey = 'sampleOutput' + nextIndex;
+        // create a dummy empty FeatureCollection for the paired output
+        samples[outKey] = { type: 'FeatureCollection', features: [] };
+
+        // Create paired buttons and insert into the Sample Inputs section
+        const section = document.getElementById('sample-section');
+        if (section) {
+            const row = document.createElement('div');
+            row.className = 'sample-row';
+
+            const inBtn = document.createElement('button');
+            inBtn.className = 'sample-btn';
+            inBtn.dataset.sample = key;
+            inBtn.textContent = `Sample Input ${nextIndex}`;
+            inBtn.addEventListener('click', () => loadSample(key));
+
+            const outBtn = document.createElement('button');
+            outBtn.className = 'sample-btn';
+            outBtn.dataset.sample = outKey;
+            outBtn.textContent = `Sample Output ${nextIndex}`;
+            outBtn.addEventListener('click', () => loadSample(outKey));
+
+            row.appendChild(inBtn);
+            row.appendChild(outBtn);
+            section.appendChild(row);
+        }
+    } catch (e) {
+        console.error('Failed to register new sample:', e);
+    }
 }
 
 // Toggle legend visibility based on sidebar checkbox
