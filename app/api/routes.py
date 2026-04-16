@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 from app.models.schemas import (
     ClashDetectionRequest, 
     ClashDetectionResponse,
+    ClashResultFeatureCollection,
     GeoJSONFeatureCollection
 )
 from app.core.cache import get_cache, set_cache, compute_content_hash
@@ -48,8 +49,14 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
         from_cache=False
     )
 
-@router.get("/results/{job_id}")
+@router.get("/results/{job_id}", response_model=ClashDetectionResponse)
 async def get_results(job_id: str):
     """Poll for job results (placeholder for async implementation)."""
     # TODO: Implement Redis-based job status polling
-    return {"job_id": job_id, "status": "not_implemented"}
+    return ClashDetectionResponse(
+        job_id=job_id,
+        status="pending",
+        result=None,
+        from_cache=False,
+        task_id=None
+    )
