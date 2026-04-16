@@ -381,13 +381,12 @@ window.sendInputFromForm = async function() {
     const statusEl = document.getElementById('input-status');
     const sendBtn = document.getElementById('send-btn');
     if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Sending...'; }
-    if (statusEl) { statusEl.textContent = 'Sending...'; statusEl.style.color = '#aaa'; }
+    if (statusEl) { statusEl.textContent = ''; }
     let parsed;
     try {
         parsed = JSON.parse(ta.value);
         if (!parsed || !parsed.features) throw new Error('Not a FeatureCollection');
     } catch (err) {
-        if (statusEl) { statusEl.textContent = 'Invalid JSON: ' + err.message; statusEl.style.color = '#ff8080'; }
         if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
         return;
     }
@@ -422,10 +421,11 @@ window.sendInputFromForm = async function() {
             inBtn.textContent = `Sample Input ${nextIndex}`;
             inBtn.addEventListener('click', () => loadSample(key));
 
+            const initialIcon = statusIconFor('pending');
             outBtn = document.createElement('button');
-            outBtn.className = 'sample-btn';
+            outBtn.className = 'sample-btn status-pending';
             outBtn.dataset.sample = outKey;
-            outBtn.textContent = `Sample Output ${nextIndex}`;
+            outBtn.innerHTML = `${initialIcon} Sample Output ${nextIndex}`;
             outBtn.addEventListener('click', () => loadSample(outKey));
 
             row.appendChild(inBtn);
@@ -443,33 +443,33 @@ window.sendInputFromForm = async function() {
             console.log('Backend response for detect-clashes:', resp);
             // Replace the dummy output sample with the server response when available
             try {
-                if (resp && resp.result && outKey) {
-                    samples[outKey] = resp.result;
+                if (resp && outKey) {
+                    const status = resp.status || (resp.result ? 'completed' : (resp.job_id ? 'processing' : 'failed'));
+                    const icon = statusIconFor(status);
+                    if (resp.result) {
+                        samples[outKey] = resp.result;
+                    }
                     if (outBtn) {
-                        outBtn.classList.add('ready');
-                        outBtn.title = 'Server result ready';
+                        outBtn.classList.remove('status-pending','status-processing','status-completed','status-failed','ready');
+                        outBtn.classList.add(`status-${status}`);
+                        if (status === 'completed' && resp.result) outBtn.classList.add('ready');
+                        outBtn.innerHTML = `${icon} Sample Output ${nextIndex}`;
+                        outBtn.title = resp.job_id ? `Job ${resp.job_id} — ${status}` : `${status}`;
                     }
                 }
             } catch (e) {
                 console.error('Failed to apply server result to sample output:', e);
             }
-            if (statusEl) {
-                if (resp && resp.job_id) {
-                    statusEl.textContent = `Sent — job ${resp.job_id} (${resp.status})`;
-                } else {
-                    statusEl.textContent = `Sent — ${resp.status || 'done'}`;
-                }
-                statusEl.style.color = '#7fff7f';
-            }
+            if (statusEl) { statusEl.textContent = ''; }
         } catch (err) {
             console.error('Failed to POST input to server:', err);
-            if (statusEl) { statusEl.textContent = 'Server error: ' + err.message; statusEl.style.color = '#ff8080'; }
+            if (statusEl) { statusEl.textContent = ''; }
         } finally {
             if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
         }
     } else {
         if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
-        if (statusEl) { statusEl.textContent = 'Local sample added.'; statusEl.style.color = '#7fff7f'; }
+        if (statusEl) { statusEl.textContent = ''; }
     }
 }
 
@@ -526,3 +526,19 @@ window.postInputToServer = postInputToServer;
 
 // Initialize on load
 init();
+
+// Map JobStatus to an icon/emoji for button display
+function statusIconFor(status) {
+    switch ((status || '').toString().toLowerCase()) {
+        case 'pending':
+            return '⏳';
+        case 'processing':
+            return '🔄';
+        case 'completed':
+            return '✅';
+        case 'failed':
+            return '❌';
+        default:
+            return '❔';
+    }
+}
