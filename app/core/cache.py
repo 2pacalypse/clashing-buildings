@@ -17,9 +17,6 @@ async def get_redis() -> redis.Redis:
         )
     return redis_client
 
-def compute_content_hash(content: str) -> str:
-    """Compute SHA256 hash of content for cache key."""
-    return hashlib.sha256(content.encode('utf-8')).hexdigest()
 
 async def get_cache(key: str) -> Optional[dict]:
     """Get cached result by key."""

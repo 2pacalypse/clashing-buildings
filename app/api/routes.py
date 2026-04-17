@@ -8,7 +8,7 @@ from app.models.schemas import (
     GeoJSONFeatureCollection,
     JobStatus
 )
-from app.core.cache import get_cache, set_cache, compute_content_hash
+from app.core.cache import get_cache, set_cache
 from app.services.clash_detector import detect_clashes
 
 router = APIRouter()
@@ -21,10 +21,7 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
     For large inputs that take >10s, returns a job_id for polling.
     """
     # Generate server-side job ID
-    job_id = str(uuid.uuid4())
-    
-    # Compute content hash for caching
-    # content_hash = request.content_hash()
+    job_id = request.content_hash()
     
     # Check cache first
     # cached_result = await get_cache(content_hash)
