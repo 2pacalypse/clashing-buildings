@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Literal, Annotated
 from enum import Enum
 from pydantic import BaseModel, Field, field_validator
 import json
@@ -14,18 +14,19 @@ class BuildingProperties(BaseModel):
     height: float = Field(gt=0, description="Building height in meters")
     elevation: float = Field(ge=0, description="Building base elevation in meters")
 
+
+Coordinate = Annotated[List[float], Field(min_items=2, max_items=2, description="[lon, lat]")]
+
+
+class PolygonGeometry(BaseModel):
+    type: Literal["Polygon"] = "Polygon"
+    coordinates: List[List[Coordinate]]
+
 class GeoJSONFeature(BaseModel):
     type: str = "Feature"
     id: str
     properties: BuildingProperties
-    geometry: Dict[str, Any]
-
-    @field_validator('geometry')
-    @classmethod
-    def validate_geometry(cls, v):
-        if v.get('type') != 'Polygon':
-            raise ValueError("Geometry must be a Polygon")
-        return v
+    geometry: PolygonGeometry
 
 class GeoJSONFeatureCollection(BaseModel):
     type: str = "FeatureCollection"
@@ -57,14 +58,7 @@ class ClashFeature(BaseModel):
     """A single clash feature in the result."""
     type: str = "Feature"
     properties: ClashProperties
-    geometry: Dict[str, Any]
-
-    @field_validator('geometry')
-    @classmethod
-    def validate_geometry(cls, v):
-        if v.get('type') != 'Polygon':
-            raise ValueError("Geometry must be a Polygon")
-        return v
+    geometry: PolygonGeometry
 
 class ClashResultFeatureCollection(BaseModel):
     """Result of clash detection - GeoJSON FeatureCollection of clashes."""
