@@ -1,7 +1,7 @@
 from typing import Optional, List, Dict, Any
 from .job_status import JobStatus
 from pydantic import BaseModel, Field
-from app.api.clash_detection_request import (
+from app.models.clash_detection_request import (
     BuildingProperties,
     Coordinate,
     PolygonGeometry,
