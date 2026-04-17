@@ -37,7 +37,7 @@ class GeoJSONFeatureCollection(BaseModel):
 class ClashDetectionRequest(GeoJSONFeatureCollection):
     """Request schema for clash detection - accepts GeoJSON FeatureCollection directly."""
 
-    def content_hash(self) -> str:
+    def hash(self) -> str:
         """Generate content-based hash for caching."""
         import hashlib
         canonical = self.model_dump_json()

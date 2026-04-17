@@ -20,7 +20,7 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
     For large inputs that take >10s, returns a job_id for polling.
     """
     # Generate server-side job ID
-    job_id = request.content_hash()
+    job_id = request.hash()
     
     # Check cache first
     # cached_result = await get_cache(content_hash)
