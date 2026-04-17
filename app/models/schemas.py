@@ -1,14 +1,7 @@
 from typing import Optional, List, Dict, Any, Literal, Annotated
-from enum import Enum
+from .job_status import JobStatus
 from pydantic import BaseModel, Field, field_validator
 import json
-
-class JobStatus(str, Enum):
-    """Enum for clash detection job status."""
-    PENDING = "pending"
-    PROCESSING = "processing"
-    COMPLETED = "completed"
-    FAILED = "failed"
 
 class BuildingProperties(BaseModel):
     height: float = Field(gt=0, description="Building height in meters")

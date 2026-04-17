@@ -6,8 +6,8 @@ from app.models.schemas import (
     ClashDetectionResponse,
     ClashResultFeatureCollection,
     GeoJSONFeatureCollection,
-    JobStatus
 )
+from app.models.job_status import JobStatus
 from app.core.cache import get_cache, set_cache
 from app.services.clash_detector import detect_clashes
 
