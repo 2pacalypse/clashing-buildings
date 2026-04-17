@@ -2,11 +2,10 @@ import uuid
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from app.core.db import get_db
 from app.models.schemas import (
-    ClashDetectionRequest, 
     ClashDetectionResponse,
     ClashResultFeatureCollection,
-    GeoJSONFeatureCollection,
 )
+from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.job_status import JobStatus
 from app.core.cache import get_cache, set_cache
 from app.services.clash_detector import detect_clashes
