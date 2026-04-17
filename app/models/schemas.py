@@ -44,7 +44,7 @@ class ClashDetectionRequest(GeoJSONFeatureCollection):
     def content_hash(self) -> str:
         """Generate content-based hash for caching."""
         import hashlib
-        canonical = self.model_dump_json(sort_keys=True)
+        canonical = self.model_dump_json()
         return hashlib.sha256(canonical.encode()).hexdigest()
 
 class ClashProperties(BaseModel):
