@@ -11,6 +11,7 @@ from app.core.cache import get_cache, set_cache
 from app.services.clash_detector import detect_clashes
 
 router = APIRouter()
+#TODO: VALIDATIONS - max features, max vertices, valid GeoJSON structure, etc.
 
 @router.post("/detect-clashes", response_model=ClashDetectionResponse)
 async def detect_clashes_endpoint(request: ClashDetectionRequest):
