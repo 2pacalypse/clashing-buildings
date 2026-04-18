@@ -23,3 +23,10 @@ class CanonicalBuilding:
 class CanonicalBuildingSet:
     """Canonical building set model for clash detection."""
     buildings: tuple[CanonicalBuilding]
+
+
+@dataclass
+class CanonicalBuildingIntersection:
+    """Canonical building set model for clash detection."""
+    building_ids: tuple[int, int]
+    intersection: CanonicalBuilding

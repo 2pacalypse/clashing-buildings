@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from shapely.geometry import Polygon, mapping
-from app.models.canonical.buildings import CanonicalBuildingSet
+from app.models.canonical.buildings import CanonicalBuilding, CanonicalBuildingSet, CanonicalBuildingIntersection, CanonicalPolygon
 
 
 def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
@@ -44,25 +44,32 @@ def detect_clashes(building_set: CanonicalBuildingSet) -> Dict[str, Any]:
                     clash_top = min(geom1["top"], geom2["top"])
                     clash_height = clash_top - clash_elevation
                     if clash_height > 0 and not intersection_geom.is_empty:
-                        collisions.append({
-                            "indices": (i, j),
-                            "ids": [geom1["id"], geom2["id"]],
-                            "elevation": clash_elevation,
-                            "height": clash_height,
-                            "geometry": intersection_geom
-                        })
+                        # Use CanonicalBuildingIntersection for collisions
+                        intersection_building = CanonicalBuilding(
+                                elevation=clash_elevation,
+                                height=clash_height,
+                                base=CanonicalPolygon(coordinates=tuple(intersection_geom.exterior.coords))
+                            )
+                        
+                        intersection = CanonicalBuildingIntersection(
+                            building_ids=(i, j),
+                            intersection= intersection_building
+                        )
+                        collisions.append(intersection)
 
-    # Step 2: Build GeoJSON output from collisions
+    # Step 2: Build GeoJSON output from CanonicalBuildingIntersection list
     clash_features = []
     for c in collisions:
+        # Reconstruct the intersection geometry as a Shapely Polygon
+        intersection_geom = Polygon(c.intersection.base.coordinates)
         clash_features.append({
             "type": "Feature",
             "properties": {
-                "elevation": c["elevation"],
-                "height": c["height"],
-                "buildings": c["ids"]
+                "elevation": c.intersection.elevation,
+                "height": c.intersection.height,
+                "buildings": list(map(str, c.building_ids))
             },
-            "geometry": mapping(c["geometry"])
+            "geometry": mapping(intersection_geom)
         })
 
     return {
