@@ -23,7 +23,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
          )
     
     # Convert GeoJSON features to canonical building set
-    building_set = map_request_to_canonical(request)
+    building_set, original_indices = map_request_to_canonical(request)
     
     # Process synchronously (for smaller inputs)
     # For larger inputs, integrate with Celery here

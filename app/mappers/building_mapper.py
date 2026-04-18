@@ -25,8 +25,23 @@ def map_building_to_canonical(building: GeoJSONFeature) -> CanonicalBuilding:
     )
 
 
-def map_request_to_canonical(request: ClashDetectionRequest) -> CanonicalBuildingSet:
-    """Map incoming clash detection request to canonical building set."""
-    canonical_buildings = [map_building_to_canonical(feat) for feat in request.features]
-    canonical_buildings.sort()
-    return CanonicalBuildingSet(buildings=tuple(canonical_buildings))
+def map_request_to_canonical(request: ClashDetectionRequest) -> tuple[CanonicalBuildingSet, tuple[int, ...]]:
+    """Map incoming clash detection request to canonical building set.
+    
+    Returns:
+        A tuple of (canonical_building_set, indices) where indices[i] is the 
+        original input index of the i-th building in the canonical set.
+    """
+    # Create list of (building, original_index) tuples
+    buildings_with_indices = [
+        (map_building_to_canonical(feat), idx) for idx, feat in enumerate(request.features)
+    ]
+    
+    # Sort by building, keeping track of original indices
+    buildings_with_indices.sort(key=lambda x: x[0])
+    
+    # Extract sorted buildings and their original indices
+    sorted_buildings = [building for building, _ in buildings_with_indices]
+    original_indices = tuple(idx for _, idx in buildings_with_indices)
+    
+    return CanonicalBuildingSet(buildings=tuple(sorted_buildings)), original_indices
