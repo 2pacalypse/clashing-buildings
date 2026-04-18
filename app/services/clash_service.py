@@ -56,7 +56,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
         # Another process is already working on this job, return PENDING
         return ClashDetectionResponse(
             job_id=job_id,
-            status=JobStatus.PROCESSING,
+            status=JobStatus.PENDING,
             result=None,
         )
 
