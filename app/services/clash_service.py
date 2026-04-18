@@ -9,6 +9,10 @@ from app.utils.job_id_generator import generate_job_id
 
 
 async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetectionResponse:
+    
+    # Convert GeoJSON features to canonical building set
+    building_set, original_indices = map_request_to_canonical(request)
+    
     # Generate server-side job ID
     job_id = generate_job_id(request)
     
@@ -22,9 +26,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
              from_cache=True
          )
     
-    # Convert GeoJSON features to canonical building set
-    building_set, original_indices = map_request_to_canonical(request)
-    
+
     # Process synchronously (for smaller inputs)
     # For larger inputs, integrate with Celery here
     result = detect_clashes(building_set)
