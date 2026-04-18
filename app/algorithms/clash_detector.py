@@ -24,7 +24,7 @@ def detect_clashes(building_set: CanonicalBuildingSet) -> List[CanonicalBuilding
                     clash_elevation = max(b1.elevation, b2.elevation)
                     clash_top = min(top1, top2)
                     clash_height = clash_top - clash_elevation
-                    if clash_height > 0 and not intersection_geom.is_empty:
+                    if clash_height > 0 and not intersection_geom.is_empty and isinstance(intersection_geom, Polygon):
                         intersection_building = CanonicalBuilding(
                             elevation=clash_elevation,
                             height=clash_height,
