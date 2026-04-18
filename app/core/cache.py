@@ -1,8 +1,9 @@
 import json
-import hashlib
 import redis.asyncio as redis
-from typing import Optional, Any
+from typing import List, Optional
 from app.core.config import settings
+from app.models.canonical.buildings import CanonicalBuildingIntersection, CanonicalBuilding, CanonicalPolygon
+from shapely.geometry import Polygon
 
 redis_client: Optional[redis.Redis] = None
 
@@ -18,17 +19,34 @@ async def get_redis() -> redis.Redis:
     return redis_client
 
 
-async def get_cache(key: str) -> Optional[dict]:
+def _reconstruct_intersection(data: dict) -> CanonicalBuildingIntersection:
+    """Reconstruct CanonicalBuildingIntersection from dict, converting coordinate lists back to Polygons."""
+    polygon = Polygon(data["intersection"]["base"]["polygon"])
+    canonical_polygon = CanonicalPolygon(polygon=polygon)
+    canonical_building = CanonicalBuilding(
+        elevation=data["intersection"]["elevation"],
+        height=data["intersection"]["height"],
+        base=canonical_polygon
+    )
+    return CanonicalBuildingIntersection(
+        building_ids=tuple(data["building_ids"]),
+        intersection=canonical_building
+    )
+
+
+async def get_cache(key: str) -> Optional[List[CanonicalBuildingIntersection]]:
     """Get cached result by key."""
     client = await get_redis()
     data = await client.get(key)
     if data:
-        return json.loads(data)
+        cached_data = json.loads(data)
+        return [_reconstruct_intersection(item) for item in cached_data]
     return None
 
-async def set_cache(key: str, value: dict, ttl: int = None) -> bool:
+async def set_cache(key: str, value: List[CanonicalBuildingIntersection], ttl: int = None) -> bool:
     """Set cache with optional TTL."""
     client = await get_redis()
     ttl = ttl or settings.CACHE_TTL
-    await client.setex(key, ttl, json.dumps(value))
+    serialized = [v.model_dump() for v in value]
+    await client.setex(key, ttl, json.dumps(serialized))
     return True

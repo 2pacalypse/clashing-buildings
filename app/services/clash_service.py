@@ -16,23 +16,24 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
     # Generate server-side job ID
     job_id = generate_job_id(building_set)
     
-    # Check cache first
-    cached_result = await get_cache(job_id)
-    if cached_result:
-        return ClashDetectionResponse(
-             job_id=job_id,
-             status=JobStatus.COMPLETED,
-             result=ClashResultFeatureCollection(**cached_result),
-             from_cache=True
-         )
+    # Check cache first for canonical collisions
+    cached_collisions = await get_cache(job_id)
+
+    collisions = None
+
+    if cached_collisions is not None:
+        collisions = cached_collisions
+    else:
+        #todo: celery here
+        collisions = detect_clashes(building_set)
+
+        # Cache the result
+        await set_cache(job_id, collisions)
+
+    
     
 
-    # Process synchronously (for smaller inputs)
-    # For larger inputs, integrate with Celery here
-    collisions = detect_clashes(building_set)
-
     # Step 2: Convert collisions to GeoJSON output
-    from shapely.geometry import Polygon, mapping
     def _unquantize_coords(coords):
         SCALE = 10**6
         return [(x / SCALE, y / SCALE) for x, y in coords]
@@ -56,9 +57,6 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
         )
 
     result = ClashResultFeatureCollection(features=clash_features)
-
-    # Cache the result
-    await set_cache(job_id, result.model_dump())
 
     return ClashDetectionResponse(
         job_id=job_id,

@@ -1,33 +1,40 @@
-from dataclasses import dataclass
-from typing import List, Annotated, Literal
-from pydantic import BaseModel, Field, field_validator
+from typing import List, Annotated, Literal, Tuple
+from pydantic import BaseModel, Field, field_validator, ConfigDict, field_serializer
 from shapely.geometry import Polygon
 import hashlib
 import json
 
 
-
-@dataclass
-class CanonicalPolygon:
+class CanonicalPolygon(BaseModel):
     """Canonical polygon representation for building footprints."""
     polygon: Polygon
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
+    @field_serializer('polygon')
+    def serialize_polygon(self, polygon: Polygon) -> list:
+        return list(polygon.exterior.coords)
 
-@dataclass(order=True)
-class CanonicalBuilding:
+
+class CanonicalBuilding(BaseModel):
     """Canonical building model"""
     elevation: float
     height: float
     base: CanonicalPolygon
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-@dataclass
-class CanonicalBuildingSet:
+class CanonicalBuildingSet(BaseModel):
     """Canonical building set model for clash detection."""
-    buildings: tuple[CanonicalBuilding]
+    buildings: Tuple[CanonicalBuilding, ...]
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-@dataclass
-class CanonicalBuildingIntersection:
+class CanonicalBuildingIntersection(BaseModel):
     """Canonical building set model for clash detection."""
-    building_ids: tuple[int, int]
+    building_ids: Tuple[int, int]
     intersection: CanonicalBuilding
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)

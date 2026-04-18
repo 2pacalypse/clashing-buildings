@@ -37,8 +37,8 @@ def map_request_to_canonical(request: ClashDetectionRequest) -> tuple[CanonicalB
         (map_building_to_canonical(feat), idx) for idx, feat in enumerate(request.features)
     ]
     
-    # Sort by building, keeping track of original indices
-    buildings_with_indices.sort(key=lambda x: x[0])
+    # Sort by elevation, then height, keeping track of original indices
+    buildings_with_indices.sort(key=lambda x: (x[0].elevation, x[0].height))
     
     # Extract sorted buildings and their original indices
     sorted_buildings = [building for building, _ in buildings_with_indices]
