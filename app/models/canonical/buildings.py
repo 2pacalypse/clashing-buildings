@@ -11,7 +11,7 @@ class CanonicalPolygon:
     """Canonical polygon representation for building footprints."""
     coordinates: tuple[tuple[float, float]]
 
-@dataclass
+@dataclass(order=True)
 class CanonicalBuilding:
     """Canonical building model"""
     elevation: float

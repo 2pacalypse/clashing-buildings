@@ -2,19 +2,15 @@ from typing import Dict, Any
 from shapely.geometry import Polygon, mapping
 from app.models.canonical.buildings import CanonicalBuildingSet
 
-def detect_clashes(building_set: CanonicalBuildingSet) -> Dict[str, Any]:
+
+def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
     """
-    Detect 3D clashes between buildings using canonical building set model.
-    
-    Returns GeoJSON FeatureCollection with clash areas as features.
+    Convert CanonicalBuildingSet to list of dicts containing Shapely geometries
+    and 3D bounds (elevation, height, top).
     """
-    clash_features = []
-    
-    # Convert canonical buildings to Shapely geometries with 3D bounds
     geometries = []
     for idx, building in enumerate(building_set.buildings):
         try:
-            # Create Shapely polygon from canonical polygon coordinates
             geom = Polygon(building.base.coordinates)
             geometries.append({
                 "id": f"building_{idx}",
@@ -25,6 +21,18 @@ def detect_clashes(building_set: CanonicalBuildingSet) -> Dict[str, Any]:
             })
         except Exception:
             continue
+    return geometries
+
+def detect_clashes(building_set: CanonicalBuildingSet) -> Dict[str, Any]:
+    """
+    Detect 3D clashes between buildings using canonical building set model.
+    
+    Returns GeoJSON FeatureCollection with clash areas as features.
+    """
+    clash_features = []
+    
+    # Convert canonical buildings to Shapely geometries with 3D bounds
+    geometries = _convert_buildings_to_geometries(building_set)
     
     # Check for spatial overlaps and compute intersection geometries
     for i, geom1 in enumerate(geometries):
