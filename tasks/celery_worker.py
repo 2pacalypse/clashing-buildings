@@ -17,12 +17,12 @@ celery_app.conf.update(
     enable_utc=True,
 )
 
-@celery_app.task(name='detect_clashes_task')
-def detect_clashes_task(buildings: list, content_hash: str):
-    """Async task for clash detection."""
-    result = detect_clashes(buildings)
+# @celery_app.task(name='detect_clashes_task')
+# def detect_clashes_task(buildings: list, content_hash: str):
+#     """Async task for clash detection."""
+#     result = detect_clashes(buildings)
     
-    # Cache the result
-    set_cache(content_hash, result)
+#     # Cache the result
+#     set_cache(content_hash, result)
     
-    return result
+#     return result
