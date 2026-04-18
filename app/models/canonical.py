@@ -15,6 +15,13 @@ class CanonicalPolygon(BaseModel):
     def serialize_polygon(self, polygon: Polygon) -> list:
         return list(polygon.exterior.coords)
 
+    @field_validator('polygon', mode='before')
+    def _parse_polygon(cls, v):
+        if isinstance(v, (list, tuple)):
+        # handle either [ [ (x,y),... ] ] or [ (x,y), ... ]
+            coords = v[0] if v and isinstance(v[0][0], (list, tuple)) else v
+            return Polygon(coords)
+        return v
 
 class CanonicalBuilding(BaseModel):
     """Canonical building model"""

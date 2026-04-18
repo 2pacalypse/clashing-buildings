@@ -50,3 +50,30 @@ async def set_cache(key: str, value: List[CanonicalBuildingIntersection], ttl: i
     serialized = [v.model_dump() for v in value]
     await client.setex(key, ttl, json.dumps(serialized))
     return True
+
+
+
+async def claim_job(job_id: str, ttl: int = None) -> bool:
+    client = await get_redis()
+    ttl = ttl or settings.CACHE_TTL
+    # returns True if key was set (we claimed it), None/False otherwise
+    return await client.set(f"job:{job_id}:status", "processing", nx=True, ex=ttl)
+
+async def set_job_status(job_id: str, status: str, ttl: int = None) -> None:
+    client = await get_redis()
+    ttl = ttl or settings.CACHE_TTL
+    await client.setex(f"job:{job_id}:status", ttl, status)
+
+async def get_job_status(job_id: str) -> Optional[str]:
+    client = await get_redis()
+    return await client.get(f"job:{job_id}:status")
+
+async def set_original_ids(job_id: str, original_ids: list, ttl: int = None) -> None:
+    client = await get_redis()
+    ttl = ttl or settings.CACHE_TTL
+    await client.setex(f"job:{job_id}:mapping", ttl, json.dumps(original_ids))
+
+async def get_original_ids(job_id: str) -> Optional[list]:
+    client = await get_redis()
+    val = await client.get(f"job:{job_id}:mapping")
+    return json.loads(val) if val else None
