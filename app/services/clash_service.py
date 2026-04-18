@@ -38,6 +38,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
         SCALE = 10**6
         return [(x / SCALE, y / SCALE) for x, y in coords]
 
+    
     clash_features = []
     for c in collisions:
         intersection_coords = _unquantize_coords(c.intersection.base.polygon.exterior.coords)
@@ -47,7 +48,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
                 properties=ClashProperties(
                     elevation=c.intersection.elevation,
                     height=c.intersection.height,
-                    buildings=list(map(str, c.building_ids))
+                    buildings= [request.features[original_indices[i]].id for i in c.building_ids]
                 ),
                 geometry=PolygonGeometry(
                     type="Polygon",
