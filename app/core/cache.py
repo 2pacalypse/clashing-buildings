@@ -21,7 +21,7 @@ async def get_redis() -> redis.Redis:
 async def get_cache(key: str) -> Optional[dict]:
     """Get cached result by key."""
     client = await get_redis()
-    data = await client.get(f"clash:{key}")
+    data = await client.get(key)
     if data:
         return json.loads(data)
     return None
@@ -30,5 +30,5 @@ async def set_cache(key: str, value: dict, ttl: int = None) -> bool:
     """Set cache with optional TTL."""
     client = await get_redis()
     ttl = ttl or settings.CACHE_TTL
-    await client.setex(f"clash:{key}", ttl, json.dumps(value))
+    await client.setex(key, ttl, json.dumps(value))
     return True

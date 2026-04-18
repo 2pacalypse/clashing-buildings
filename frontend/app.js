@@ -90,7 +90,7 @@ function onMouseMove(event) {
             overlay.style.display = 'block';
         } else if (data.type === 'overlap') {
             const f = data.feature;
-            overlay.innerHTML = `<strong>Overlap</strong><br>Buildings: ${f.properties.buildingIds.join(', ')}<br>Height: ${f.properties.height}m<br>Elevation: ${f.properties.elevation}m`;
+            overlay.innerHTML = `<strong>Overlap</strong><br>Buildings: ${f.properties.buildings.join(', ')}<br>Height: ${f.properties.height}m<br>Elevation: ${f.properties.elevation}m`;
             overlay.style.display = 'block';
         }
     } else {

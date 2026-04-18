@@ -45,7 +45,7 @@ async def test_detect_clashes_returns_overlap():
     assert len(result['features']) > 0
     # Check properties
     feature = result['features'][0]
-    assert 'buildingIds' in feature['properties']
+    assert 'buildings' in feature['properties']
     assert 'height' in feature['properties']
     assert 'elevation' in feature['properties']
 

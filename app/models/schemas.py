@@ -1,4 +1,5 @@
 from typing import Optional, List, Dict, Any
+
 from .job_status import JobStatus
 from pydantic import BaseModel, Field
 from app.models.clash_detection_request import (
@@ -11,11 +12,12 @@ from app.models.clash_detection_request import (
 )
 import json
 
+
 class ClashProperties(BaseModel):
     """Properties of a clash feature."""
     elevation: float = Field(ge=0, description="Elevation of the clash area in meters")
     height: float = Field(gt=0, description="Height of the clash area in meters")
-    buildingIds: List[str] = Field(description="List of building IDs involved in the clash")
+    buildings: List[str] = Field(description="List of building IDs involved in the clash")
 
 class ClashFeature(BaseModel):
     """A single clash feature in the result."""

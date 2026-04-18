@@ -22,7 +22,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
         return ClashDetectionResponse(
              job_id=job_id,
              status=JobStatus.COMPLETED,
-             result=cached_result,
+             result=ClashResultFeatureCollection(**cached_result),
              from_cache=True
          )
     
@@ -46,7 +46,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
                 properties=ClashProperties(
                     elevation=c.intersection.elevation,
                     height=c.intersection.height,
-                    buildingIds=list(map(str, c.building_ids))
+                    buildings=list(map(str, c.building_ids))
                 ),
                 geometry=PolygonGeometry(
                     type="Polygon",
@@ -58,10 +58,12 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
     result = ClashResultFeatureCollection(features=clash_features)
 
     # Cache the result
-    await set_cache(job_id, result)
+    await set_cache(job_id, result.model_dump())
+
     return ClashDetectionResponse(
         job_id=job_id,
         status=JobStatus.COMPLETED,
         result=result,
-        from_cache=False
+        from_cache=False,
+        task_id=None
     )
