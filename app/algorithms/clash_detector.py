@@ -10,7 +10,8 @@ def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
     """
     geometries = []
     for building in building_set.buildings:
-        geom = Polygon(building.base.coordinates)
+        # Use the already-normalized shapely polygon from canonical building
+        geom = building.base.polygon
         geometries.append({
             "geometry": geom,
             "elevation": building.elevation,
@@ -43,7 +44,7 @@ def detect_clashes(building_set: CanonicalBuildingSet) -> List[CanonicalBuilding
                         intersection_building = CanonicalBuilding(
                                 elevation=clash_elevation,
                                 height=clash_height,
-                                base=CanonicalPolygon(coordinates=tuple(intersection_geom.exterior.coords))
+                                base=CanonicalPolygon(polygon=intersection_geom)
                             )
                         
                         intersection = CanonicalBuildingIntersection(

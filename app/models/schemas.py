@@ -15,7 +15,7 @@ class ClashProperties(BaseModel):
     """Properties of a clash feature."""
     elevation: float = Field(ge=0, description="Elevation of the clash area in meters")
     height: float = Field(gt=0, description="Height of the clash area in meters")
-    buildings: List[str] = Field(description="List of building IDs involved in the clash")
+    buildingIds: List[str] = Field(description="List of building IDs involved in the clash")
 
 class ClashFeature(BaseModel):
     """A single clash feature in the result."""
