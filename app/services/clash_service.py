@@ -39,6 +39,4 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
         request=request,
         original_indices=original_indices,
         job_id=job_id,
-        from_cache=False,
-        task_id=None,
     )

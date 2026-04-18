@@ -25,8 +25,6 @@ async def get_results(job_id: str):
         job_id=job_id,
         status=JobStatus.PENDING,
         result=None,
-        from_cache=False,
-        task_id=None
     )
 
 

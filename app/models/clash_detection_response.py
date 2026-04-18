@@ -34,5 +34,3 @@ class ClashDetectionResponse(BaseModel):
     job_id: str
     status: JobStatus
     result: Optional[ClashResultFeatureCollection] = None
-    from_cache: bool = False
-    task_id: Optional[str] = None

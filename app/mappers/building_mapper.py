@@ -1,5 +1,5 @@
 from shapely.geometry import Polygon
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 from app.models.canonical.buildings import (
     CanonicalBuilding,
@@ -69,18 +69,14 @@ def map_collisions_to_response(
     request: ClashDetectionRequest,
     original_indices: Tuple[int, ...],
     job_id: str,
-    from_cache: bool = False,
-    task_id: Optional[str] = None,
 ) -> ClashDetectionResponse:
     """Map list of canonical collisions to a ClashDetectionResponse (GeoJSON FeatureCollection).
 
     Args:
-        collisions: list of CanonicalBuildingIntersection-like objects returned by detector
+        collisions: list of CanonicalBuildingIntersection objects returned by detector
         request: original ClashDetectionRequest (for mapping back building ids)
         original_indices: mapping from canonical ordering back to original feature indices
         job_id: server-side job id
-        from_cache: whether the collisions came from cache
-        task_id: optional task id
 
     Returns:
         ClashDetectionResponse containing GeoJSON FeatureCollection of clashes.
@@ -113,6 +109,4 @@ def map_collisions_to_response(
         job_id=job_id,
         status=JobStatus.COMPLETED,
         result=result,
-        from_cache=from_cache,
-        task_id=task_id,
     )
