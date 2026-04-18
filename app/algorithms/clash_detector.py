@@ -2,11 +2,6 @@ from typing import Dict, Any, List
 from shapely.geometry import Polygon, mapping
 from app.models.canonical.buildings import CanonicalBuilding, CanonicalBuildingSet, CanonicalBuildingIntersection, CanonicalPolygon
 
-SCALE = 10**6
-
-def _unquantize_coords(coords):
-    return [(x / SCALE, y / SCALE) for x, y in coords]
-
 
 def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
     """
