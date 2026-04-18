@@ -31,12 +31,12 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
         await set_cache(job_id, collisions)
 
     
+    # Retrieve original building IDs for the collisions
+    buildings = [[request.features[original_indices[i]].id for i in c.building_ids] for c in collisions ]
     
-
     # Step 2: Convert collisions to GeoJSON output via mapper
     return map_collisions_to_response(
         collisions=collisions,
-        request=request,
-        original_indices=original_indices,
+        buildings=buildings,
         job_id=job_id,
     )

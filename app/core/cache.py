@@ -2,7 +2,7 @@ import json
 import redis.asyncio as redis
 from typing import List, Optional
 from app.core.config import settings
-from app.models.canonical.buildings import CanonicalBuildingIntersection, CanonicalBuilding, CanonicalPolygon
+from app.models.canonical import CanonicalBuildingIntersection, CanonicalBuilding, CanonicalPolygon
 from shapely.geometry import Polygon
 
 redis_client: Optional[redis.Redis] = None

@@ -1,6 +1,6 @@
 import hashlib
 import json
-from app.models.canonical.buildings import CanonicalBuildingSet
+from app.models.canonical import CanonicalBuildingSet
 
 
 def generate_job_id(building_set: CanonicalBuildingSet) -> str:

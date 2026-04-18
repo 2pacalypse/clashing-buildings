@@ -67,8 +67,7 @@ def map_request_to_canonical(request: ClashDetectionRequest) -> tuple[CanonicalB
 
 def map_collisions_to_response(
     collisions: List[CanonicalBuildingIntersection],
-    request: ClashDetectionRequest,
-    original_indices: Tuple[int, ...],
+    buildings: List[List[str]],
     job_id: str,
 ) -> ClashDetectionResponse:
     """Map list of canonical collisions to a ClashDetectionResponse (GeoJSON FeatureCollection).
@@ -87,7 +86,7 @@ def map_collisions_to_response(
         return [(x / SCALE, y / SCALE) for x, y in coords]
 
     clash_features: List[ClashFeature] = []
-    for c in collisions:
+    for c, b in zip(collisions, buildings):
         intersection_coords = _unquantize_coords(c.intersection.base.polygon.exterior.coords)
         clash_features.append(
             ClashFeature(
@@ -95,7 +94,7 @@ def map_collisions_to_response(
                 properties=ClashProperties(
                     elevation=c.intersection.elevation,
                     height=c.intersection.height,
-                    buildings=[request.features[original_indices[i]].id for i in c.building_ids],
+                    buildings= b,
                 ),
                 geometry=PolygonGeometry(
                     type="Polygon",

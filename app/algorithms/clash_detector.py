@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 from shapely.geometry import Polygon, mapping
-from app.models.canonical.buildings import CanonicalBuilding, CanonicalBuildingSet, CanonicalBuildingIntersection, CanonicalPolygon
+from app.models.canonical import CanonicalBuilding, CanonicalBuildingSet, CanonicalBuildingIntersection, CanonicalPolygon
 
 
 
