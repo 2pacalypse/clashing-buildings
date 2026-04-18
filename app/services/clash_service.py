@@ -1,7 +1,9 @@
 from app.core.cache import get_cache, set_cache
+from app.mappers.building_mapper import map_request_to_canonical
 from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.job_status import JobStatus
 from app.models.schemas import ClashDetectionResponse
+from app.models.canonical.buildings import CanonicalBuildingSet, CanonicalBuilding, CanonicalPolygon
 from app.algorithms.clash_detector import detect_clashes
 from app.utils.job_id_generator import generate_job_id
 
@@ -20,10 +22,12 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
              from_cache=True
          )
     
+    # Convert GeoJSON features to canonical building set
+    building_set = map_request_to_canonical(request)
+    
     # Process synchronously (for smaller inputs)
     # For larger inputs, integrate with Celery here
-    buildings = [f.model_dump() for f in request.features]
-    result = detect_clashes(buildings)
+    result = detect_clashes(building_set)
     
     # Cache the result
     await set_cache(job_id, result)

@@ -1,35 +1,27 @@
-from typing import List, Dict, Any
-from shapely.geometry import shape, mapping
+from typing import Dict, Any
+from shapely.geometry import Polygon, mapping
+from app.models.canonical.buildings import CanonicalBuildingSet
 
-def detect_clashes(buildings: List[Dict[str, Any]]) -> Dict[str, Any]:
+def detect_clashes(building_set: CanonicalBuildingSet) -> Dict[str, Any]:
     """
-    Detect 3D clashes between buildings and return as GeoJSON FeatureCollection.
-    
-    Expected input format:
-    {
-        "type": "Feature",
-        "id": "building_0", 
-        "properties": {"height": 4, "elevation": 0},
-        "geometry": {"type": "Polygon", "coordinates": [...]}
-    }
+    Detect 3D clashes between buildings using canonical building set model.
     
     Returns GeoJSON FeatureCollection with clash areas as features.
     """
     clash_features = []
     
-    # Convert GeoJSON features to Shapely geometries with 3D bounds
+    # Convert canonical buildings to Shapely geometries with 3D bounds
     geometries = []
-    for building in buildings:
+    for idx, building in enumerate(building_set.buildings):
         try:
-            geom = shape(building.get("geometry", {}))
-            height = building.get("properties", {}).get("height", 0)
-            elevation = building.get("properties", {}).get("elevation", 0)
+            # Create Shapely polygon from canonical polygon coordinates
+            geom = Polygon(building.base.coordinates)
             geometries.append({
-                "id": building.get("id"),
+                "id": f"building_{idx}",
                 "geometry": geom,
-                "height": height,
-                "elevation": elevation,
-                "top": elevation + height
+                "height": building.height,
+                "elevation": building.elevation,
+                "top": building.elevation + building.height
             })
         except Exception:
             continue
