@@ -6,11 +6,6 @@ from app.services.clash_detector import detect_clashes
 
 
 async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetectionResponse:
-    """
-    Detect building clashes in 3D space.
-    
-    For large inputs that take >10s, returns a job_id for polling.
-    """
     # Generate server-side job ID
     job_id = request.hash()
     
