@@ -9,7 +9,7 @@ def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
     and 3D bounds (elevation, height, top).
     """
     geometries = []
-    for idx, building in enumerate(building_set.buildings):
+    for building in building_set.buildings:
         geom = Polygon(building.base.coordinates)
         geometries.append({
             "geometry": geom,
