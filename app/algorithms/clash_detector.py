@@ -3,21 +3,6 @@ from shapely.geometry import Polygon, mapping
 from app.models.canonical.buildings import CanonicalBuilding, CanonicalBuildingSet, CanonicalBuildingIntersection, CanonicalPolygon
 
 
-def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
-    """
-    Convert CanonicalBuildingSet to list of dicts containing Shapely geometries
-    and 3D bounds (elevation, height, top).
-    """
-    geometries = []
-    for building in building_set.buildings:
-        # Use the already-normalized shapely polygon from canonical building
-        geom = building.base.polygon
-        geometries.append({
-            "geometry": geom,
-            "elevation": building.elevation,
-            "top": building.elevation + building.height
-        })
-    return geometries
 
 def detect_clashes(building_set: CanonicalBuildingSet) -> List[CanonicalBuildingIntersection]:
     """
@@ -25,33 +10,29 @@ def detect_clashes(building_set: CanonicalBuildingSet) -> List[CanonicalBuilding
     Step 1: List all pairwise indices with collision and attributes.
     Step 2: Build GeoJSON output from those collisions.
     """
-    geometries = _convert_buildings_to_geometries(building_set)
-
-    # Step 1: Find all colliding pairs and their attributes
     collisions = []
-    for i, geom1 in enumerate(geometries):
-        for j, geom2 in enumerate(geometries[i + 1:], start=i + 1):
+    buildings = building_set.buildings
+    for i, b1 in enumerate(buildings):
+        top1 = b1.elevation + b1.height
+        for j, b2 in enumerate(buildings[i + 1:], start=i + 1):
             # Check 2D intersection
-            if geom1["geometry"].intersects(geom2["geometry"]):
+            if b1.base.polygon.intersects(b2.base.polygon):
                 # Check 3D overlap (elevation ranges)
-                if not (geom1["top"] < geom2["elevation"] or geom2["top"] < geom1["elevation"]):
-                    intersection_geom = geom1["geometry"].intersection(geom2["geometry"])
-                    clash_elevation = max(geom1["elevation"], geom2["elevation"])
-                    clash_top = min(geom1["top"], geom2["top"])
+                top2 = b2.elevation + b2.height
+                if not (top1 < b2.elevation or top2 < b1.elevation):
+                    intersection_geom = b1.base.polygon.intersection(b2.base.polygon)
+                    clash_elevation = max(b1.elevation, b2.elevation)
+                    clash_top = min(top1, top2)
                     clash_height = clash_top - clash_elevation
                     if clash_height > 0 and not intersection_geom.is_empty:
-                        # Use CanonicalBuildingIntersection for collisions
                         intersection_building = CanonicalBuilding(
-                                elevation=clash_elevation,
-                                height=clash_height,
-                                base=CanonicalPolygon(polygon=intersection_geom)
-                            )
-                        
+                            elevation=clash_elevation,
+                            height=clash_height,
+                            base=CanonicalPolygon(polygon=intersection_geom)
+                        )
                         intersection = CanonicalBuildingIntersection(
                             building_ids=(i, j),
-                            intersection= intersection_building
+                            intersection=intersection_building
                         )
                         collisions.append(intersection)
-
-    # Return the list of CanonicalBuildingIntersection objects (collisions)
     return collisions
