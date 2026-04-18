@@ -10,17 +10,12 @@ def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
     """
     geometries = []
     for idx, building in enumerate(building_set.buildings):
-        try:
-            geom = Polygon(building.base.coordinates)
-            geometries.append({
-                "id": f"building_{idx}",
-                "geometry": geom,
-                "height": building.height,
-                "elevation": building.elevation,
-                "top": building.elevation + building.height
-            })
-        except Exception:
-            continue
+        geom = Polygon(building.base.coordinates)
+        geometries.append({
+            "geometry": geom,
+            "elevation": building.elevation,
+            "top": building.elevation + building.height
+        })
     return geometries
 
 def detect_clashes(building_set: CanonicalBuildingSet) -> List[CanonicalBuildingIntersection]:
