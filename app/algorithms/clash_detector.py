@@ -26,42 +26,45 @@ def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
 def detect_clashes(building_set: CanonicalBuildingSet) -> Dict[str, Any]:
     """
     Detect 3D clashes between buildings using canonical building set model.
-    
-    Returns GeoJSON FeatureCollection with clash areas as features.
+    Step 1: List all pairwise indices with collision and attributes.
+    Step 2: Build GeoJSON output from those collisions.
     """
-    clash_features = []
-    
-    # Convert canonical buildings to Shapely geometries with 3D bounds
     geometries = _convert_buildings_to_geometries(building_set)
-    
-    # Check for spatial overlaps and compute intersection geometries
+
+    # Step 1: Find all colliding pairs and their attributes
+    collisions = []
     for i, geom1 in enumerate(geometries):
-        for geom2 in geometries[i + 1:]:
+        for j, geom2 in enumerate(geometries[i + 1:], start=i + 1):
             # Check 2D intersection
             if geom1["geometry"].intersects(geom2["geometry"]):
                 # Check 3D overlap (elevation ranges)
                 if not (geom1["top"] < geom2["elevation"] or geom2["top"] < geom1["elevation"]):
-                    # Compute intersection polygon
                     intersection_geom = geom1["geometry"].intersection(geom2["geometry"])
-                    
-                    # Determine clash elevation and height
                     clash_elevation = max(geom1["elevation"], geom2["elevation"])
                     clash_top = min(geom1["top"], geom2["top"])
                     clash_height = clash_top - clash_elevation
-                    
                     if clash_height > 0 and not intersection_geom.is_empty:
-                        # Create feature for this clash
-                        clash_feature = {
-                            "type": "Feature",
-                            "properties": {
-                                "elevation": clash_elevation,
-                                "height": clash_height,
-                                "buildings": [geom1["id"], geom2["id"]]
-                            },
-                            "geometry": mapping(intersection_geom)
-                        }
-                        clash_features.append(clash_feature)
-    
+                        collisions.append({
+                            "indices": (i, j),
+                            "ids": [geom1["id"], geom2["id"]],
+                            "elevation": clash_elevation,
+                            "height": clash_height,
+                            "geometry": intersection_geom
+                        })
+
+    # Step 2: Build GeoJSON output from collisions
+    clash_features = []
+    for c in collisions:
+        clash_features.append({
+            "type": "Feature",
+            "properties": {
+                "elevation": c["elevation"],
+                "height": c["height"],
+                "buildings": c["ids"]
+            },
+            "geometry": mapping(c["geometry"])
+        })
+
     return {
         "type": "FeatureCollection",
         "features": clash_features
