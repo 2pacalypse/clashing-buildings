@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 from shapely.geometry import Polygon, mapping
 from app.models.canonical.buildings import CanonicalBuilding, CanonicalBuildingSet, CanonicalBuildingIntersection, CanonicalPolygon
 
@@ -28,7 +28,7 @@ def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
             continue
     return geometries
 
-def detect_clashes(building_set: CanonicalBuildingSet) -> Dict[str, Any]:
+def detect_clashes(building_set: CanonicalBuildingSet) -> List[CanonicalBuildingIntersection]:
     """
     Detect 3D clashes between buildings using canonical building set model.
     Step 1: List all pairwise indices with collision and attributes.
@@ -62,23 +62,5 @@ def detect_clashes(building_set: CanonicalBuildingSet) -> Dict[str, Any]:
                         )
                         collisions.append(intersection)
 
-    # Step 2: Build GeoJSON output from CanonicalBuildingIntersection list
-    clash_features = []
-    for c in collisions:
-        # Reconstruct the intersection geometry as a Shapely Polygon
-        intersection_coords = _unquantize_coords(c.intersection.base.coordinates)
-        intersection_geom = Polygon(intersection_coords)
-        clash_features.append({
-            "type": "Feature",
-            "properties": {
-                "elevation": c.intersection.elevation,
-                "height": c.intersection.height,
-                "buildings": list(map(str, c.building_ids))
-            },
-            "geometry": mapping(intersection_geom)
-        })
-
-    return {
-        "type": "FeatureCollection",
-        "features": clash_features
-    }
+    # Return the list of CanonicalBuildingIntersection objects (collisions)
+    return collisions

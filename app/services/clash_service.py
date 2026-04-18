@@ -29,11 +29,35 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
 
     # Process synchronously (for smaller inputs)
     # For larger inputs, integrate with Celery here
-    result = detect_clashes(building_set)
-    
+    collisions = detect_clashes(building_set)
+
+    # Step 2: Convert collisions to GeoJSON output
+    from shapely.geometry import Polygon, mapping
+    def _unquantize_coords(coords):
+        SCALE = 10**6
+        return [(x / SCALE, y / SCALE) for x, y in coords]
+
+    clash_features = []
+    for c in collisions:
+        intersection_coords = _unquantize_coords(c.intersection.base.coordinates)
+        intersection_geom = Polygon(intersection_coords)
+        clash_features.append({
+            "type": "Feature",
+            "properties": {
+                "elevation": c.intersection.elevation,
+                "height": c.intersection.height,
+                "buildingIds": list(map(str, c.building_ids))
+            },
+            "geometry": mapping(intersection_geom)
+        })
+
+    result = {
+        "type": "FeatureCollection",
+        "features": clash_features
+    }
+
     # Cache the result
     await set_cache(job_id, result)
-    
     return ClashDetectionResponse(
         job_id=job_id,
         status=JobStatus.COMPLETED,

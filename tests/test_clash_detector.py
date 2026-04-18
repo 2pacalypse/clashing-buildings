@@ -1,5 +1,7 @@
 import pytest
-from app.algorithms.clash_detector import detect_clashes
+import asyncio
+from app.services.clash_service import process_clash_detection
+from app.models.clash_detection_request import ClashDetectionRequest
 
 # Sample input matching input-sample1.json format
 SAMPLE_BUILDINGS = [
@@ -33,20 +35,22 @@ SAMPLE_BUILDINGS = [
     }
 ]
 
-def test_detect_clashes_returns_overlap():
+@pytest.mark.asyncio
+async def test_detect_clashes_returns_overlap():
     """Test that overlapping buildings produce clash features."""
-    result = detect_clashes(SAMPLE_BUILDINGS)
-    
+    request = ClashDetectionRequest(features=SAMPLE_BUILDINGS)
+    response = await process_clash_detection(request)
+    result = response.result
     assert result['type'] == 'FeatureCollection'
     assert len(result['features']) > 0
-    
     # Check properties
     feature = result['features'][0]
     assert 'buildingIds' in feature['properties']
     assert 'height' in feature['properties']
     assert 'elevation' in feature['properties']
 
-def test_no_overlap():
+@pytest.mark.asyncio
+async def test_no_overlap():
     """Test that non-overlapping buildings return empty result."""
     non_overlapping = [
         {
@@ -66,8 +70,8 @@ def test_no_overlap():
             "properties": {"id": "b2", "height": 10, "elevation": 0}
         }
     ]
-    
-    result = detect_clashes(non_overlapping)
-    
+    request = ClashDetectionRequest(features=non_overlapping)
+    response = await process_clash_detection(request)
+    result = response.result
     assert result['type'] == 'FeatureCollection'
     assert len(result['features']) == 0
