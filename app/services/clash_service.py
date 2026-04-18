@@ -3,7 +3,7 @@ from app.mappers.building_mapper import map_request_to_canonical, map_collisions
 from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.job_status import JobStatus
 from app.models.clash_detection_response import ClashDetectionResponse
-from app.models.canonical.buildings import CanonicalBuildingSet, CanonicalBuilding, CanonicalPolygon
+from app.models.canonical import CanonicalBuildingSet, CanonicalBuilding, CanonicalPolygon
 from app.algorithms.clash_detector import detect_clashes
 from app.utils.job_id_generator import generate_job_id
 
