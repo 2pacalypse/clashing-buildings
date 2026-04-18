@@ -14,7 +14,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
     building_set, original_indices = map_request_to_canonical(request)
     
     # Generate server-side job ID
-    job_id = generate_job_id(request)
+    job_id = generate_job_id(building_set)
     
     # Check cache first
     cached_result = await get_cache(job_id)
