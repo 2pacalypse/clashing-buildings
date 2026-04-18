@@ -1,7 +1,5 @@
 from celery import Celery
 from app.core.config import settings
-from app.algorithms.clash_detector import detect_clashes
-from app.core.cache import set_cache
 
 celery_app = Celery(
     'clash_detector',
