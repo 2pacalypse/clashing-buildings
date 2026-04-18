@@ -41,6 +41,7 @@ class GeoJSONFeatureCollection(BaseModel):
 class ClashDetectionRequest(GeoJSONFeatureCollection):
     """Request schema for clash detection - accepts GeoJSON FeatureCollection directly."""
 
+    #todo: fix - feature id is important. do not ignore it.
     def hash(self) -> str:
         # Build a canonical representation:
         # - Format all numeric values to 6 decimals
