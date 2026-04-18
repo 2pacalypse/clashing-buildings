@@ -2,7 +2,7 @@ from app.core.cache import get_cache, set_cache
 from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.job_status import JobStatus
 from app.models.schemas import ClashDetectionResponse
-from app.services.clash_detector import detect_clashes
+from app.algorithms.clash_detector import detect_clashes
 
 
 async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetectionResponse:

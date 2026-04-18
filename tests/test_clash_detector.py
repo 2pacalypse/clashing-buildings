@@ -1,5 +1,5 @@
 import pytest
-from app.services.clash_detector import detect_clashes
+from app.algorithms.clash_detector import detect_clashes
 
 # Sample input matching input-sample1.json format
 SAMPLE_BUILDINGS = [

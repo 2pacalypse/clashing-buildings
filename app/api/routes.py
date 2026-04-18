@@ -8,9 +8,7 @@ from app.models.schemas import (
 )
 from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.job_status import JobStatus
-from app.core.cache import get_cache, set_cache
 from app.services import clash_service
-from app.services.clash_detector import detect_clashes
 
 router = APIRouter()
 #TODO: VALIDATIONS - max features, max vertices, valid GeoJSON structure, etc.
