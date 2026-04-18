@@ -16,6 +16,7 @@ from app.models.clash_detection_response import (
 )
 from app.models.job_status import JobStatus
 
+#todo: move this out later
 SCALE = 10**6
 
 
