@@ -2,6 +2,11 @@ from typing import Dict, Any
 from shapely.geometry import Polygon, mapping
 from app.models.canonical.buildings import CanonicalBuilding, CanonicalBuildingSet, CanonicalBuildingIntersection, CanonicalPolygon
 
+SCALE = 10**6
+
+def _unquantize_coords(coords):
+    return [(x / SCALE, y / SCALE) for x, y in coords]
+
 
 def _convert_buildings_to_geometries(building_set: CanonicalBuildingSet):
     """
@@ -61,7 +66,8 @@ def detect_clashes(building_set: CanonicalBuildingSet) -> Dict[str, Any]:
     clash_features = []
     for c in collisions:
         # Reconstruct the intersection geometry as a Shapely Polygon
-        intersection_geom = Polygon(c.intersection.base.coordinates)
+        intersection_coords = _unquantize_coords(c.intersection.base.coordinates)
+        intersection_geom = Polygon(intersection_coords)
         clash_features.append({
             "type": "Feature",
             "properties": {

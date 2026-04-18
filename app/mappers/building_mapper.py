@@ -1,9 +1,11 @@
 from app.models.canonical.buildings import CanonicalBuilding, CanonicalBuildingSet, CanonicalPolygon
 from app.models.clash_detection_request import ClashDetectionRequest, GeoJSONFeature, PolygonGeometry, PolygonGeometry
 
-def map_coordinate_to_canonical(coord: tuple[float, float]) -> tuple[float, float]:
-    """Normalize coordinate to canonical format (6 decimal places)."""
-    return (round(coord[0], 6), round(coord[1], 6))
+SCALE = 10**6
+
+def map_coordinate_to_canonical(coord: tuple[float, float]) -> tuple[int, int]:
+    x, y = coord
+    return (int(round(x * SCALE)), int(round(y * SCALE)))
 
 def map_polygon_to_canonical(geometry: PolygonGeometry) -> CanonicalPolygon:
     coords = geometry.coordinates[0]
