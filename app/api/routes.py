@@ -2,7 +2,7 @@ import uuid
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from httpx import request
 from app.core.db import get_db
-from app.models.schemas import (
+from app.models.clash_detection_response import (
     ClashDetectionResponse,
     ClashResultFeatureCollection,
 )

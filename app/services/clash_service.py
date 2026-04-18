@@ -2,7 +2,7 @@ from app.core.cache import get_cache, set_cache
 from app.mappers.building_mapper import map_request_to_canonical
 from app.models.clash_detection_request import ClashDetectionRequest, PolygonGeometry
 from app.models.job_status import JobStatus
-from app.models.schemas import ClashDetectionResponse, ClashFeature, ClashProperties, ClashResultFeatureCollection
+from app.models.clash_detection_response import ClashDetectionResponse, ClashFeature, ClashProperties, ClashResultFeatureCollection
 from app.models.canonical.buildings import CanonicalBuildingSet, CanonicalBuilding, CanonicalPolygon
 from app.algorithms.clash_detector import detect_clashes
 from app.utils.job_id_generator import generate_job_id
