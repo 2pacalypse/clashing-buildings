@@ -3,11 +3,12 @@ from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.job_status import JobStatus
 from app.models.schemas import ClashDetectionResponse
 from app.algorithms.clash_detector import detect_clashes
+from app.utils.job_id_generator import generate_job_id
 
 
 async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetectionResponse:
     # Generate server-side job ID
-    job_id = request.hash()
+    job_id = generate_job_id(request)
     
     # Check cache first
     cached_result = await get_cache(job_id)
