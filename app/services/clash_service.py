@@ -19,14 +19,20 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
 
     collisions = None
 
+    suitable_for_sync_process = True
+
     if cached_collisions is not None:
         collisions = cached_collisions
     else:
-        #todo: celery here
-        collisions = detect_clashes(building_set)
-
-        # Cache the result
-        await set_cache(job_id, collisions)
+        if suitable_for_sync_process:
+            # If the job is small enough, process synchronously
+            collisions = detect_clashes(building_set)
+            await set_cache(job_id, collisions)
+        else:
+            # For larger jobs, we would kick off an async background task here
+            # and return a PENDING status immediately. The background task would
+            # compute the collisions and store them in cache for later retrieval.
+            pass
 
     
     # Retrieve original building IDs for the collisions
