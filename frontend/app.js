@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { sampleInputOne, sampleInputTwo, samples } from './data.js';
 
+// Copy icon (emoji)
+const copyIconSvg = '📋';
+
 // Color palette for buildings (light background friendly)
 const buildingColors = [
     0x3498db, 0x2ecc71, 0xe67e22, 0x9b59b6, 0x1abc9c,
@@ -415,11 +418,38 @@ window.sendInputFromForm = async function() {
             row = document.createElement('div');
             row.className = 'sample-row';
 
+            // LEFT: input item (button + copy field stacked)
+            const leftItem = document.createElement('div');
+            leftItem.className = 'sample-item';
+
             inBtn = document.createElement('button');
             inBtn.className = 'sample-btn';
             inBtn.dataset.sample = key;
             inBtn.textContent = `Sample Input ${nextIndex}`;
             inBtn.addEventListener('click', () => loadSample(key));
+
+            const inCopyRow = document.createElement('div');
+            inCopyRow.className = 'copy-row';
+            const inCopyField = document.createElement('input');
+            inCopyField.type = 'text';
+            inCopyField.className = 'copy-field';
+            inCopyField.id = 'copy-input-' + key;
+            inCopyField.readOnly = true;
+            inCopyField.value = samples[key] ? JSON.stringify(samples[key]) : '';
+            const inCopyBtn = document.createElement('button');
+            inCopyBtn.className = 'copy-btn';
+            inCopyBtn.title = 'Copy Input';
+            inCopyBtn.innerHTML = copyIconSvg;
+            inCopyBtn.addEventListener('click', () => copySample(key, 'input'));
+            inCopyRow.appendChild(inCopyField);
+            inCopyRow.appendChild(inCopyBtn);
+
+            leftItem.appendChild(inBtn);
+            leftItem.appendChild(inCopyRow);
+
+            // RIGHT: output item (button + copy field stacked)
+            const rightItem = document.createElement('div');
+            rightItem.className = 'sample-item';
 
             const initialIcon = statusIconFor('pending');
             outBtn = document.createElement('button');
@@ -428,8 +458,27 @@ window.sendInputFromForm = async function() {
             outBtn.innerHTML = `${initialIcon} Sample Output ${nextIndex}`;
             outBtn.addEventListener('click', () => loadSample(outKey));
 
-            row.appendChild(inBtn);
-            row.appendChild(outBtn);
+            const outCopyRow = document.createElement('div');
+            outCopyRow.className = 'copy-row';
+            const outCopyField = document.createElement('input');
+            outCopyField.type = 'text';
+            outCopyField.className = 'copy-field';
+            outCopyField.id = 'copy-input-' + outKey;
+            outCopyField.readOnly = true;
+            outCopyField.value = samples[outKey] ? JSON.stringify(samples[outKey]) : '';
+            const outCopyBtn = document.createElement('button');
+            outCopyBtn.className = 'copy-btn';
+            outCopyBtn.title = 'Copy Output';
+            outCopyBtn.innerHTML = copyIconSvg;
+            outCopyBtn.addEventListener('click', () => copySample(outKey, 'output'));
+            outCopyRow.appendChild(outCopyField);
+            outCopyRow.appendChild(outCopyBtn);
+
+            rightItem.appendChild(outBtn);
+            rightItem.appendChild(outCopyRow);
+
+            row.appendChild(leftItem);
+            row.appendChild(rightItem);
             section.appendChild(row);
         }
     } catch (e) {
@@ -448,6 +497,13 @@ window.sendInputFromForm = async function() {
                     const icon = statusIconFor(status);
                     if (resp.result) {
                         samples[outKey] = resp.result;
+                        // Update the copy field for the output sample if present
+                        try {
+                            const outField = document.getElementById('copy-input-' + outKey);
+                            if (outField) outField.value = JSON.stringify(resp.result);
+                        } catch (e) {
+                            console.warn('Failed to update output copy field:', e);
+                        }
                     }
                     if (outBtn) {
                         outBtn.classList.remove('status-pending','status-processing','status-completed','status-failed','ready');
@@ -521,6 +577,23 @@ async function postInputToServer(geojson) {
         throw err;
     }
 }
+
+// Expose samples object to the global window so inline scripts can access it
+window.samples = samples;
+
+// Populate any existing copy fields after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        Object.keys(window.samples || {}).forEach(function(key) {
+            const field = document.getElementById('copy-input-' + key);
+            if (field && window.samples[key]) {
+                field.value = JSON.stringify(window.samples[key]);
+            }
+        });
+    } catch (e) {
+        console.warn('Failed populating copy fields on load:', e);
+    }
+});
 
 window.postInputToServer = postInputToServer;
 

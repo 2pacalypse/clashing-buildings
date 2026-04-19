@@ -24,12 +24,36 @@
                 <h2>Sample Inputs</h2>
                 <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Click to toggle (select multiple)</p>
                 <div class="sample-row">
-                    <button class="sample-btn" data-sample="sampleInputOne" onclick="loadSample('sampleInputOne')">Sample Input 1</button>
-                    <button class="sample-btn" data-sample="sampleOutputOne" onclick="loadSample('sampleOutputOne')">Sample Output 1</button>
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="sampleInputOne" onclick="loadSample('sampleInputOne')">Sample Input 1</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-sampleInputOne" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('sampleInputOne', 'input')" title="Copy Input">📋</button>
+                        </div>
+                    </div>
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="sampleOutputOne" onclick="loadSample('sampleOutputOne')">Sample Output 1</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-sampleOutputOne" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('sampleOutputOne', 'output')" title="Copy Output">📋</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="sample-row">
-                    <button class="sample-btn" data-sample="sampleInputTwo" onclick="loadSample('sampleInputTwo')">Sample Input 2</button>
-                    <button class="sample-btn" data-sample="sampleOutputTwo" onclick="loadSample('sampleOutputTwo')">Sample Output 2</button>
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="sampleInputTwo" onclick="loadSample('sampleInputTwo')">Sample Input 2</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-sampleInputTwo" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('sampleInputTwo', 'input')" title="Copy Input">📋</button>
+                        </div>
+                    </div>
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="sampleOutputTwo" onclick="loadSample('sampleOutputTwo')">Sample Output 2</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-sampleOutputTwo" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('sampleOutputTwo', 'output')" title="Copy Output">📋</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -76,5 +100,73 @@
     </div>
 
     <script type="module" src="app.js"></script>
+    <script>
+    // Copy sample function with tooltip feedback
+    window.copySample = function(sampleKey, type) {
+        if (!window.samples) return;
+        const sample = window.samples[sampleKey];
+        if (!sample) return;
+        const field = document.getElementById('copy-input-' + sampleKey);
+        if (!field) return;
+        const text = JSON.stringify(sample);
+
+
+        function flashField(field) {
+            if (!field) return;
+            const original = field.value;
+            const originalAlign = field.style.textAlign || '';
+            try {
+                field.style.textAlign = 'center';
+                field.classList.add('flash');
+                field.value = '✅ Copied';
+            } catch (e) {}
+            setTimeout(() => {
+                try {
+                    field.classList.remove('flash');
+                    field.style.textAlign = originalAlign;
+                    field.value = original;
+                } catch (e) {}
+            }, 1200);
+        }
+
+        // Try Clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                field.value = text;
+                field.blur();
+                flashField(field);
+            }).catch(() => {
+                try {
+                    field.value = text;
+                    field.select();
+                    field.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+                } catch (e) {}
+                field.blur();
+                flashField(field);
+            });
+        } else {
+            try {
+                field.value = text;
+                field.select();
+                field.setSelectionRange(0, 99999);
+                document.execCommand('copy');
+            } catch (e) {}
+            field.blur();
+            flashField(field);
+        }
+    };
+
+    // Populate copy fields on load (fallback - app.js also populates)
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.samples) return;
+        ['sampleInputOne','sampleOutputOne','sampleInputTwo','sampleOutputTwo'].forEach(function(key) {
+            const field = document.getElementById('copy-input-' + key);
+            if (field && window.samples[key]) {
+                field.value = JSON.stringify(window.samples[key]);
+            }
+        });
+    });
+    </script>
 </body>
 </html>

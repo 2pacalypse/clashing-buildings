@@ -67,8 +67,43 @@ button {
 .sample-btn.active { background: #00d4ff; color: #1a1a2e; }
 
 /* Arrange sample input/output buttons in pairs per row */
-.sample-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.sample-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .sample-row .sample-btn { flex: 1 1 0; text-align: center; padding: 8px; }
+
+/* Each button + its copy field stacks vertically inside a sample-item */
+.sample-item { display: flex; flex-direction: column; gap: 6px; flex: 1 1 0; min-width: 0; }
+.copy-row { position: relative; display: block; }
+.copy-field { width: 100%; padding: 6px 44px 6px 8px; font-size: 0.72rem; border-radius: 4px; border: 1px solid #0f3460; background: #0f0f1a; color: #ddd; font-family: monospace; height: 34px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; min-width: 0; box-sizing: border-box; transition: background-color 160ms ease, color 160ms ease, text-align 120ms ease; }
+.copy-btn { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 28px; height: 24px; background: transparent; color: #cbd5e1; border: none; border-radius: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; z-index: 3; }
+.copy-btn:hover { color: #fff; background: rgba(255,255,255,0.03); border-radius: 4px; }
+.copy-row .copy-btn { font-size: 0.95rem; }
+.copy-field[readonly] { cursor: default; }
+.copy-btn:focus { outline: 2px solid rgba(0,212,255,0.25); }
+.copy-btn:hover { background: #1a4a7a; }
+
+/* Flash style when field shows the 'Copied' message */
+.copy-field.flash { color: #9ae6b4; background: rgba(34,197,94,0.08); }
+
+/* Tooltip shown when copy succeeds */
+.copy-tooltip {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.95);
+    background: rgba(0,0,0,0.92);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    opacity: 0;
+    transition: opacity 140ms ease, transform 140ms ease;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.04);
+}
+.copy-tooltip.visible { opacity: 1; transform: translateY(-50%) scale(1); }
 
 .legend { font-size: 0.8rem; }
 .legend-item { display: flex; align-items: center; margin-bottom: 6px; }
