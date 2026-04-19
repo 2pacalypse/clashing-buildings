@@ -1,3 +1,41 @@
+// Increment all heights in a ready sample and update the text field with flash
+window.incrementHeights = function(sampleKey) {
+    if (!window.samples || !window.samples[sampleKey]) return;
+    // Deep clone the sample to avoid mutating all references
+    const orig = window.samples[sampleKey];
+    const updated = JSON.parse(JSON.stringify(orig));
+    if (updated.features && Array.isArray(updated.features)) {
+        updated.features.forEach(f => {
+            if (f.properties && typeof f.properties.height === 'number') {
+                f.properties.height += 1;
+            }
+        });
+    }
+    window.samples[sampleKey] = updated;
+    // Update the text field
+    const field = document.getElementById('copy-input-' + sampleKey);
+    if (field) {
+        field.value = JSON.stringify(updated);
+        // Flash green checkmark
+        const original = field.value;
+        const originalAlign = field.style.textAlign || '';
+        const originalColor = field.style.color || '';
+        try {
+            field.style.textAlign = 'center';
+            field.style.color = '#1a8f2b';
+            field.classList.add('flash');
+            field.value = '✅ Updated';
+        } catch (e) {}
+        setTimeout(() => {
+            try {
+                field.classList.remove('flash');
+                field.style.textAlign = originalAlign;
+                field.style.color = originalColor;
+                field.value = JSON.stringify(updated);
+            } catch (e) {}
+        }, 1200);
+    }
+};
 import { sampleInputOne, sampleInputTwo, samples, test100Buildings, test200Buildings, test300Buildings, test400Buildings, test500Buildings, test600Buildings } from './data.js';
 import { postInputToServer, getResults } from './endpoints.js';
 import { init as initScene, loadSample, clearScene, renderGeoJSON, renderAllSelectedSamples, resetCamera, topDownView, sideView, clearSelection } from './scene.js';
