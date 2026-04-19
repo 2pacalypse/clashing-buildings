@@ -198,6 +198,14 @@ document.addEventListener('DOMContentLoaded', () => {
 // Expose samples object to the global window so inline scripts can access it
 window.samples = samples;
 
+// Add ready inputs aliases for quick-loading/copying (placeholder -> sampleInputOne)
+samples.ready_XXS = sampleInputOne;
+samples.ready_XS = sampleInputOne;
+samples.ready_S = sampleInputOne;
+samples.ready_M = sampleInputOne;
+samples.ready_L = sampleInputOne;
+samples.ready_XL = sampleInputOne;
+
 // Populate any existing copy fields after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     try {

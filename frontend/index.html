@@ -67,8 +67,59 @@
                 <p id="input-status" class="stats"></p>
             </div>
             
-            
-            
+            <div class="section" id="ready-inputs-section">
+                <h2>Ready Inputs</h2>
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Quick inputs you can load into the form or copy to clipboard.</p>
+                <div class="sample-row">
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="ready_XXS" onclick="loadSample('ready_XXS')">XXS</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-ready_XXS" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('ready_XXS', 'input')" title="Copy Input">📋</button>
+                        </div>
+                    </div>
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="ready_XS" onclick="loadSample('ready_XS')">XS</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-ready_XS" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('ready_XS', 'input')" title="Copy Input">📋</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="sample-row">
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="ready_S" onclick="loadSample('ready_S')">S</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-ready_S" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('ready_S', 'input')" title="Copy Input">📋</button>
+                        </div>
+                    </div>
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="ready_M" onclick="loadSample('ready_M')">M</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-ready_M" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('ready_M', 'input')" title="Copy Input">📋</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="sample-row">
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="ready_sL" onclick="loadSample('ready_L')">L</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-ready_L" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('ready_L', 'input')" title="Copy Input">📋</button>
+                        </div>
+                    </div>
+                    <div class="sample-item">
+                        <button class="sample-btn" data-sample="ready_XL" onclick="loadSample('ready_XL')">XL</button>
+                        <div class="copy-row">
+                            <input type="text" class="copy-field" id="copy-input-ready_XL" readonly value="" />
+                            <button class="copy-btn" onclick="copySample('ready_XL', 'input')" title="Copy Input">📋</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
         <div id="canvas-container">
@@ -160,7 +211,7 @@
     // Populate copy fields on load (fallback - app.js also populates)
     document.addEventListener('DOMContentLoaded', function() {
         if (!window.samples) return;
-        ['sampleInputOne','sampleOutputOne','sampleInputTwo','sampleOutputTwo'].forEach(function(key) {
+        ['sampleInputOne','sampleOutputOne','sampleInputTwo','sampleOutputTwo','ready_XXS','ready_XS','ready_S','ready_M','ready_L','ready_XL'].forEach(function(key) {
             const field = document.getElementById('copy-input-' + key);
             if (field && window.samples[key]) {
                 field.value = JSON.stringify(window.samples[key]);
