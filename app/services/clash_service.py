@@ -11,6 +11,8 @@ from app.models.clash_detection_response import ClashDetectionResponse
 from app.algorithms.clash_detector import detect_clashes
 from app.models.job_status import JobStatus
 from app.utils.job_id_generator import generate_job_id
+
+from app.core.constants import SYNC_CLASH_COMPLEXITY_THRESHOLD
 from tasks.celery_worker import detect_clashes_task
 
 
@@ -30,8 +32,8 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
     # Calculate the number of buildings and total vertices
     n_buildings = len(building_set.buildings)
     n_vertices = sum(len(b.base.polygon.exterior.coords) for b in building_set.buildings)
-    # Use the product as a proxy for complexity (O(n^2 * v)), threshold at 640,000
-    suitable_for_sync_process = (n_buildings * n_vertices) <= 100_000
+    # Use the product as a proxy for complexity (O(n^2 * v)), threshold at SYNC_CLASH_COMPLEXITY_THRESHOLD
+    suitable_for_sync_process = (n_buildings * n_vertices) <= SYNC_CLASH_COMPLEXITY_THRESHOLD
 
     if cached_collisions is not None:
         collisions = cached_collisions
