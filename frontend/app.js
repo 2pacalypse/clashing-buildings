@@ -1,3 +1,59 @@
+// Assign unique random 4-letter names to each building in a sample
+function randomBuildingNames(sampleKey) {
+    if (!window.samples || !window.samples[sampleKey]) return;
+    const orig = window.samples[sampleKey];
+    const updated = JSON.parse(JSON.stringify(orig));
+    if (updated.features && Array.isArray(updated.features)) {
+        const n = updated.features.length;
+        // Generate all possible 4-letter uppercase names (A-Z)
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const total = Math.pow(chars.length, 4);
+        if (n > total) {
+            alert('Too many buildings for unique 4-letter names!');
+            return;
+        }
+        // Generate a set of unique random names
+        const namesSet = new Set();
+        while (namesSet.size < n) {
+            let name = '';
+            for (let i = 0; i < 4; i++) {
+                name += chars[Math.floor(Math.random() * chars.length)];
+            }
+            namesSet.add(name);
+        }
+        const names = Array.from(namesSet);
+        // Assign names to features
+        updated.features.forEach((f, i) => {
+            if (!f.properties) f.properties = {};
+            f.properties.name = names[i];
+        });
+    }
+    window.samples[sampleKey] = updated;
+    // Update the text field
+    const field = document.getElementById('copy-input-' + sampleKey);
+    if (field) {
+        field.value = JSON.stringify(updated);
+        // Flash magenta checkmark
+        const original = field.value;
+        const originalAlign = field.style.textAlign || '';
+        const originalColor = field.style.color || '';
+        try {
+            field.style.textAlign = 'center';
+            field.style.color = '#d100b8';
+            field.classList.add('flash');
+            field.value = '🏷️ Names randomized';
+        } catch (e) {}
+        setTimeout(() => {
+            try {
+                field.classList.remove('flash');
+                field.style.textAlign = originalAlign;
+                field.style.color = originalColor;
+                field.value = JSON.stringify(updated);
+            } catch (e) {}
+        }, 1200);
+    }
+}
+window.randomBuildingNames = randomBuildingNames;
 // Rotate the coordinates inside each ring of Polygon or MultiPolygon features
 function rotateCoordinates(sampleKey) {
     if (!window.samples || !window.samples[sampleKey]) return;
