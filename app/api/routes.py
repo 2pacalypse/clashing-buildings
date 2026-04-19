@@ -14,7 +14,6 @@ from app.services import clash_service
 from tasks.celery_worker import celery_app
 
 router = APIRouter()
-#TODO: VALIDATIONS - max features, max vertices, valid GeoJSON structure, etc.
 
 @router.post("/detect-clashes", response_model=ClashDetectionResponse)
 async def detect_clashes_endpoint(request: ClashDetectionRequest):
