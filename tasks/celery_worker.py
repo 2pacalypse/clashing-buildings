@@ -1,6 +1,6 @@
 from celery import Celery
 import json
-import redis
+from app.core.cache import get_sync_redis
 from app.algorithms.clash_detector import detect_clashes
 from app.core.cache import set_cache
 from app.core.config import settings
@@ -31,10 +31,8 @@ def detect_clashes_task(buildings_dump: dict, job_id: str):
     # Serialize collisions the same way set_cache does
     serialized = [c.model_dump() for c in collisions]
 
-    # Serialize collisions the same way set_cache does
-    # Use a sync Redis client inside Celery worker to avoid asyncio issues
-    sync_client = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB, decode_responses=True)
+    # Use a sync Redis client from cache utility for Celery worker
+    sync_client = get_sync_redis()
     sync_client.setex(job_id, settings.CACHE_TTL, json.dumps(serialized))
-
     sync_client.delete(f"job:{job_id}:status")
     return {"job_id": job_id, "status": "completed"}
