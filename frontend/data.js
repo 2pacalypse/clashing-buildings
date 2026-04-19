@@ -283,9 +283,153 @@ export const sampleOutputTwo = {
   ]
 };
 
+export const test100Buildings = {
+  type: "FeatureCollection",
+  features: Array.from({ length: 100 }, (_, i) => {
+    let x, y;
+    if (i < 2) {
+      x = i * 5;
+      y = 0;
+    } else {
+      x = ((i - 2) % 14) * 20;
+      y = Math.floor((i - 2) / 14) * 20;
+    }
+    return {
+      type: "Feature",
+      id: `building_${i}`,
+      properties: { height: 4, elevation: 0 },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[x, y], [x + 10, y], [x + 10, y + 10], [x, y + 10], [x, y]]]
+      }
+    };
+  })
+};
+
+export const test200Buildings = {
+  type: "FeatureCollection",
+  features: Array.from({ length: 200 }, (_, i) => {
+    let x, y;
+    if (i < 2) {
+      x = i * 5;
+      y = 0;
+    } else {
+      x = ((i - 2) % 20) * 20;
+      y = Math.floor((i - 2) / 20) * 20;
+    }
+    return {
+      type: "Feature",
+      id: `building_${i}`,
+      properties: { height: 4, elevation: 0 },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[x, y], [x + 10, y], [x + 10, y + 10], [x, y + 10], [x, y]]]
+      }
+    };
+  })
+};
+
+export const test300Buildings = {
+  type: "FeatureCollection",
+  features: Array.from({ length: 300 }, (_, i) => {
+    let x, y;
+    if (i < 2) {
+      x = i * 5;
+      y = 0;
+    } else {
+      x = ((i - 2) % 24) * 20;
+      y = Math.floor((i - 2) / 24) * 20;
+    }
+    return {
+      type: "Feature",
+      id: `building_${i}`,
+      properties: { height: 4, elevation: 0 },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[x, y], [x + 10, y], [x + 10, y + 10], [x, y + 10], [x, y]]]
+      }
+    };
+  })
+};
+
+export const test400Buildings = {
+  type: "FeatureCollection",
+  features: Array.from({ length: 400 }, (_, i) => {
+    let x, y;
+    if (i < 2) {
+      x = i * 5;
+      y = 0;
+    } else {
+      x = ((i - 2) % 28) * 20;
+      y = Math.floor((i - 2) / 28) * 20;
+    }
+    return {
+      type: "Feature",
+      id: `building_${i}`,
+      properties: { height: 4, elevation: 0 },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[x, y], [x + 10, y], [x + 10, y + 10], [x, y + 10], [x, y]]]
+      }
+    };
+  })
+};
+
+export const test500Buildings = {
+  type: "FeatureCollection",
+  features: Array.from({ length: 500 }, (_, i) => {
+    let x, y;
+    if (i < 2) {
+      x = i * 5;
+      y = 0;
+    } else {
+      x = ((i - 2) % 32) * 20;
+      y = Math.floor((i - 2) / 32) * 20;
+    }
+    return {
+      type: "Feature",
+      id: `building_${i}`,
+      properties: { height: 4, elevation: 0 },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[x, y], [x + 10, y], [x + 10, y + 10], [x, y + 10], [x, y]]]
+      }
+    };
+  })
+};
+
+export const test600Buildings = {
+  type: "FeatureCollection",
+  features: Array.from({ length: 600 }, (_, i) => {
+    let x, y;
+    if (i < 2) {
+      x = i * 5;
+      y = 0;
+    } else {
+      x = ((i - 2) % 35) * 20;
+      y = Math.floor((i - 2) / 35) * 20;
+    }
+    return {
+      type: "Feature",
+      id: `building_${i}`,
+      properties: { height: 4, elevation: 0 },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[x, y], [x + 10, y], [x + 10, y + 10], [x, y + 10], [x, y]]]
+      }
+    };
+  })
+};
+
 export const samples = {
     sampleInputOne,
     sampleInputTwo,
     sampleOutputOne,
-    sampleOutputTwo
+    sampleOutputTwo,
+    test100Buildings,
+    test200Buildings,
+    test300Buildings,
+    test400Buildings,
+    test500Buildings,
+    test600Buildings
 };

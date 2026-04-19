@@ -1,4 +1,4 @@
-import { sampleInputOne, sampleInputTwo, samples } from './data.js';
+import { sampleInputOne, sampleInputTwo, samples, test100Buildings, test200Buildings, test300Buildings, test400Buildings, test500Buildings, test600Buildings } from './data.js';
 import { postInputToServer } from './endpoints.js';
 import { init as initScene, loadSample, clearScene, renderGeoJSON, renderAllSelectedSamples, resetCamera, topDownView, sideView, clearSelection } from './scene.js';
 
@@ -199,12 +199,12 @@ document.addEventListener('DOMContentLoaded', () => {
 window.samples = samples;
 
 // Add ready inputs aliases for quick-loading/copying (placeholder -> sampleInputOne)
-samples.ready_XXS = sampleInputOne;
-samples.ready_XS = sampleInputOne;
-samples.ready_S = sampleInputOne;
-samples.ready_M = sampleInputOne;
-samples.ready_L = sampleInputOne;
-samples.ready_XL = sampleInputOne;
+samples.ready_XXS = test100Buildings;
+samples.ready_XS = test200Buildings;
+samples.ready_S = test300Buildings;
+samples.ready_M = test400Buildings;
+samples.ready_L = test500Buildings;
+samples.ready_XL = test600Buildings;
 
 // Populate any existing copy fields after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
