@@ -3,7 +3,6 @@ import uuid
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from httpx import request
 from app.core.cache import get_cache, get_redis
-from app.core.db import get_db
 from app.mappers.building_mapper import map_collisions_to_response
 from app.models.clash_detection_response import (
     ClashDetectionResponse,
@@ -50,12 +49,5 @@ async def get_results(job_id: str):
     return ClashDetectionResponse(job_id=job_id, status=JobStatus.PENDING, result=None)
 
 
-@router.get("/db-test")
-async def db_test():
-    """Simple endpoint to verify DB connectivity by inserting a doc."""
-    try:
-        db = get_db()
-        result = db.test_collection.insert_one({"test": "ok"})
-        return {"inserted_id": str(result.inserted_id)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
+

@@ -8,8 +8,7 @@ class Settings:
     CACHE_TTL: int = int(os.getenv("CACHE_TTL", "3600"))  # 1 hour
     CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
     CELERY_RESULT_BACKEND: str = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/2")
-    MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-    MONGO_DB: str = os.getenv("MONGO_DB", "clashingdb")
+    # MongoDB removed from this project
 
 @lru_cache()
 def get_settings() -> Settings:
