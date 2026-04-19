@@ -1,10 +1,8 @@
 
-import json
 from app.exceptions import JobNotFoundError
 from app.services.clash_cache import (
     get_clash_results, set_clash_results, claim_job, set_canonical_building_names, get_canonical_building_names, job_exists
 )
-from tasks.celery_worker import celery_app
 from app.mappers.building_mapper import map_request_to_canonical, map_collisions_to_response
 from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.clash_detection_response import ClashDetectionResponse

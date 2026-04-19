@@ -1,8 +1,6 @@
-from typing import List, Annotated, Literal, Tuple
-from pydantic import BaseModel, Field, field_validator, ConfigDict, field_serializer
+from typing import Tuple
+from pydantic import BaseModel, field_validator, ConfigDict, field_serializer
 from shapely.geometry import Polygon
-import hashlib
-import json
 
 
 class CanonicalPolygon(BaseModel):

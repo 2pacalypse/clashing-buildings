@@ -1,7 +1,5 @@
 from typing import List, Annotated, Literal
 from pydantic import BaseModel, Field, field_validator
-import hashlib
-import json
 
 
 
@@ -11,12 +9,7 @@ class BuildingProperties(BaseModel):
     elevation: float = Field(ge=0, description="Building base elevation in meters")
 
 
-Coordinate = Annotated[List[float], Field(min_items=2, max_items=2, description="[lon, lat]")]
-
-
-class PolygonGeometry(BaseModel):
-    type: Literal["Polygon"] = "Polygon"
-    coordinates: List[List[Coordinate]]
+from app.models.polygon_geometry import PolygonGeometry, Coordinate
 
 
 class GeoJSONFeature(BaseModel):

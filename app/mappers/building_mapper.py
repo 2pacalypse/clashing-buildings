@@ -14,7 +14,8 @@ from app.models.canonical import (
     CanonicalPolygon,
     CanonicalBuildingIntersection,
 )
-from app.models.clash_detection_request import ClashDetectionRequest, GeoJSONFeature, PolygonGeometry
+from app.models.clash_detection_request import ClashDetectionRequest, GeoJSONFeature
+from app.models.polygon_geometry import PolygonGeometry
 from app.models.clash_detection_response import (
     ClashDetectionResponse,
     ClashFeature,

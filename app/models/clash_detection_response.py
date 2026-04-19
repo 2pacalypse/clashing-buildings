@@ -1,17 +1,8 @@
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 
-from .job_status import JobStatus
+from app.models.job_status import JobStatus
+from app.models.polygon_geometry import PolygonGeometry
 from pydantic import BaseModel, Field
-from app.models.clash_detection_request import (
-    BuildingProperties,
-    Coordinate,
-    PolygonGeometry,
-    GeoJSONFeature,
-    GeoJSONFeatureCollection,
-    ClashDetectionRequest,
-)
-import json
-
 
 class ClashProperties(BaseModel):
     """Properties of a clash feature."""
