@@ -10,6 +10,7 @@ from app.models.clash_detection_response import (
 )
 from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.job_status import JobStatus
+from app.exceptions import JobNotFoundError
 from app.services import clash_service
 from tasks.celery_worker import celery_app
 
@@ -21,7 +22,10 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
 
 @router.get("/results/{job_id}", response_model=ClashDetectionResponse)
 async def get_results(job_id: str):
-    return await clash_service.get_results(job_id)
+    try:
+        return await clash_service.get_results(job_id)
+    except JobNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
 
 
 

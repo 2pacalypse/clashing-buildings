@@ -1,7 +1,8 @@
 
 import json
+from app.exceptions import JobNotFoundError
 from app.services.clash_cache import (
-    get_clash_results, set_clash_results, claim_job, set_original_ids, get_original_ids
+    get_clash_results, set_clash_results, claim_job, set_original_ids, get_original_ids, job_exists
 )
 from tasks.celery_worker import celery_app
 from app.mappers.building_mapper import map_request_to_canonical, map_collisions_to_response
@@ -92,6 +93,11 @@ async def get_results(job_id: str) -> ClashDetectionResponse:
         original_ids = await get_original_ids(job_id)
         buildings = [[original_ids[i] for i in c.building_ids] for c in cached]
         return map_collisions_to_response(collisions=cached, buildings=buildings, job_id=job_id)
+
+    # Check if job exists (was ever claimed/submitted)
+    exists = await job_exists(job_id)
+    if not exists:
+        raise JobNotFoundError(f"Job {job_id} not found")
 
     # Results not cached yet — job is still queued/processing
     return ClashDetectionResponse(job_id=job_id, status=JobStatus.PENDING, result=None)

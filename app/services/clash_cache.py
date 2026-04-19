@@ -44,3 +44,10 @@ async def get_original_ids(job_id: str) -> Optional[list]:
     client = await get_redis()
     val = await client.get(f"job:{job_id}:mapping")
     return json.loads(val) if val else None
+
+
+async def job_exists(job_id: str) -> bool:
+    """Check if a job has been claimed (submitted for processing)."""
+    client = await get_redis()
+    status = await client.get(f"job:{job_id}:status")
+    return status is not None
