@@ -1,3 +1,7 @@
+
+import json
+from app.core.cache import get_redis
+from tasks.celery_worker import celery_app
 from app.core.cache import claim_job, get_cache, set_cache, set_original_ids
 from app.mappers.building_mapper import map_request_to_canonical, map_collisions_to_response
 from app.models.clash_detection_request import ClashDetectionRequest
@@ -80,3 +84,29 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
 
 
 
+async def get_results(job_id: str) -> ClashDetectionResponse:
+    cached = await get_cache(job_id)
+    client = await get_redis()
+    if cached is not None:
+        mapping_raw = await client.get(f"job:{job_id}:mapping")
+        original_ids = json.loads(mapping_raw) if mapping_raw else None
+        if original_ids:
+            buildings = [[original_ids[i] for i in c.building_ids] for c in cached]
+        else:
+            buildings = [[str(i) for i in c.building_ids] for c in cached]
+        return map_collisions_to_response(collisions=cached, buildings=buildings, job_id=job_id)
+
+    # not cached — check status / task
+    status = await client.get(f"job:{job_id}:status")
+    if status == "processing":
+        return ClashDetectionResponse(job_id=job_id, status=JobStatus.PENDING, result=None)
+
+    task_id = await client.get(f"job:{job_id}:task")
+    if task_id:
+        state = celery_app.AsyncResult(task_id).state
+        if state == "FAILURE":
+            return ClashDetectionResponse(job_id=job_id, status=JobStatus.FAILED, result=None)
+        return ClashDetectionResponse(job_id=job_id, status=JobStatus.PENDING, result=None)
+
+    # unknown job -> still return PENDING (or 404 if you prefer)
+    return ClashDetectionResponse(job_id=job_id, status=JobStatus.PENDING, result=None)
