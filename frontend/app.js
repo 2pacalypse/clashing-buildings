@@ -1,3 +1,62 @@
+// Rotate the coordinates inside each ring of Polygon or MultiPolygon features
+function rotateCoordinates(sampleKey) {
+    if (!window.samples || !window.samples[sampleKey]) return;
+    // Deep clone the sample to avoid mutating all references
+    const orig = window.samples[sampleKey];
+    const updated = JSON.parse(JSON.stringify(orig));
+    function rotateRing(ring) {
+        if (!Array.isArray(ring) || ring.length < 4) return ring;
+        // Remove last point (should be same as first)
+        const closed = JSON.stringify(ring[0]) === JSON.stringify(ring[ring.length - 1]);
+        const core = closed ? ring.slice(0, -1) : ring.slice();
+        // Rotate by a random offset
+        const offset = Math.floor(Math.random() * core.length);
+        const rotated = core.slice(offset).concat(core.slice(0, offset));
+        // Re-close the ring
+        return closed ? rotated.concat([rotated[0]]) : rotated;
+    }
+    if (updated.features && Array.isArray(updated.features)) {
+        updated.features.forEach(f => {
+            if (!f.geometry || !f.geometry.type || !f.geometry.coordinates) return;
+            if (f.geometry.type === 'Polygon') {
+                if (Array.isArray(f.geometry.coordinates)) {
+                    f.geometry.coordinates = f.geometry.coordinates.map(ring => rotateRing(ring));
+                }
+            } else if (f.geometry.type === 'MultiPolygon') {
+                if (Array.isArray(f.geometry.coordinates)) {
+                    f.geometry.coordinates = f.geometry.coordinates.map(poly =>
+                        Array.isArray(poly) ? poly.map(ring => rotateRing(ring)) : poly
+                    );
+                }
+            }
+        });
+    }
+    window.samples[sampleKey] = updated;
+    // Update the text field
+    const field = document.getElementById('copy-input-' + sampleKey);
+    if (field) {
+        field.value = JSON.stringify(updated);
+        // Flash orange checkmark
+        const original = field.value;
+        const originalAlign = field.style.textAlign || '';
+        const originalColor = field.style.color || '';
+        try {
+            field.style.textAlign = 'center';
+            field.style.color = '#ff8800';
+            field.classList.add('flash');
+            field.value = '🔄 Coordinates rotated';
+        } catch (e) {}
+        setTimeout(() => {
+            try {
+                field.classList.remove('flash');
+                field.style.textAlign = originalAlign;
+                field.style.color = originalColor;
+                field.value = JSON.stringify(updated);
+            } catch (e) {}
+        }, 1200);
+    }
+}
+window.rotateCoordinates = rotateCoordinates;
 // Shuffle the order of buildings in a ready sample and update the text field with flash
 window.shuffleBuildings = function(sampleKey) {
     if (!window.samples || !window.samples[sampleKey]) return;
