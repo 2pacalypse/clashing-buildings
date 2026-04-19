@@ -41,7 +41,6 @@ services:
       timeout: 3s
       retries: 5
 
-  # mongo service removed
 
   frontend:
     image: nginx:alpine
