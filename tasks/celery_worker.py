@@ -34,5 +34,4 @@ def detect_clashes_task(buildings_dump: dict, job_id: str):
     # Use a sync Redis client from cache utility for Celery worker
     sync_client = get_sync_redis()
     sync_client.setex(job_id, settings.CACHE_TTL, json.dumps(serialized))
-    sync_client.delete(f"job:{job_id}:status")
     return {"job_id": job_id, "status": "completed"}
