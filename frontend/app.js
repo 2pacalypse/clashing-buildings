@@ -1,3 +1,41 @@
+// Shuffle the order of buildings in a ready sample and update the text field with flash
+window.shuffleBuildings = function(sampleKey) {
+    if (!window.samples || !window.samples[sampleKey]) return;
+    // Deep clone the sample to avoid mutating all references
+    const orig = window.samples[sampleKey];
+    const updated = JSON.parse(JSON.stringify(orig));
+    if (updated.features && Array.isArray(updated.features)) {
+        // Fisher-Yates shuffle
+        for (let i = updated.features.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [updated.features[i], updated.features[j]] = [updated.features[j], updated.features[i]];
+        }
+    }
+    window.samples[sampleKey] = updated;
+    // Update the text field
+    const field = document.getElementById('copy-input-' + sampleKey);
+    if (field) {
+        field.value = JSON.stringify(updated);
+        // Flash blue checkmark
+        const original = field.value;
+        const originalAlign = field.style.textAlign || '';
+        const originalColor = field.style.color || '';
+        try {
+            field.style.textAlign = 'center';
+            field.style.color = '#1a4f8f';
+            field.classList.add('flash');
+            field.value = '🔀 Shuffled';
+        } catch (e) {}
+        setTimeout(() => {
+            try {
+                field.classList.remove('flash');
+                field.style.textAlign = originalAlign;
+                field.style.color = originalColor;
+                field.value = JSON.stringify(updated);
+            } catch (e) {}
+        }, 1200);
+    }
+};
 // Increment all heights in a ready sample and update the text field with flash
 window.incrementHeights = function(sampleKey) {
     if (!window.samples || !window.samples[sampleKey]) return;
