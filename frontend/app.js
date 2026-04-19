@@ -189,7 +189,7 @@ window.incrementHeights = function(sampleKey) {
         }, 1200);
     }
 };
-import { sampleInputOne, sampleInputTwo, samples, test100Buildings, test200Buildings, test300Buildings, test400Buildings, test500Buildings, test600Buildings } from './data.js';
+import { sampleInputOne, sampleInputTwo, samples, test100Buildings, test200Buildings, test300Buildings, test400Buildings, test500Buildings, test600Buildings, test1000Buildings, test1500Buildings } from './data.js';
 import { postInputToServer, getResults } from './endpoints.js';
 import { init as initScene, loadSample, clearScene, renderGeoJSON, renderAllSelectedSamples, resetCamera, topDownView, sideView, clearSelection } from './scene.js';
 
@@ -557,6 +557,8 @@ samples.ready_S = test300Buildings;
 samples.ready_M = test400Buildings;
 samples.ready_L = test500Buildings;
 samples.ready_XL = test600Buildings;
+samples.ready_XXL = test1000Buildings;
+samples.ready_XXXL = test1500Buildings;
 
 // Populate any existing copy fields after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {

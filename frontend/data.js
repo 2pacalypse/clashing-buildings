@@ -1,3 +1,48 @@
+export const test1000Buildings = {
+  type: "FeatureCollection",
+  features: Array.from({ length: 1000 }, (_, i) => {
+    let x, y;
+    if (i < 2) {
+      x = i * 5;
+      y = 0;
+    } else {
+      x = ((i - 2) % 40) * 20;
+      y = 20 + Math.floor((i - 2) / 40) * 20;
+    }
+    return {
+      type: "Feature",
+      id: `building_${i}`,
+      properties: { height: 4, elevation: 0 },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[x, y], [x + 10, y], [x + 10, y + 10], [x, y + 10], [x, y]]]
+      }
+    };
+  })
+};
+
+export const test1500Buildings = {
+  type: "FeatureCollection",
+  features: Array.from({ length: 1500 }, (_, i) => {
+    let x, y;
+    if (i < 2) {
+      x = i * 5;
+      y = 0;
+    } else {
+      x = ((i - 2) % 50) * 20;
+      y = 20 + Math.floor((i - 2) / 50) * 20;
+    }
+    return {
+      type: "Feature",
+      id: `building_${i}`,
+      properties: { height: 4, elevation: 0 },
+      geometry: {
+        type: "Polygon",
+        coordinates: [[[x, y], [x + 10, y], [x + 10, y + 10], [x, y + 10], [x, y]]]
+      }
+    };
+  })
+};
 export const sampleInputOne = {
     type: "FeatureCollection",
     features: [
@@ -432,4 +477,6 @@ export const samples = {
     test400Buildings,
     test500Buildings,
     test600Buildings
+  ,test1000Buildings
+  ,test1500Buildings
 };
