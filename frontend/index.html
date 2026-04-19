@@ -7,6 +7,60 @@
     <link rel="stylesheet" href="styles.css">
     
     <style>
+                .sample-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+                .sample-row-single {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 0;
+                }
+                .sample-row-single .sample-btn {
+                    width: 100%;
+                    min-width: 0;
+                    padding: 6px 0 6px 14px;
+                    text-align: left;
+                }
+                .sample-row-single .copy-field-group {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                .sample-row-single .copy-field {
+                    flex: 1 1 0;
+                    min-width: 0;
+                    padding: 4px 6px;
+                }
+                .sample-row-single .copy-field-group {
+                    position: relative;
+                }
+                .sample-row-single .copy-field {
+                    flex: 1 1 0;
+                    min-width: 0;
+                    padding: 4px 32px 4px 6px;
+                }
+                .sample-row-single .copy-btn {
+                    position: absolute;
+                    right: 2px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    padding: 4px 8px;
+                    font-size: 1.1em;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    line-height: 1;
+                    color: #333;
+                    transition: color 0.15s;
+                    z-index: 2;
+                }
+                .sample-row-single .copy-btn:hover {
+                    color: #0078d4;
+                }
         /* Hourglass shake/vibration animation during polling */
         @keyframes shake-hourglass {
             0%, 100% { transform: translateX(0); }
@@ -57,35 +111,33 @@
             <div id="sample-section" class="section">
                 <h2>Sample Inputs</h2>
                 <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Click to toggle (select multiple)</p>
-                <div class="sample-row">
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="sampleInputOne" onclick="loadSample('sampleInputOne')">Sample Input 1</button>
-                        <div class="copy-row">
+                <div class="sample-list">
+                    <div class="sample-row-single">
+                        <button class="sample-btn" data-sample="sampleInputOne" onclick="loadSample('sampleInputOne')">Input 1</button>
+                        <div class="copy-field-group">
                             <input type="text" class="copy-field" id="copy-input-sampleInputOne" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('sampleInputOne', 'input')" title="Copy Input">📋</button>
+                            <button class="copy-btn" onclick="copySample('sampleInputOne', 'input')" title="Copy Input" tabindex="-1">📋</button>
                         </div>
                     </div>
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="sampleOutputOne" onclick="loadSample('sampleOutputOne')">Sample Output 1</button>
-                        <div class="copy-row">
+                    <div class="sample-row-single">
+                        <button class="sample-btn" data-sample="sampleOutputOne" onclick="loadSample('sampleOutputOne')">Output 1</button>
+                        <div class="copy-field-group">
                             <input type="text" class="copy-field" id="copy-input-sampleOutputOne" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('sampleOutputOne', 'output')" title="Copy Output">📋</button>
+                            <button class="copy-btn" onclick="copySample('sampleOutputOne', 'output')" title="Copy Output" tabindex="-1">📋</button>
                         </div>
                     </div>
-                </div>
-                <div class="sample-row">
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="sampleInputTwo" onclick="loadSample('sampleInputTwo')">Sample Input 2</button>
-                        <div class="copy-row">
+                    <div class="sample-row-single">
+                        <button class="sample-btn" data-sample="sampleInputTwo" onclick="loadSample('sampleInputTwo')">Input 2</button>
+                        <div class="copy-field-group">
                             <input type="text" class="copy-field" id="copy-input-sampleInputTwo" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('sampleInputTwo', 'input')" title="Copy Input">📋</button>
+                            <button class="copy-btn" onclick="copySample('sampleInputTwo', 'input')" title="Copy Input" tabindex="-1">📋</button>
                         </div>
                     </div>
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="sampleOutputTwo" onclick="loadSample('sampleOutputTwo')">Sample Output 2</button>
-                        <div class="copy-row">
+                    <div class="sample-row-single">
+                        <button class="sample-btn" data-sample="sampleOutputTwo" onclick="loadSample('sampleOutputTwo')">Output 2</button>
+                        <div class="copy-field-group">
                             <input type="text" class="copy-field" id="copy-input-sampleOutputTwo" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('sampleOutputTwo', 'output')" title="Copy Output">📋</button>
+                            <button class="copy-btn" onclick="copySample('sampleOutputTwo', 'output')" title="Copy Output" tabindex="-1">📋</button>
                         </div>
                     </div>
                 </div>
@@ -408,6 +460,87 @@
             }
         });
     });
+
+    // Patch: When adding new samples via the form, label as 'Input N' or 'Output N' (not 'Sample ...')
+    // If you have a function that adds new sample rows, ensure it uses this convention for the button label.
+    // Example helper (to be used in your add sample logic):
+    window.getSampleButtonLabel = function(key) {
+        // Defensive: ensure key is a string
+        if (typeof key !== 'string') key = String(key);
+        // key: e.g. 'sampleInputThree', 'sampleOutputFour', etc.
+        const inputMatch = key.match(/^sampleInput(\d+)$/i);
+        const outputMatch = key.match(/^sampleOutput(\d+)$/i);
+        if (inputMatch) return 'Input ' + inputMatch[1];
+        if (outputMatch) return 'Output ' + outputMatch[1];
+        // fallback: try to infer
+        if (key.toLowerCase().includes('input')) return 'Input';
+        if (key.toLowerCase().includes('output')) return 'Output';
+        return key;
+    }
+
+    // Patch: Override sendInputFromForm to add new samples in the new layout
+    (function() {
+        const origSendInputFromForm = window.sendInputFromForm;
+        window.sendInputFromForm = function() {
+            if (!window.samples) window.samples = {};
+            const textarea = document.getElementById('input-json');
+            const val = textarea && textarea.value ? textarea.value.trim() : '';
+            if (!val) return;
+            let parsed;
+            try {
+                parsed = JSON.parse(val);
+            } catch (e) {
+                document.getElementById('input-status').textContent = '❌ Invalid JSON';
+                return;
+            }
+            // Generate a unique key for the new input
+            let idx = 3;
+            while (window.samples['sampleInput' + idx]) idx++;
+            const key = 'sampleInput' + idx;
+            window.samples[key] = parsed;
+            // Add to DOM in correct vertical layout (sample-row-single)
+            const sampleList = document.querySelector('#sample-section .sample-list');
+            if (sampleList) {
+                // Create a new row with the same structure as the static sample rows
+                const row = document.createElement('div');
+                row.className = 'sample-row-single';
+                // Button (left column)
+                const btn = document.createElement('button');
+                btn.className = 'sample-btn';
+                btn.setAttribute('data-sample', key);
+                btn.textContent = window.getSampleButtonLabel(key);
+                btn.onclick = function() { window.loadSample(key); };
+                // Copy field group (right column)
+                const group = document.createElement('div');
+                group.className = 'copy-field-group';
+                // Input field
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'copy-field';
+                input.id = 'copy-input-' + key;
+                input.readOnly = true;
+                input.value = JSON.stringify(parsed);
+                // Copy button
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.title = 'Copy Input';
+                copyBtn.tabIndex = -1;
+                copyBtn.innerHTML = '📋';
+                copyBtn.onclick = function() { window.copySample(key, 'input'); };
+                // Assemble group
+                group.appendChild(input);
+                group.appendChild(copyBtn);
+                // Assemble row
+                row.appendChild(btn);
+                row.appendChild(group);
+                // Append row to sample list
+                sampleList.appendChild(row);
+            }
+            // Clear textarea and status
+            textarea.value = '';
+            document.getElementById('input-status').textContent = '✅ Added as Input ' + idx;
+        };
+    })();
     </script>
 </body>
 </html>

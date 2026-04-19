@@ -325,42 +325,33 @@ window.sendInputFromForm = async function() {
         return;
     }
 
-    // Determine next input sample index (count existing sample-input buttons)
-    const existingInputBtns = Array.from(document.querySelectorAll('.sample-btn')).filter(b => {
-        const ds = b.dataset && b.dataset.sample ? b.dataset.sample.toLowerCase() : '';
-        return ds.includes('input');
-    });
-    const nextIndex = existingInputBtns.length + 1;
-    const key = 'sampleInput' + nextIndex;
-
-    // Register new sample in the samples object so loadSample can find it
-    // Declare these here so they are available after the POST response
+    // Determine next input sample index (count existing sampleInputN keys)
+    let idx = 3;
+    while (samples['sampleInput' + idx]) idx++;
+    const key = 'sampleInput' + idx;
     let outKey;
-    let inBtn, outBtn, row;
+    let inBtn, outBtn;
     try {
         samples[key] = parsed;
-        outKey = 'sampleOutput' + nextIndex;
+        outKey = 'sampleOutput' + idx;
         // create a dummy empty FeatureCollection for the paired output
         samples[outKey] = { type: 'FeatureCollection', features: [] };
 
-        // Create paired buttons and insert into the Sample Inputs section
-        const section = document.getElementById('sample-section');
-        if (section) {
-            row = document.createElement('div');
-            row.className = 'sample-row';
-
-            // LEFT: input item (button + copy field stacked)
-            const leftItem = document.createElement('div');
-            leftItem.className = 'sample-item';
-
+        // Insert input and output as separate rows in the .sample-list (vertical, like static rows)
+        const sampleList = document.querySelector('#sample-section .sample-list');
+        if (sampleList) {
+            // --- Input row ---
+            const inRow = document.createElement('div');
+            inRow.className = 'sample-row-single';
+            // Button (left)
             inBtn = document.createElement('button');
             inBtn.className = 'sample-btn';
             inBtn.dataset.sample = key;
-            inBtn.textContent = `Sample Input ${nextIndex}`;
-            inBtn.addEventListener('click', () => loadSample(key));
-
-            const inCopyRow = document.createElement('div');
-            inCopyRow.className = 'copy-row';
+            inBtn.textContent = window.getSampleButtonLabel ? window.getSampleButtonLabel(key) : ('Input ' + idx);
+            inBtn.onclick = () => loadSample(key);
+            // Copy field group (right)
+            const inGroup = document.createElement('div');
+            inGroup.className = 'copy-field-group';
             const inCopyField = document.createElement('input');
             inCopyField.type = 'text';
             inCopyField.className = 'copy-field';
@@ -370,27 +361,28 @@ window.sendInputFromForm = async function() {
             const inCopyBtn = document.createElement('button');
             inCopyBtn.className = 'copy-btn';
             inCopyBtn.title = 'Copy Input';
+            inCopyBtn.tabIndex = -1;
             inCopyBtn.innerHTML = copyIconSvg;
-            inCopyBtn.addEventListener('click', () => copySample(key, 'input'));
-            inCopyRow.appendChild(inCopyField);
-            inCopyRow.appendChild(inCopyBtn);
+            inCopyBtn.onclick = () => copySample(key, 'input');
+            inGroup.appendChild(inCopyField);
+            inGroup.appendChild(inCopyBtn);
+            inRow.appendChild(inBtn);
+            inRow.appendChild(inGroup);
+            sampleList.appendChild(inRow);
 
-            leftItem.appendChild(inBtn);
-            leftItem.appendChild(inCopyRow);
-
-            // RIGHT: output item (button + copy field stacked)
-            const rightItem = document.createElement('div');
-            rightItem.className = 'sample-item';
-
+            // --- Output row ---
+            const outRow = document.createElement('div');
+            outRow.className = 'sample-row-single';
+            // Button (left)
             const initialIcon = statusIconFor('pending');
             outBtn = document.createElement('button');
             outBtn.className = 'sample-btn status-pending';
             outBtn.dataset.sample = outKey;
-            outBtn.innerHTML = `${initialIcon} Sample Output ${nextIndex}`;
-            outBtn.addEventListener('click', () => loadSample(outKey));
-
-            const outCopyRow = document.createElement('div');
-            outCopyRow.className = 'copy-row';
+            outBtn.innerHTML = `${initialIcon} ` + (window.getSampleButtonLabel ? window.getSampleButtonLabel(outKey) : ('Output ' + idx));
+            outBtn.onclick = () => loadSample(outKey);
+            // Copy field group (right)
+            const outGroup = document.createElement('div');
+            outGroup.className = 'copy-field-group';
             const outCopyField = document.createElement('input');
             outCopyField.type = 'text';
             outCopyField.className = 'copy-field';
@@ -400,17 +392,14 @@ window.sendInputFromForm = async function() {
             const outCopyBtn = document.createElement('button');
             outCopyBtn.className = 'copy-btn';
             outCopyBtn.title = 'Copy Output';
+            outCopyBtn.tabIndex = -1;
             outCopyBtn.innerHTML = copyIconSvg;
-            outCopyBtn.addEventListener('click', () => copySample(outKey, 'output'));
-            outCopyRow.appendChild(outCopyField);
-            outCopyRow.appendChild(outCopyBtn);
-
-            rightItem.appendChild(outBtn);
-            rightItem.appendChild(outCopyRow);
-
-            row.appendChild(leftItem);
-            row.appendChild(rightItem);
-            section.appendChild(row);
+            outCopyBtn.onclick = () => copySample(outKey, 'output');
+            outGroup.appendChild(outCopyField);
+            outGroup.appendChild(outCopyBtn);
+            outRow.appendChild(outBtn);
+            outRow.appendChild(outGroup);
+            sampleList.appendChild(outRow);
         }
     } catch (e) {
         console.error('Failed to register new sample:', e);
@@ -423,8 +412,7 @@ window.sendInputFromForm = async function() {
     if (outBtn) {
         outBtn.disabled = true;
         outBtn.classList.add('polling');
-        outBtn.innerHTML = `⏳ Sample Output ${nextIndex} (0.00s)`;
-        
+        outBtn.innerHTML = `⏳ Output ${idx} (0.00s)`;
         // Start display timer to show elapsed time
         const displayInterval = setInterval(() => {
             if (!outBtn || !outBtn.classList.contains('polling')) {
@@ -433,9 +421,8 @@ window.sendInputFromForm = async function() {
             }
             const elapsedMs = Date.now() - requestStartTime;
             const elapsedSeconds = (elapsedMs / 1000).toFixed(2);
-            outBtn.innerHTML = `⏳ Sample Output ${nextIndex} (${elapsedSeconds}s)`;
+            outBtn.innerHTML = `⏳ Output ${idx} (${elapsedSeconds}s)`;
         }, 100);
-        
         // Store the display interval so it can be cleared later
         outBtn.dataset.displayInterval = displayInterval;
     }
@@ -482,7 +469,7 @@ window.sendInputFromForm = async function() {
                             }
                             outBtn.classList.remove('polling');
                             outBtn.disabled = false;
-                            outBtn.innerHTML = `✅ Sample Output ${nextIndex} (${elapsedSeconds}s)`;
+                            outBtn.innerHTML = `✅ Output ${idx} (${elapsedSeconds}s)`;
                         } else {
                             // Failed or other status - stop timer
                             if (outBtn.dataset.displayInterval) {
@@ -491,7 +478,7 @@ window.sendInputFromForm = async function() {
                             }
                             outBtn.classList.remove('polling');
                             outBtn.disabled = false;
-                            outBtn.innerHTML = `${icon} Sample Output ${nextIndex}`;
+                            outBtn.innerHTML = `${icon} Output ${idx}`;
                         }
                         outBtn.title = resp.job_id ? `Job ${resp.job_id} — ${status}` : `${status}`;
                     }
