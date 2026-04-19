@@ -172,10 +172,13 @@
                         <button class="copy-btn" id="copy-btn-ready-single" title="Copy Input">📋</button>
                     </div>
                     <div class="btn-row" style="gap: 8px;">
-                        <button class="height-btn" id="set-random-height-btn" style="font-size:0.72em; padding:1.5px 4px;" title="Set all heights to a random value">Set Random Height</button>
+                        <button class="height-btn" id="set-random-height-btn" style="font-size:0.72em; padding:1.5px 4px;" title="Set all heights to a random value">Set same random height for all buildings</button>
                         <button class="height-btn" id="shuffle-btn" style="font-size:0.72em; padding:1.5px 4px;" title="Shuffle buildings">Shuffle buildings</button>
                         <button class="height-btn" id="rotate-btn" style="font-size:0.72em; padding:1.5px 4px;" title="Rotate coordinates in rings">Rotate coordinates</button>
                         <button class="height-btn" id="random-names-btn" style="font-size:0.72em; padding:1.5px 4px;" title="Assign random 4-letter names">Random building names</button>
+                    </div>
+                    <div class="ready-info-text" style="margin-top:10px; font-size:0.85em; color:#666; line-height:1.5;">
+                        <strong>Note:</strong> Our backend service uses the cache entry even if you change the building order, polygon vertex order, or building names. However, the z axis (height) is <strong>not</strong> covered in our normalization, so changing heights will result in a cache miss and a new computation.
                     </div>
                 </div>
             </div>
