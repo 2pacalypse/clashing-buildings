@@ -21,7 +21,11 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
 
     collisions = None
 
-    suitable_for_sync_process = False
+    # Calculate the number of buildings and total vertices
+    n_buildings = len(building_set.buildings)
+    n_vertices = sum(len(b.polygon) for b in building_set.buildings)
+    # Use the product as a proxy for complexity (O(n^2 * v)), threshold at 640,000
+    suitable_for_sync_process = (n_buildings * n_vertices) <= 640_000
 
     if cached_collisions is not None:
         collisions = cached_collisions
