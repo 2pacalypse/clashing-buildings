@@ -292,7 +292,7 @@ export const test100Buildings = {
       y = 0;
     } else {
       x = ((i - 2) % 14) * 20;
-      y = Math.floor((i - 2) / 14) * 20;
+      y = 20 + Math.floor((i - 2) / 14) * 20;
     }
     return {
       type: "Feature",
@@ -315,7 +315,7 @@ export const test200Buildings = {
       y = 0;
     } else {
       x = ((i - 2) % 20) * 20;
-      y = Math.floor((i - 2) / 20) * 20;
+      y = 20 + Math.floor((i - 2) / 20) * 20;
     }
     return {
       type: "Feature",
@@ -338,7 +338,7 @@ export const test300Buildings = {
       y = 0;
     } else {
       x = ((i - 2) % 24) * 20;
-      y = Math.floor((i - 2) / 24) * 20;
+      y = 20 + Math.floor((i - 2) / 24) * 20;
     }
     return {
       type: "Feature",
@@ -361,7 +361,7 @@ export const test400Buildings = {
       y = 0;
     } else {
       x = ((i - 2) % 28) * 20;
-      y = Math.floor((i - 2) / 28) * 20;
+      y = 20 + Math.floor((i - 2) / 28) * 20;
     }
     return {
       type: "Feature",
@@ -384,7 +384,7 @@ export const test500Buildings = {
       y = 0;
     } else {
       x = ((i - 2) % 32) * 20;
-      y = Math.floor((i - 2) / 32) * 20;
+      y = 20 + Math.floor((i - 2) / 32) * 20;
     }
     return {
       type: "Feature",
@@ -407,7 +407,7 @@ export const test600Buildings = {
       y = 0;
     } else {
       x = ((i - 2) % 35) * 20;
-      y = Math.floor((i - 2) / 35) * 20;
+      y = 20 + Math.floor((i - 2) / 35) * 20;
     }
     return {
       type: "Feature",
