@@ -5,6 +5,7 @@ from tasks.celery_worker import celery_app
 from app.mappers.building_mapper import map_request_to_canonical, map_collisions_to_response
 from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.clash_detection_response import ClashDetectionResponse
+from app.models.canonical import CanonicalBuildingIntersection
 from app.algorithms.clash_detector import detect_clashes
 from app.models.job_status import JobStatus
 from app.utils.job_id_generator import generate_job_id
@@ -31,8 +32,9 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
     suitable_for_sync_process = (n_buildings * n_vertices) <= 100_000
 
     if cached_collisions is not None:
-        collisions = cached_collisions
-            # Retrieve original building IDs for the collisions
+        # Deserialize raw cache data back to models
+        collisions = [CanonicalBuildingIntersection.model_validate(item) for item in cached_collisions]
+        # Retrieve original building IDs for the collisions
         buildings = [[request.features[original_indices[i]].id for i in c.building_ids] for c in collisions ]
     
         # Step 2: Convert collisions to GeoJSON output via mapper
@@ -87,9 +89,11 @@ async def get_results(job_id: str) -> ClashDetectionResponse:
     # Check if results are cached
     cached = await get_cache(job_id)
     if cached is not None:
+        # Deserialize raw cache data back to models
+        collisions = [CanonicalBuildingIntersection.model_validate(item) for item in cached]
         original_ids = await get_original_ids(job_id)
-        buildings = [[original_ids[i] for i in c.building_ids] for c in cached]
-        return map_collisions_to_response(collisions=cached, buildings=buildings, job_id=job_id)
+        buildings = [[original_ids[i] for i in c.building_ids] for c in collisions]
+        return map_collisions_to_response(collisions=collisions, buildings=buildings, job_id=job_id)
 
     # Results not cached yet — job is still queued/processing
     return ClashDetectionResponse(job_id=job_id, status=JobStatus.PENDING, result=None)
