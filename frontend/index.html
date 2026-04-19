@@ -24,6 +24,12 @@
         .sample-btn.polling:disabled {
             color: #999;
         }
+
+        .main-btn-disabled {
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+            pointer-events: auto !important;
+        }
     </style>
     
     <script type="importmap">
@@ -39,6 +45,14 @@
     <div class="container">
         <div class="sidebar">
             <h1>🏢 Building Clashes 3D</h1>
+            <div id="scene-toggle-row" style="margin-bottom: 12px;">
+                <label class="control-checkbox" style="display:flex; align-items:center; gap:8px; font-size:0.95rem;">
+                    <input id="toggle-scene-checkbox" type="checkbox" checked>
+                    Show scene
+                </label>
+            </div>
+            <!-- sidebar id for scene toggle -->
+            <script>document.currentScript.parentElement.id = 'sidebar-main';</script>
             
             <div id="sample-section" class="section">
                 <h2>Sample Inputs</h2>
@@ -89,105 +103,150 @@
             
             <div class="section" id="ready-inputs-section">
                 <h2>Ready Inputs</h2>
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Quick inputs you can load into the form or copy to clipboard.</p>
-                <div class="sample-row">
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="ready_XXS" onclick="loadSample('ready_XXS')">XXS (100)</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="incrementHeights('ready_XXS')" title="Add +1 to heights">+1 height</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="shuffleBuildings('ready_XXS')" title="Shuffle buildings">Shuffle buildings</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="rotateCoordinates('ready_XXS')" title="Rotate coordinates in rings">Rotate coordinates</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="randomBuildingNames('ready_XXS')" title="Assign random 4-letter names">Random building names</button>
-                        <div class="copy-row">
-                            <input type="text" class="copy-field" id="copy-input-ready_XXS" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('ready_XXS', 'input')" title="Copy Input">📋</button>
-                        </div>
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Select a size, then use the actions below.</p>
+                <div class="sample-row" id="ready-size-btn-row" style="margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                    <button class="sample-btn" data-sample="ready_XXS" onclick="selectReadySample('ready_XXS')">XXS (100)</button>
+                    <button class="sample-btn" data-sample="ready_XS" onclick="selectReadySample('ready_XS')">XS (200)</button>
+                    <button class="sample-btn" data-sample="ready_S" onclick="selectReadySample('ready_S')">S (300)</button>
+                    <button class="sample-btn" data-sample="ready_M" onclick="selectReadySample('ready_M')">M (400)</button>
+                    <button class="sample-btn" data-sample="ready_L" onclick="selectReadySample('ready_L')">L (500)</button>
+                    <button class="sample-btn" data-sample="ready_XL" onclick="selectReadySample('ready_XL')">XL (600)</button>
+                    <button class="sample-btn" data-sample="ready_XXL" onclick="selectReadySample('ready_XXL')">XXL (1000)</button>
+                    <button class="sample-btn" data-sample="ready_XXXL" onclick="selectReadySample('ready_XXXL')">XXXL (1500)</button>
+                </div>
+                <div id="ready-actions" style="display:none;">
+                    <div class="copy-row" style="margin-bottom: 8px;">
+                        <input type="text" class="copy-field" id="copy-input-ready-single" readonly value="" />
+                        <button class="copy-btn" id="copy-btn-ready-single" title="Copy Input">📋</button>
                     </div>
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="ready_XS" onclick="loadSample('ready_XS')">XS (200)</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="incrementHeights('ready_XS')" title="Add +1 to heights">+1 height</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="shuffleBuildings('ready_XS')" title="Shuffle buildings">Shuffle buildings</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="rotateCoordinates('ready_XS')" title="Rotate coordinates in rings">Rotate coordinates</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="randomBuildingNames('ready_XS')" title="Assign random 4-letter names">Random building names</button>
-                        <div class="copy-row">
-                            <input type="text" class="copy-field" id="copy-input-ready_XS" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('ready_XS', 'input')" title="Copy Input">📋</button>
-                        </div>
+                    <div class="btn-row" style="gap: 8px;">
+                        <button class="height-btn" id="inc-height-btn" style="font-size:0.8em; padding:2px 6px;" title="Add +1 to heights">+1 height</button>
+                        <button class="height-btn" id="shuffle-btn" style="font-size:0.8em; padding:2px 6px;" title="Shuffle buildings">Shuffle buildings</button>
+                        <button class="height-btn" id="rotate-btn" style="font-size:0.8em; padding:2px 6px;" title="Rotate coordinates in rings">Rotate coordinates</button>
+                        <button class="height-btn" id="random-names-btn" style="font-size:0.8em; padding:2px 6px;" title="Assign random 4-letter names">Random building names</button>
                     </div>
                 </div>
-                <div class="sample-row">
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="ready_S" onclick="loadSample('ready_S')">S (300)</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="incrementHeights('ready_S')" title="Add +1 to heights">+1 height</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="shuffleBuildings('ready_S')" title="Shuffle buildings">Shuffle buildings</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="rotateCoordinates('ready_S')" title="Rotate coordinates in rings">Rotate coordinates</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="randomBuildingNames('ready_S')" title="Assign random 4-letter names">Random building names</button>
-                        <div class="copy-row">
-                            <input type="text" class="copy-field" id="copy-input-ready_S" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('ready_S', 'input')" title="Copy Input">📋</button>
-                        </div>
-                    </div>
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="ready_M" onclick="loadSample('ready_M')">M (400)</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="incrementHeights('ready_M')" title="Add +1 to heights">+1 height</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="shuffleBuildings('ready_M')" title="Shuffle buildings">Shuffle buildings</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="rotateCoordinates('ready_M')" title="Rotate coordinates in rings">Rotate coordinates</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="randomBuildingNames('ready_M')" title="Assign random 4-letter names">Random building names</button>
-                        <div class="copy-row">
-                            <input type="text" class="copy-field" id="copy-input-ready_M" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('ready_M', 'input')" title="Copy Input">📋</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="sample-row">
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="ready_L" onclick="loadSample('ready_L')">L (500)</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="incrementHeights('ready_L')" title="Add +1 to heights">+1 height</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="shuffleBuildings('ready_L')" title="Shuffle buildings">Shuffle buildings</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="rotateCoordinates('ready_L')" title="Rotate coordinates in rings">Rotate coordinates</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="randomBuildingNames('ready_L')" title="Assign random 4-letter names">Random building names</button>
-                        <div class="copy-row">
-                            <input type="text" class="copy-field" id="copy-input-ready_L" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('ready_L', 'input')" title="Copy Input">📋</button>
-                        </div>
-                    </div>
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="ready_XL" onclick="loadSample('ready_XL')">XL (600)</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="incrementHeights('ready_XL')" title="Add +1 to heights">+1 height</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="shuffleBuildings('ready_XL')" title="Shuffle buildings">Shuffle buildings</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="rotateCoordinates('ready_XL')" title="Rotate coordinates in rings">Rotate coordinates</button>
-                                                <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="randomBuildingNames('ready_XL')" title="Assign random 4-letter names">Random building names</button>
-                        <div class="copy-row">
-                            <input type="text" class="copy-field" id="copy-input-ready_XL" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('ready_XL', 'input')" title="Copy Input">📋</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="sample-row">
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="ready_XXL" onclick="loadSample('ready_XXL')">XXL (1000)</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="incrementHeights('ready_XXL')" title="Add +1 to heights">+1 height</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="shuffleBuildings('ready_XXL')" title="Shuffle buildings">Shuffle buildings</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="rotateCoordinates('ready_XXL')" title="Rotate coordinates in rings">Rotate coordinates</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="randomBuildingNames('ready_XXL')" title="Assign random 4-letter names">Random building names</button>
-                        <div class="copy-row">
-                            <input type="text" class="copy-field" id="copy-input-ready_XXL" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('ready_XXL', 'input')" title="Copy Input">📋</button>
-                        </div>
-                    </div>
-                    <div class="sample-item">
-                        <button class="sample-btn" data-sample="ready_XXXL" onclick="loadSample('ready_XXXL')">XXXL (1500)</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="incrementHeights('ready_XXXL')" title="Add +1 to heights">+1 height</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="shuffleBuildings('ready_XXXL')" title="Shuffle buildings">Shuffle buildings</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="rotateCoordinates('ready_XXXL')" title="Rotate coordinates in rings">Rotate coordinates</button>
-                        <button class="height-btn" style="font-size:0.8em; margin-left:4px; padding:2px 6px;" onclick="randomBuildingNames('ready_XXXL')" title="Assign random 4-letter names">Random building names</button>
-                        <div class="copy-row">
-                            <input type="text" class="copy-field" id="copy-input-ready_XXXL" readonly value="" />
-                            <button class="copy-btn" onclick="copySample('ready_XXXL', 'input')" title="Copy Input">📋</button>
-                        </div>
-                    </div>
-                </div>
-       
             </div>
+    <script>
+    // Ready Inputs: Single selection logic
+    window.selectReadySample = function(sampleKey) {
+        if (!window.samples) return;
+        // Highlight selected button
+        document.querySelectorAll('#ready-size-btn-row .sample-btn').forEach(btn => {
+            if (btn.getAttribute('data-sample') === sampleKey) {
+                btn.classList.add('selected');
+            } else {
+                btn.classList.remove('selected');
+            }
+        });
+        // Show actions
+        document.getElementById('ready-actions').style.display = '';
+        // Set field value
+        const field = document.getElementById('copy-input-ready-single');
+        if (field && window.samples[sampleKey]) {
+            field.value = JSON.stringify(window.samples[sampleKey]);
+            flashField(field, 'Updated with ' + btnLabelFromKey(sampleKey));
+        }
+        // Store selected key
+        window.selectedReadySample = sampleKey;
+    };
+
+    // Helper to get label from key
+    function btnLabelFromKey(key) {
+        const map = {
+            'ready_XXS': 'XXS', 'ready_XS': 'XS', 'ready_S': 'S', 'ready_M': 'M', 'ready_L': 'L', 'ready_XL': 'XL', 'ready_XXL': 'XXL', 'ready_XXXL': 'XXXL'
+        };
+        return map[key] || key;
+    }
+
+    // Flash field with optional message
+    function flashField(field, msg) {
+        if (!field) return;
+        const original = field.value;
+        const originalAlign = field.style.textAlign || '';
+        try {
+            field.style.textAlign = 'center';
+            field.classList.add('flash');
+            if (msg) field.value = '✅ ' + msg;
+        } catch (e) {}
+        setTimeout(() => {
+            try {
+                field.classList.remove('flash');
+                field.style.textAlign = originalAlign;
+                field.value = original;
+            } catch (e) {}
+        }, 500);
+    }
+
+    // Action handlers for single ready input
+    document.addEventListener('DOMContentLoaded', function() {
+        // Copy
+        document.getElementById('copy-btn-ready-single').onclick = function() {
+            if (!window.selectedReadySample) return;
+            // Copy the value in the single field
+            const field = document.getElementById('copy-input-ready-single');
+            if (field) {
+                // Use Clipboard API if available
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(field.value).then(() => {
+                        flashField(field, 'Copied!');
+                    }).catch(() => {
+                        field.select();
+                        field.setSelectionRange(0, 99999);
+                        document.execCommand('copy');
+                        flashField(field, 'Copied!');
+                    });
+                } else {
+                    field.select();
+                    field.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+                    flashField(field, 'Copied!');
+                }
+            }
+        };
+        // +1 height
+        document.getElementById('inc-height-btn').onclick = function() {
+            if (!window.selectedReadySample) return;
+            window.incrementHeights(window.selectedReadySample);
+            // Update field
+            const field = document.getElementById('copy-input-ready-single');
+            if (field && window.samples[window.selectedReadySample]) {
+                field.value = JSON.stringify(window.samples[window.selectedReadySample]);
+                flashField(field, '+1 height');
+            }
+        };
+        // Shuffle
+        document.getElementById('shuffle-btn').onclick = function() {
+            if (!window.selectedReadySample) return;
+            window.shuffleBuildings(window.selectedReadySample);
+            const field = document.getElementById('copy-input-ready-single');
+            if (field && window.samples[window.selectedReadySample]) {
+                field.value = JSON.stringify(window.samples[window.selectedReadySample]);
+                flashField(field, 'Shuffled');
+            }
+        };
+        // Rotate
+        document.getElementById('rotate-btn').onclick = function() {
+            if (!window.selectedReadySample) return;
+            window.rotateCoordinates(window.selectedReadySample);
+            const field = document.getElementById('copy-input-ready-single');
+            if (field && window.samples[window.selectedReadySample]) {
+                field.value = JSON.stringify(window.samples[window.selectedReadySample]);
+                flashField(field, 'Rotated');
+            }
+        };
+        // Random names
+        document.getElementById('random-names-btn').onclick = function() {
+            if (!window.selectedReadySample) return;
+            window.randomBuildingNames(window.selectedReadySample);
+            const field = document.getElementById('copy-input-ready-single');
+            if (field && window.samples[window.selectedReadySample]) {
+                field.value = JSON.stringify(window.samples[window.selectedReadySample]);
+                flashField(field, 'Random names');
+            }
+        };
+    });
+    </script>
 
         </div>
         
@@ -217,9 +276,64 @@
             <input id="show-legend-checkbox" type="checkbox">
             Show legend
         </label>
+        <!-- Show scene checkbox moved above, remove from here -->
     </div>
 
     <script type="module" src="app.js"></script>
+        <script>
+        // Scene toggle logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const sceneCheckbox = document.getElementById('toggle-scene-checkbox');
+            const canvasContainer = document.getElementById('canvas-container');
+            const sidebar = document.getElementById('sidebar-main');
+            const controls = document.querySelector('.floating-controls');
+            function updateSceneVisibility() {
+                if (sceneCheckbox && canvasContainer && sidebar) {
+                    // Always select .sample-btn inside #sample-section (handles dynamic additions)
+                    const sampleSectionBtns = document.querySelectorAll('#sample-section .sample-btn');
+                    // Ready input size buttons (should always be enabled)
+                    const readyBtns = document.querySelectorAll('#ready-size-btn-row .sample-btn');
+                    if (sceneCheckbox.checked) {
+                        canvasContainer.style.display = '';
+                        sidebar.style.width = '';
+                        sidebar.style.maxWidth = '';
+                        if (controls) controls.style.display = '';
+                        sampleSectionBtns.forEach(btn => btn.classList.remove('main-btn-disabled'));
+                        readyBtns.forEach(btn => btn.classList.remove('main-btn-disabled'));
+                    } else {
+                        canvasContainer.style.display = 'none';
+                        sidebar.style.width = '100vw';
+                        sidebar.style.maxWidth = '100vw';
+                        if (controls) controls.style.display = 'none';
+                        sampleSectionBtns.forEach(btn => btn.classList.add('main-btn-disabled'));
+                        readyBtns.forEach(btn => btn.classList.remove('main-btn-disabled'));
+                    }
+                }
+            }
+
+            // Re-apply disabling logic if new sample-btns are added to #sample-section
+            const sampleSection = document.getElementById('sample-section');
+            if (sampleSection && window.MutationObserver) {
+                const observer = new MutationObserver(() => {
+                    updateSceneVisibility();
+                });
+                observer.observe(sampleSection, { childList: true, subtree: true });
+            }
+
+            // Prevent click actions on visually disabled buttons but allow not-allowed cursor
+            document.addEventListener('click', function(e) {
+                const target = e.target;
+                if (target.classList && target.classList.contains('main-btn-disabled')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
+            if (sceneCheckbox) {
+                sceneCheckbox.addEventListener('change', updateSceneVisibility);
+                updateSceneVisibility();
+            }
+        });
+        </script>
     <script>
     // Copy sample function with tooltip feedback
     window.copySample = function(sampleKey, type) {
