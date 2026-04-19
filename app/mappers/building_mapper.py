@@ -1,3 +1,10 @@
+def quantize_z(value: float) -> int:
+    """Quantize a z-axis value (elevation or height) to integer using SCALE."""
+    return int(round(value * SCALE))
+
+def unquantize_z(value: int) -> float:
+    """Convert quantized z-axis value back to float."""
+    return value / SCALE
 from shapely.geometry import Polygon
 from typing import List, Tuple
 
@@ -14,10 +21,9 @@ from app.models.clash_detection_response import (
     ClashProperties,
     ClashResultFeatureCollection,
 )
-from app.models.job_status import JobStatus
 
-#todo: move this out later
-SCALE = 10**6
+from app.models.job_status import JobStatus
+from app.core.constants import SCALE
 
 
 def map_coordinate_to_canonical(coord: tuple[float, float]) -> tuple[int, int]:
@@ -36,9 +42,12 @@ def map_polygon_to_canonical(geometry: PolygonGeometry) -> CanonicalPolygon:
 
 def map_building_to_canonical(building: GeoJSONFeature) -> CanonicalBuilding:
     """Map incoming building data to canonical format."""
+    # Quantize elevation and height for canonical representation
+    elevation_q = quantize_z(building.properties.elevation)
+    height_q = quantize_z(building.properties.height)
     return CanonicalBuilding(
-        elevation=building.properties.elevation,
-        height=building.properties.height,
+        elevation=elevation_q,
+        height=height_q,
         base=map_polygon_to_canonical(building.geometry),
     )
 
@@ -82,8 +91,13 @@ def map_collisions_to_response(
         ClashDetectionResponse containing GeoJSON FeatureCollection of clashes.
     """
 
+
     def _unquantize_coords(coords):
         return [(x / SCALE, y / SCALE) for x, y in coords]
+
+    def _unquantize_z(z):
+        return unquantize_z(z)
+
 
     clash_features: List[ClashFeature] = []
     for c, b in zip(collisions, buildings):
@@ -92,9 +106,9 @@ def map_collisions_to_response(
             ClashFeature(
                 type="Feature",
                 properties=ClashProperties(
-                    elevation=c.intersection.elevation,
-                    height=c.intersection.height,
-                    buildings= b,
+                    elevation=_unquantize_z(c.intersection.elevation),
+                    height=_unquantize_z(c.intersection.height),
+                    buildings=b,
                 ),
                 geometry=PolygonGeometry(
                     type="Polygon",
