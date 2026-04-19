@@ -32,15 +32,15 @@ async def claim_job(job_id: str, ttl: int = None) -> bool:
     return await client.set(f"job:{job_id}:status", "processing", nx=True, ex=ttl)
 
 
-async def set_original_ids(job_id: str, original_ids: list, ttl: int = None) -> None:
-    """Store the mapping of canonical building indices to original feature IDs."""
+async def set_canonical_building_names(job_id: str, building_names: list, ttl: int = None) -> None:
+    """Store the building names in canonical building order for a job."""
     client = await get_redis()
     ttl = ttl or settings.CACHE_TTL
-    await client.setex(f"job:{job_id}:mapping", ttl, json.dumps(original_ids))
+    await client.setex(f"job:{job_id}:mapping", ttl, json.dumps(building_names))
 
 
-async def get_original_ids(job_id: str) -> Optional[list]:
-    """Retrieve the original feature ID mapping for a job."""
+async def get_canonical_building_names(job_id: str) -> Optional[list]:
+    """Retrieve the building names in canonical building order for a job."""
     client = await get_redis()
     val = await client.get(f"job:{job_id}:mapping")
     return json.loads(val) if val else None

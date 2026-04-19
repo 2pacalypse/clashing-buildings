@@ -2,7 +2,7 @@
 import json
 from app.exceptions import JobNotFoundError
 from app.services.clash_cache import (
-    get_clash_results, set_clash_results, claim_job, set_original_ids, get_original_ids, job_exists
+    get_clash_results, set_clash_results, claim_job, set_canonical_building_names, get_canonical_building_names, job_exists
 )
 from tasks.celery_worker import celery_app
 from app.mappers.building_mapper import map_request_to_canonical, map_collisions_to_response
@@ -54,8 +54,8 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
 
         # Store both results and mapping for consistency with async path
         await set_clash_results(job_id, collisions)
-        original_ids = [request.features[idx].id for idx in original_indices]
-        await set_original_ids(job_id, original_ids)
+        building_names = [request.features[idx].id for idx in original_indices]
+        await set_canonical_building_names(job_id, building_names)
 
         # Step 2: Convert collisions to GeoJSON output via mapper
         return map_collisions_to_response(
@@ -76,8 +76,8 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
         )
 
      # we claimed it: store canonical->original id mapping for later mapping
-    original_ids = [request.features[idx].id for idx in original_indices]
-    await set_original_ids(job_id, original_ids)
+    building_names = [request.features[idx].id for idx in original_indices]
+    await set_canonical_building_names(job_id, building_names)
 
     # dispatch Celery task (pass serializable canonical dump + job_id)
     building_dump = building_set.model_dump()
@@ -92,8 +92,8 @@ async def get_results(job_id: str) -> ClashDetectionResponse:
     # Check if results are cached
     cached = await get_clash_results(job_id)
     if cached is not None:
-        original_ids = await get_original_ids(job_id)
-        buildings = [[original_ids[i] for i in c.building_ids] for c in cached]
+        building_names = await get_canonical_building_names(job_id)
+        buildings = [[building_names[i] for i in c.building_ids] for c in cached]
         return map_collisions_to_response(collisions=cached, buildings=buildings, job_id=job_id)
 
     # Check if job exists (was ever claimed/submitted)
