@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { sampleInputOne, sampleInputTwo, samples } from './data.js';
+import { postInputToServer } from './endpoints.js';
 
 // Copy icon (emoji)
 const copyIconSvg = '📋';
@@ -554,29 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLegendVisibility();
 });
 
-// POST GeoJSON to backend clash detection endpoint.
-// Not wired to UI yet — call `postInputToServer(geojson)` when ready.
-async function postInputToServer(geojson) {
-    const url = '/api/v1/detect-clashes';
-    try {
-        const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(geojson)
-        });
-
-        if (!resp.ok) {
-            const text = await resp.text();
-            throw new Error(`Server responded ${resp.status}: ${text}`);
-        }
-
-        const data = await resp.json();
-        return data; // Caller handles the response
-    } catch (err) {
-        console.error('postInputToServer error:', err);
-        throw err;
-    }
-}
+// `postInputToServer` is provided by ./endpoints.js
 
 // Expose samples object to the global window so inline scripts can access it
 window.samples = samples;
