@@ -10,6 +10,373 @@ from app.models.canonical import (
 
 
 class TestDetectClashes:
+    def test_two_buildings_100000_vertices(self):
+        """Test with 2 buildings, each with 100,000 vertices (very large polygons)."""
+        import math
+        def make_circle_polygon(center_x, center_y, radius, num_vertices):
+            return [
+                (
+                    center_x + radius * math.cos(2 * math.pi * i / num_vertices),
+                    center_y + radius * math.sin(2 * math.pi * i / num_vertices)
+                )
+                for i in range(num_vertices)
+            ]
+
+        num_vertices = 100000
+        poly1 = Polygon(make_circle_polygon(0, 0, 10, num_vertices))
+        poly2 = Polygon(make_circle_polygon(5, 0, 10, num_vertices))
+        building1 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly1)
+        )
+        building2 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly2)
+        )
+        building_set = CanonicalBuildingSet(buildings=(building1, building2))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 1
+        assert not clashes[0].intersection.base.polygon.is_empty
+
+    def test_two_buildings_200000_vertices(self):
+        """Test with 2 buildings, each with 200,000 vertices (very large polygons)."""
+        import math
+        def make_circle_polygon(center_x, center_y, radius, num_vertices):
+            return [
+                (
+                    center_x + radius * math.cos(2 * math.pi * i / num_vertices),
+                    center_y + radius * math.sin(2 * math.pi * i / num_vertices)
+                )
+                for i in range(num_vertices)
+            ]
+
+        num_vertices = 200000
+        poly1 = Polygon(make_circle_polygon(0, 0, 10, num_vertices))
+        poly2 = Polygon(make_circle_polygon(5, 0, 10, num_vertices))
+        building1 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly1)
+        )
+        building2 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly2)
+        )
+        building_set = CanonicalBuildingSet(buildings=(building1, building2))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 1
+        assert not clashes[0].intersection.base.polygon.is_empty
+
+    def test_two_buildings_300000_vertices(self):
+        """Test with 2 buildings, each with 300,000 vertices (very large polygons)."""
+        import math
+        def make_circle_polygon(center_x, center_y, radius, num_vertices):
+            return [
+                (
+                    center_x + radius * math.cos(2 * math.pi * i / num_vertices),
+                    center_y + radius * math.sin(2 * math.pi * i / num_vertices)
+                )
+                for i in range(num_vertices)
+            ]
+
+        num_vertices = 300000
+        poly1 = Polygon(make_circle_polygon(0, 0, 10, num_vertices))
+        poly2 = Polygon(make_circle_polygon(5, 0, 10, num_vertices))
+        building1 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly1)
+        )
+        building2 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly2)
+        )
+        building_set = CanonicalBuildingSet(buildings=(building1, building2))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 1
+        assert not clashes[0].intersection.base.polygon.is_empty
+
+    def test_two_buildings_400000_vertices(self):
+        """Test with 2 buildings, each with 400,000 vertices (very large polygons)."""
+        import math
+        def make_circle_polygon(center_x, center_y, radius, num_vertices):
+            return [
+                (
+                    center_x + radius * math.cos(2 * math.pi * i / num_vertices),
+                    center_y + radius * math.sin(2 * math.pi * i / num_vertices)
+                )
+                for i in range(num_vertices)
+            ]
+
+        num_vertices = 400000
+        poly1 = Polygon(make_circle_polygon(0, 0, 10, num_vertices))
+        poly2 = Polygon(make_circle_polygon(5, 0, 10, num_vertices))
+        building1 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly1)
+        )
+        building2 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly2)
+        )
+        building_set = CanonicalBuildingSet(buildings=(building1, building2))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 1
+        assert not clashes[0].intersection.base.polygon.is_empty
+
+    def test_two_buildings_500000_vertices(self):
+        """Test with 2 buildings, each with 500,000 vertices (very large polygons)."""
+        import math
+        def make_circle_polygon(center_x, center_y, radius, num_vertices):
+            return [
+                (
+                    center_x + radius * math.cos(2 * math.pi * i / num_vertices),
+                    center_y + radius * math.sin(2 * math.pi * i / num_vertices)
+                )
+                for i in range(num_vertices)
+            ]
+
+        num_vertices = 500000
+        poly1 = Polygon(make_circle_polygon(0, 0, 10, num_vertices))
+        poly2 = Polygon(make_circle_polygon(5, 0, 10, num_vertices))
+        building1 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly1)
+        )
+        building2 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly2)
+        )
+        building_set = CanonicalBuildingSet(buildings=(building1, building2))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 1
+        assert not clashes[0].intersection.base.polygon.is_empty
+    def test_two_buildings_10000_vertices(self):
+        """Test with 2 buildings, each with 10,000 vertices (large polygons)."""
+        import math
+        def make_circle_polygon(center_x, center_y, radius, num_vertices):
+            return [
+                (
+                    center_x + radius * math.cos(2 * math.pi * i / num_vertices),
+                    center_y + radius * math.sin(2 * math.pi * i / num_vertices)
+                )
+                for i in range(num_vertices)
+            ]
+
+        num_vertices = 10000
+        poly1 = Polygon(make_circle_polygon(0, 0, 10, num_vertices))
+        poly2 = Polygon(make_circle_polygon(5, 0, 10, num_vertices))
+        building1 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly1)
+        )
+        building2 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly2)
+        )
+        building_set = CanonicalBuildingSet(buildings=(building1, building2))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 1
+        assert not clashes[0].intersection.base.polygon.is_empty
+
+    def test_two_buildings_20000_vertices(self):
+        """Test with 2 buildings, each with 20,000 vertices (very large polygons)."""
+        import math
+        def make_circle_polygon(center_x, center_y, radius, num_vertices):
+            return [
+                (
+                    center_x + radius * math.cos(2 * math.pi * i / num_vertices),
+                    center_y + radius * math.sin(2 * math.pi * i / num_vertices)
+                )
+                for i in range(num_vertices)
+            ]
+
+        num_vertices = 20000
+        poly1 = Polygon(make_circle_polygon(0, 0, 10, num_vertices))
+        poly2 = Polygon(make_circle_polygon(5, 0, 10, num_vertices))
+        building1 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly1)
+        )
+        building2 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly2)
+        )
+        building_set = CanonicalBuildingSet(buildings=(building1, building2))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 1
+        assert not clashes[0].intersection.base.polygon.is_empty
+
+    def test_two_buildings_30000_vertices(self):
+        """Test with 2 buildings, each with 30,000 vertices (extremely large polygons)."""
+        import math
+        def make_circle_polygon(center_x, center_y, radius, num_vertices):
+            return [
+                (
+                    center_x + radius * math.cos(2 * math.pi * i / num_vertices),
+                    center_y + radius * math.sin(2 * math.pi * i / num_vertices)
+                )
+                for i in range(num_vertices)
+            ]
+
+        num_vertices = 30000
+        poly1 = Polygon(make_circle_polygon(0, 0, 10, num_vertices))
+        poly2 = Polygon(make_circle_polygon(5, 0, 10, num_vertices))
+        building1 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly1)
+        )
+        building2 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly2)
+        )
+        building_set = CanonicalBuildingSet(buildings=(building1, building2))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 1
+        assert not clashes[0].intersection.base.polygon.is_empty
+    def test_two_buildings_many_vertices(self):
+        """Test with 2 buildings, each with 5000 vertices (large polygons)."""
+        import math
+        def make_circle_polygon(center_x, center_y, radius, num_vertices):
+            return [
+                (
+                    center_x + radius * math.cos(2 * math.pi * i / num_vertices),
+                    center_y + radius * math.sin(2 * math.pi * i / num_vertices)
+                )
+                for i in range(num_vertices)
+            ]
+
+        num_vertices = 5000
+        poly1 = Polygon(make_circle_polygon(0, 0, 10, num_vertices))
+        poly2 = Polygon(make_circle_polygon(5, 0, 10, num_vertices))  # Overlapping circles
+        building1 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly1)
+        )
+        building2 = CanonicalBuilding(
+            elevation=0,
+            height=10,
+            base=CanonicalPolygon(polygon=poly2)
+        )
+        building_set = CanonicalBuildingSet(buildings=(building1, building2))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 1
+        # The intersection should not be empty and should be a polygon
+        assert not clashes[0].intersection.base.polygon.is_empty
+
+    def test_200_fully_overlapping_buildings(self):
+        """Test with 200 fully overlapping buildings (should be slow, many clashes)."""
+        buildings = [
+            CanonicalBuilding(
+                elevation=0,
+                height=10,
+                base=CanonicalPolygon(polygon=Polygon([
+                    (0, 0), (10, 0), (10, 10), (0, 10)
+                ]))
+            )
+            for _ in range(200)
+        ]
+        building_set = CanonicalBuildingSet(buildings=tuple(buildings))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 19900  # 200*199/2
+
+    def test_300_fully_overlapping_buildings(self):
+        """Test with 300 fully overlapping buildings (should be slow, many clashes)."""
+        buildings = [
+            CanonicalBuilding(
+                elevation=0,
+                height=10,
+                base=CanonicalPolygon(polygon=Polygon([
+                    (0, 0), (10, 0), (10, 10), (0, 10)
+                ]))
+            )
+            for _ in range(300)
+        ]
+        building_set = CanonicalBuildingSet(buildings=tuple(buildings))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 44850  # 300*299/2
+
+    def test_400_fully_overlapping_buildings(self):
+        """Test with 400 fully overlapping buildings (should be slow, many clashes)."""
+        buildings = [
+            CanonicalBuilding(
+                elevation=0,
+                height=10,
+                base=CanonicalPolygon(polygon=Polygon([
+                    (0, 0), (10, 0), (10, 10), (0, 10)
+                ]))
+            )
+            for _ in range(400)
+        ]
+        building_set = CanonicalBuildingSet(buildings=tuple(buildings))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 79800  # 400*399/2
+
+    def test_500_fully_overlapping_buildings(self):
+        """Test with 500 fully overlapping buildings (should be slow, many clashes)."""
+        buildings = [
+            CanonicalBuilding(
+                elevation=0,
+                height=10,
+                base=CanonicalPolygon(polygon=Polygon([
+                    (0, 0), (10, 0), (10, 10), (0, 10)
+                ]))
+            )
+            for _ in range(500)
+        ]
+        building_set = CanonicalBuildingSet(buildings=tuple(buildings))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 124750  # 500*499/2
+    def test_many_non_overlapping_buildings(self):
+        """Test with 100 non-overlapping buildings (should be slow, no clashes)."""
+        buildings = []
+        for i in range(100):
+            offset = i * 20
+            buildings.append(
+                CanonicalBuilding(
+                    elevation=0,
+                    height=10,
+                    base=CanonicalPolygon(polygon=Polygon([
+                        (offset, 0), (offset + 10, 0), (offset + 10, 10), (offset, 10)
+                    ]))
+                )
+            )
+        building_set = CanonicalBuildingSet(buildings=tuple(buildings))
+        clashes = detect_clashes(building_set)
+        assert len(clashes) == 0
+
+    def test_many_overlapping_buildings(self):
+        """Test with 100 fully overlapping buildings (should be slow, many clashes)."""
+        buildings = []
+        for i in range(100):
+            buildings.append(
+                CanonicalBuilding(
+                    elevation=0,
+                    height=10,
+                    base=CanonicalPolygon(polygon=Polygon([
+                        (0, 0), (10, 0), (10, 10), (0, 10)
+                    ]))
+                )
+            )
+        building_set = CanonicalBuildingSet(buildings=tuple(buildings))
+        clashes = detect_clashes(building_set)
+        # Number of unique pairs: n * (n-1) / 2
+        assert len(clashes) == 4950
     """Unit tests for the detect_clashes method."""
 
     def test_no_clashes_non_overlapping_buildings(self):
