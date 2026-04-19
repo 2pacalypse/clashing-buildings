@@ -20,3 +20,21 @@ export async function postInputToServer(geojson) {
         throw err;
     }
 }
+
+export async function getResults(jobId) {
+    const url = `/api/v1/results/${jobId}`;
+    try {
+        const resp = await fetch(url);
+
+        if (!resp.ok) {
+            const text = await resp.text();
+            throw new Error(`Server responded ${resp.status}: ${text}`);
+        }
+
+        const data = await resp.json();
+        return data;
+    } catch (err) {
+        console.error('getResults error:', err);
+        throw err;
+    }
+}

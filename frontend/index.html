@@ -6,6 +6,26 @@
     <title>Building Clashes 3D Visualizer</title>
     <link rel="stylesheet" href="styles.css">
     
+    <style>
+        /* Hourglass shake/vibration animation during polling */
+        @keyframes shake-hourglass {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+        
+        .sample-btn.polling {
+            animation: shake-hourglass 0.4s linear infinite;
+            opacity: 0.6;
+            background-color: rgba(100, 100, 100, 0.3);
+            cursor: not-allowed;
+        }
+        
+        .sample-btn.polling:disabled {
+            color: #999;
+        }
+    </style>
+    
     <script type="importmap">
     {
         "imports": {

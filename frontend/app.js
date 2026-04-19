@@ -1,9 +1,108 @@
 import { sampleInputOne, sampleInputTwo, samples, test100Buildings, test200Buildings, test300Buildings, test400Buildings, test500Buildings, test600Buildings } from './data.js';
-import { postInputToServer } from './endpoints.js';
+import { postInputToServer, getResults } from './endpoints.js';
 import { init as initScene, loadSample, clearScene, renderGeoJSON, renderAllSelectedSamples, resetCamera, topDownView, sideView, clearSelection } from './scene.js';
 
 // Copy icon (emoji)
 const copyIconSvg = '📋';
+
+// Track active polling intervals to cancel them if needed
+const activePolls = new Map();
+
+// Expose scene controls imported from `scene.js`
+window.loadSample = loadSample;
+window.clearInput = function() {
+    document.querySelectorAll('.sample-btn').forEach(btn => btn.classList.remove('active'));
+    clearSelection();
+    const legend = document.getElementById('legend');
+    if (legend) legend.innerHTML = '';
+};
+window.resetCamera = resetCamera;
+window.topDownView = topDownView;
+window.sideView = sideView;
+
+// Poll for job results with animated hourglass feedback
+async function pollForResults(jobId, outBtn, outKey, outCopyField, requestStartTime) {
+    let pollCount = 0;
+    const maxPolls = 600; // Max 5 minutes of polling (600 * 500ms)
+    const outputIndex = outKey.match(/\d+/)?.[0] || '';
+
+    const pollInterval = setInterval(async () => {
+        pollCount++;
+
+        // Stop polling if max attempts reached
+        if (pollCount > maxPolls) {
+            clearInterval(pollInterval);
+            if (outBtn && outBtn.dataset.displayInterval) {
+                clearInterval(parseInt(outBtn.dataset.displayInterval));
+            }
+            activePolls.delete(jobId);
+            if (outBtn) {
+                outBtn.disabled = false;
+                outBtn.classList.remove('polling');
+                outBtn.textContent = `⏱️ Sample Output ${outputIndex} (timeout)`;
+            }
+            return;
+        }
+
+        try {
+            const result = await getResults(jobId);
+            const status = result.status || (result.result ? 'completed' : 'pending');
+
+            if (status === 'completed' && result.result) {
+                // Job completed - stop polling and update UI
+                clearInterval(pollInterval);
+                if (outBtn && outBtn.dataset.displayInterval) {
+                    clearInterval(parseInt(outBtn.dataset.displayInterval));
+                }
+                activePolls.delete(jobId);
+
+                samples[outKey] = result.result;
+                if (outCopyField) outCopyField.value = JSON.stringify(result.result);
+
+                if (outBtn) {
+                    const elapsedMs = Date.now() - requestStartTime;
+                    const elapsedSeconds = (elapsedMs / 1000).toFixed(2);
+
+                    outBtn.disabled = false;
+                    outBtn.classList.remove('polling');
+                    outBtn.classList.remove('status-pending', 'status-processing');
+                    outBtn.classList.add('status-completed', 'ready');
+                    outBtn.innerHTML = `✅ Sample Output ${outputIndex} (${elapsedSeconds}s)`;
+                    outBtn.title = `Job ${jobId} — completed in ${elapsedSeconds}s`;
+                    outBtn.style.opacity = '';
+                    outBtn.style.backgroundColor = '';
+                    outBtn.style.color = '';
+                    delete outBtn.dataset.displayInterval;
+                }
+            } else if (status === 'failed') {
+                // Job failed - stop polling and show error
+                clearInterval(pollInterval);
+                if (outBtn && outBtn.dataset.displayInterval) {
+                    clearInterval(parseInt(outBtn.dataset.displayInterval));
+                }
+                activePolls.delete(jobId);
+
+                if (outBtn) {
+                    outBtn.disabled = false;
+                    outBtn.classList.remove('polling');
+                    outBtn.classList.remove('status-pending', 'status-processing');
+                    outBtn.classList.add('status-failed');
+                    outBtn.innerHTML = `❌ Sample Output ${outputIndex}`;
+                    outBtn.title = `Job ${jobId} — failed`;
+                    outBtn.style.opacity = '';
+                    outBtn.style.backgroundColor = '';
+                    outBtn.style.color = '';
+                    delete outBtn.dataset.displayInterval;
+                }
+            }
+        } catch (err) {
+            console.error('Error polling for results:', err);
+            // Continue polling on error
+        }
+    }, 500);
+
+    activePolls.set(jobId, pollInterval);
+}
 
 // Expose scene controls imported from `scene.js`
 window.loadSample = loadSample;
@@ -126,6 +225,30 @@ window.sendInputFromForm = async function() {
         console.error('Failed to register new sample:', e);
     }
 
+    // Capture request start time BEFORE making the POST request
+    const requestStartTime = Date.now();
+
+    // Show the timer immediately when Send is clicked
+    if (outBtn) {
+        outBtn.disabled = true;
+        outBtn.classList.add('polling');
+        outBtn.innerHTML = `⏳ Sample Output ${nextIndex} (0.00s)`;
+        
+        // Start display timer to show elapsed time
+        const displayInterval = setInterval(() => {
+            if (!outBtn || !outBtn.classList.contains('polling')) {
+                clearInterval(displayInterval);
+                return;
+            }
+            const elapsedMs = Date.now() - requestStartTime;
+            const elapsedSeconds = (elapsedMs / 1000).toFixed(2);
+            outBtn.innerHTML = `⏳ Sample Output ${nextIndex} (${elapsedSeconds}s)`;
+        }, 100);
+        
+        // Store the display interval so it can be cleared later
+        outBtn.dataset.displayInterval = displayInterval;
+    }
+
     // Send to backend (fire-and-log). Update status UI with result.
     if (window.postInputToServer) {
         try {
@@ -136,6 +259,7 @@ window.sendInputFromForm = async function() {
                 if (resp && outKey) {
                     const status = resp.status || (resp.result ? 'completed' : (resp.job_id ? 'processing' : 'failed'));
                     const icon = statusIconFor(status);
+                    
                     if (resp.result) {
                         samples[outKey] = resp.result;
                         // Update the copy field for the output sample if present
@@ -150,8 +274,45 @@ window.sendInputFromForm = async function() {
                         outBtn.classList.remove('status-pending','status-processing','status-completed','status-failed','ready');
                         outBtn.classList.add(`status-${status}`);
                         if (status === 'completed' && resp.result) outBtn.classList.add('ready');
-                        outBtn.innerHTML = `${icon} Sample Output ${nextIndex}`;
+                        
+                        // Calculate elapsed time from POST request start to now
+                        const elapsedMs = Date.now() - requestStartTime;
+                        const elapsedSeconds = (elapsedMs / 1000).toFixed(2);
+                        
+                        // Handle different status outcomes
+                        if (status === 'pending' || status === 'processing') {
+                            // Already showing timer from before POST, just update status for styling
+                            // Timer will continue running via the displayInterval set earlier
+                        } else if (status === 'completed' && resp.result) {
+                            // Immediate result - stop the timer and show final time with checkmark
+                            if (outBtn.dataset.displayInterval) {
+                                clearInterval(parseInt(outBtn.dataset.displayInterval));
+                                delete outBtn.dataset.displayInterval;
+                            }
+                            outBtn.classList.remove('polling');
+                            outBtn.disabled = false;
+                            outBtn.innerHTML = `✅ Sample Output ${nextIndex} (${elapsedSeconds}s)`;
+                        } else {
+                            // Failed or other status - stop timer
+                            if (outBtn.dataset.displayInterval) {
+                                clearInterval(parseInt(outBtn.dataset.displayInterval));
+                                delete outBtn.dataset.displayInterval;
+                            }
+                            outBtn.classList.remove('polling');
+                            outBtn.disabled = false;
+                            outBtn.innerHTML = `${icon} Sample Output ${nextIndex}`;
+                        }
                         outBtn.title = resp.job_id ? `Job ${resp.job_id} — ${status}` : `${status}`;
+                    }
+
+                    // Start polling if job is pending or processing
+                    if ((status === 'pending' || status === 'processing') && resp.job_id) {
+                        if (outBtn) {
+                            outBtn.disabled = true;
+                            outBtn.classList.add('polling');
+                        }
+                        const outCopyField = document.getElementById('copy-input-' + outKey);
+                        pollForResults(resp.job_id, outBtn, outKey, outCopyField, requestStartTime);
                     }
                 }
             } catch (e) {
