@@ -9,23 +9,22 @@ function randomBuildingNames(sampleKey) {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         const total = Math.pow(chars.length, 4);
         if (n > total) {
-            alert('Too many buildings for unique 4-letter names!');
+            alert('Too many buildings for unique 4-letter ids!');
             return;
         }
-        // Generate a set of unique random names
-        const namesSet = new Set();
-        while (namesSet.size < n) {
-            let name = '';
+        // Generate a set of unique random ids
+        const idsSet = new Set();
+        while (idsSet.size < n) {
+            let id = '';
             for (let i = 0; i < 4; i++) {
-                name += chars[Math.floor(Math.random() * chars.length)];
+                id += chars[Math.floor(Math.random() * chars.length)];
             }
-            namesSet.add(name);
+            idsSet.add(id);
         }
-        const names = Array.from(namesSet);
-        // Assign names to features
+        const ids = Array.from(idsSet);
+        // Assign ids to features
         updated.features.forEach((f, i) => {
-            if (!f.properties) f.properties = {};
-            f.properties.name = names[i];
+            f.id = ids[i];
         });
     }
     window.samples[sampleKey] = updated;
