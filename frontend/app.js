@@ -188,7 +188,7 @@ window.incrementHeights = function(sampleKey) {
         }, 1200);
     }
 };
-import { sampleInputOne, sampleInputTwo, samples, test100Buildings, test200Buildings, test300Buildings, test400Buildings, test500Buildings, test600Buildings, test1000Buildings, test1500Buildings } from './data.js';
+import { sampleInputOne, sampleInputTwo, samples, test100Buildings, test200Buildings, test300Buildings, test400Buildings, test500Buildings, test600Buildings, test1000Buildings, test1500Buildings, test3000Buildings } from './data.js';
 import { postInputToServer, getResults } from './endpoints.js';
 import { init as initScene, loadSample, clearScene, renderGeoJSON, renderAllSelectedSamples, resetCamera, topDownView, sideView, clearSelection } from './scene.js';
 
@@ -537,14 +537,15 @@ document.addEventListener('DOMContentLoaded', () => {
 window.samples = samples;
 
 // Add ready inputs aliases for quick-loading/copying (placeholder -> sampleInputOne)
-samples.ready_XXS = test100Buildings;
-samples.ready_XS = test200Buildings;
-samples.ready_S = test300Buildings;
-samples.ready_M = test400Buildings;
-samples.ready_L = test500Buildings;
-samples.ready_XL = test600Buildings;
-samples.ready_XXL = test1000Buildings;
-samples.ready_XXXL = test1500Buildings;
+samples.ready_XXXS = test100Buildings;
+samples.ready_XXS = test200Buildings;
+samples.ready_XS = test300Buildings;
+samples.ready_S = test400Buildings;
+samples.ready_M = test500Buildings;
+samples.ready_L = test600Buildings;
+samples.ready_XL = test1000Buildings;
+samples.ready_XXL = test1500Buildings;
+samples.ready_XXXL = test3000Buildings;
 
 // Populate any existing copy fields after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {

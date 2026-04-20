@@ -160,14 +160,15 @@
                 <h2>Ready Inputs</h2>
                 <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Select a size, then use the actions below.</p>
                 <div class="sample-row" id="ready-size-btn-row" style="margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
-                    <button class="sample-btn" data-sample="ready_XXS" onclick="selectReadySample('ready_XXS')">XXS (100)</button>
-                    <button class="sample-btn" data-sample="ready_XS" onclick="selectReadySample('ready_XS')">XS (200)</button>
-                    <button class="sample-btn" data-sample="ready_S" onclick="selectReadySample('ready_S')">S (300)</button>
-                    <button class="sample-btn" data-sample="ready_M" onclick="selectReadySample('ready_M')">M (400)</button>
-                    <button class="sample-btn" data-sample="ready_L" onclick="selectReadySample('ready_L')">L (500)</button>
-                    <button class="sample-btn" data-sample="ready_XL" onclick="selectReadySample('ready_XL')">XL (600)</button>
-                    <button class="sample-btn" data-sample="ready_XXL" onclick="selectReadySample('ready_XXL')">XXL (1000)</button>
-                    <button class="sample-btn" data-sample="ready_XXXL" onclick="selectReadySample('ready_XXXL')">XXXL (1500)</button>
+                    <button class="sample-btn" data-sample="ready_XXXS" onclick="selectReadySample('ready_XXXS')">XXXS (100)</button>
+                    <button class="sample-btn" data-sample="ready_XXS" onclick="selectReadySample('ready_XXS')">XXS (200)</button>
+                    <button class="sample-btn" data-sample="ready_XS" onclick="selectReadySample('ready_XS')">XS (300)</button>
+                    <button class="sample-btn" data-sample="ready_S" onclick="selectReadySample('ready_S')">S (400)</button>
+                    <button class="sample-btn" data-sample="ready_M" onclick="selectReadySample('ready_M')">M (500)</button>
+                    <button class="sample-btn" data-sample="ready_L" onclick="selectReadySample('ready_L')">L (600)</button>
+                    <button class="sample-btn" data-sample="ready_XL" onclick="selectReadySample('ready_XL')">XL (1000)</button>
+                    <button class="sample-btn" data-sample="ready_XXL" onclick="selectReadySample('ready_XXL')">XXL (1500)</button>
+                    <button class="sample-btn" data-sample="ready_XXXL" onclick="selectReadySample('ready_XXXL')">XXXL (3000)</button>
                 </div>
                 <div id="ready-actions">
                     <div class="copy-row" style="margin-bottom: 8px;">
@@ -211,7 +212,15 @@
     // Helper to get label from key
     function btnLabelFromKey(key) {
         const map = {
-            'ready_XXS': 'XXS', 'ready_XS': 'XS', 'ready_S': 'S', 'ready_M': 'M', 'ready_L': 'L', 'ready_XL': 'XL', 'ready_XXL': 'XXL', 'ready_XXXL': 'XXXL'
+            'ready_XXXS': 'XXXS',
+            'ready_XXS': 'XXS',
+            'ready_XS': 'XS',
+            'ready_S': 'S',
+            'ready_M': 'M',
+            'ready_L': 'L',
+            'ready_XL': 'XL',
+            'ready_XXL': 'XXL',
+            'ready_XXXL': 'XXXL'
         };
         return map[key] || key;
     }
@@ -237,9 +246,9 @@
 
     // Action handlers for single ready input
     document.addEventListener('DOMContentLoaded', function() {
-                // On load, select the smallest ready input (ready_XXS) by default
-                if (window.samples && window.samples['ready_XXS']) {
-                    window.selectReadySample('ready_XXS');
+                // On load, select the smallest ready input (ready_XXXS) by default
+                if (window.samples && window.samples['ready_XXXS']) {
+                    window.selectReadySample('ready_XXXS');
                 }
         // Copy
         document.getElementById('copy-btn-ready-single').onclick = function() {
