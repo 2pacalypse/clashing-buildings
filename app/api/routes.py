@@ -11,7 +11,11 @@ router = APIRouter()
 async def detect_clashes_endpoint(request: ClashDetectionRequest):
     return await clash_service.process_clash_detection(request)
 
-@router.get("/results/{job_id}", response_model=ClashDetectionResponse)
+@router.get(
+    "/results/{job_id}",
+    response_model=ClashDetectionResponse,
+    responses={404: {"description": "Job not found"}}
+)
 async def get_results(job_id: str):
     try:
         return await clash_service.get_results(job_id)
