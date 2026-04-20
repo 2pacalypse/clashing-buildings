@@ -11,8 +11,8 @@ router = APIRouter()
     "/detect-clashes",
     response_model=ClashDetectionResponse,
     responses={
-        400: {"model": ErrorResponse, "description": "Complexity limit exceeded"},
-        422: {"model": ErrorResponse, "description": "Request validation failed"}
+        400: {"model": ErrorResponse, "description": "Bad Request - code: COMPLEXITY_LIMIT_EXCEEDED"},
+        422: {"model": ErrorResponse, "description": "Unprocessable Entity - code: VALIDATION_ERROR"}
     }
 )
 async def detect_clashes_endpoint(request: ClashDetectionRequest):
@@ -22,8 +22,8 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
     "/results/{job_id}",
     response_model=ClashDetectionResponse,
     responses={
-        404: {"model": ErrorResponse, "description": "Job not found"},
-        422: {"model": ErrorResponse, "description": "Request validation failed"}
+        404: {"model": ErrorResponse, "description": "Not Found - code: JOB_NOT_FOUND"},
+        422: {"model": ErrorResponse, "description": "Unprocessable Entity - code: VALIDATION_ERROR"}
     }
 )
 async def get_results(job_id: str):
