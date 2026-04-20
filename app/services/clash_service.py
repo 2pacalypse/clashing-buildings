@@ -1,5 +1,6 @@
 
-from app.exceptions import JobNotFoundError, ComplexityLimitExceededError
+from app.exceptions import AppException
+from app.core.error_codes import JOB_NOT_FOUND_CODE, COMPLEXITY_LIMIT_EXCEEDED_CODE
 from app.services.clash_cache import (
     get_clash_results, set_clash_results, claim_job, set_canonical_building_names, get_canonical_building_names, job_exists
 )
@@ -32,8 +33,12 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
     n_vertices = sum(len(b.base.polygon.exterior.coords) for b in building_set.buildings)
     complexity = n_buildings * n_vertices
     if complexity > MAX_CLASH_COMPLEXITY_THRESHOLD:
-        raise ComplexityLimitExceededError(
-            f"Complexity ({complexity}) exceeds the maximum allowed threshold ({MAX_CLASH_COMPLEXITY_THRESHOLD}). Reduce the number of buildings or vertices.")
+        raise AppException(
+            code=COMPLEXITY_LIMIT_EXCEEDED_CODE,
+            message=f"Complexity ({complexity}) exceeds the maximum allowed threshold ({MAX_CLASH_COMPLEXITY_THRESHOLD})",
+            details={"complexity": complexity, "max_threshold": MAX_CLASH_COMPLEXITY_THRESHOLD},
+            status_code=400
+        )
     suitable_for_sync_process = complexity <= SYNC_CLASH_COMPLEXITY_THRESHOLD
 
     if cached_collisions is not None:
@@ -100,7 +105,12 @@ async def get_results(job_id: str) -> ClashDetectionResponse:
     # Check if job exists (was ever claimed/submitted)
     exists = await job_exists(job_id)
     if not exists:
-        raise JobNotFoundError(f"Job {job_id} not found")
+        raise AppException(
+            code=JOB_NOT_FOUND_CODE,
+            message="Job not found",
+            details={"job_id": job_id},
+            status_code=404
+        )
 
     # Results not cached yet — job is still queued/processing
     return ClashDetectionResponse(job_id=job_id, status=JobStatus.PENDING, result=None)

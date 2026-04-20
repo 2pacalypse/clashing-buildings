@@ -1,12 +1,20 @@
 """Application-wide exceptions."""
 
+from typing import Optional, Dict, Any
 
 
-class JobNotFoundError(Exception):
-    """Raised when a job ID does not exist."""
-    pass
-
-
-class ComplexityLimitExceededError(Exception):
-    """Raised when the complexity of the request exceeds the allowed threshold (e.g., too many buildings or vertices)."""
-    pass
+class AppException(Exception):
+    """Base exception for all application errors."""
+    
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        details: Optional[Dict[str, Any]] = None,
+        status_code: int = 500
+    ):
+        self.code = code
+        self.message = message
+        self.details = details or {}
+        self.status_code = status_code
+        super().__init__(self.message)
