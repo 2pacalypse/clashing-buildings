@@ -498,6 +498,19 @@ window.sendInputFromForm = async function() {
             if (statusEl) { statusEl.textContent = ''; }
         } catch (err) {
             console.error('Failed to POST input to server:', err);
+            // Handle error responses - stop timer and show error in button
+            if (outBtn) {
+                if (outBtn.dataset.displayInterval) {
+                    clearInterval(parseInt(outBtn.dataset.displayInterval));
+                    delete outBtn.dataset.displayInterval;
+                }
+                outBtn.classList.remove('polling');
+                outBtn.disabled = false;
+                outBtn.classList.remove('status-pending', 'status-processing', 'status-completed', 'status-failed', 'ready');
+                outBtn.classList.add('status-failed');
+                outBtn.innerHTML = `❌ Output ${idx}`;
+                outBtn.title = err.message || 'Request failed';
+            }
             if (statusEl) { statusEl.textContent = ''; }
         } finally {
             if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
