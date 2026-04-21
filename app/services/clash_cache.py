@@ -1,7 +1,7 @@
 """Clash detection caching layer with domain-specific logic and key patterns."""
 import json
 from typing import List, Optional
-from app.core.cache import get_redis
+from app.core.cache import get_redis, get_sync_redis
 from app.core.config import settings
 from app.models.canonical import CanonicalBuildingIntersection
 
@@ -22,6 +22,15 @@ async def set_clash_results(job_id: str, collisions: List[CanonicalBuildingInter
     ttl = ttl or settings.CACHE_TTL
     serialized = [c.model_dump() for c in collisions]
     await client.setex(job_id, ttl, json.dumps(serialized))
+    return True
+
+
+def set_clash_results_sync(job_id: str, collisions: List[CanonicalBuildingIntersection], ttl: int = None) -> bool:
+    """Sync version: Serialize and cache clash results."""
+    client = get_sync_redis()
+    ttl = ttl or settings.CACHE_TTL
+    serialized = [c.model_dump() for c in collisions]
+    client.setex(job_id, ttl, json.dumps(serialized))
     return True
 
 
