@@ -30,18 +30,3 @@ async def get_redis() -> redis.Redis:
             decode_responses=True
         )
     return redis_client
-
-
-async def get_cache(key: str) -> Optional[Any]:
-    """Get cached value by key as raw data."""
-    client = await get_redis()
-    data = await client.get(key)
-    return json.loads(data) if data else None
-
-
-async def set_cache(key: str, value: Any, ttl: int = None) -> bool:
-    """Set cache with optional TTL."""
-    client = await get_redis()
-    ttl = ttl or settings.CACHE_TTL
-    await client.setex(key, ttl, json.dumps(value))
-    return True
