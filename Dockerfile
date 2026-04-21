@@ -1,12 +1,11 @@
+
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies for rtree
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
-    libspatialindex-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
