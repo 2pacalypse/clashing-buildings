@@ -12,7 +12,7 @@ from app.models.job_status import JobStatus
 from app.utils.job_id_generator import generate_job_id
 
 from app.core.constants import SYNC_CLASH_COMPLEXITY_THRESHOLD, MAX_CLASH_COMPLEXITY_THRESHOLD
-from tasks.celery_worker import detect_clashes_task
+from app.tasks.celery_worker import detect_clashes_task
 
 
 async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetectionResponse:

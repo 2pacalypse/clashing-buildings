@@ -21,7 +21,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery -A tasks.celery_worker worker --loglevel=info
+    command: celery -A app.tasks.celery_worker worker --loglevel=info
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
