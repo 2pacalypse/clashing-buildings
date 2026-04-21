@@ -33,8 +33,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    # ports removed to avoid exposing Redis to host
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
