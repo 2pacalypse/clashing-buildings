@@ -16,6 +16,7 @@ celery_app.conf.update(
     result_serializer='json',
     timezone='UTC',
     enable_utc=True,
+    task_time_limit=120
 )
 
 @celery_app.task(name='detect_clashes_task')
