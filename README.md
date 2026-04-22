@@ -61,23 +61,24 @@ docker-compose up --build
 
 ## System Flow Diagram
 
+
 ```mermaid
 flowchart TD
-  A[User submits buildings (POST /api/v1/detect-clashes)]
+  A[User submits buildings]<br>POST
   B[API receives request]
-  C[Generate canonical job ID]
-  D[Check Redis cache for job ID]
+  C[Generate job ID]
+  D[Check Redis cache]
   E{Job exists?}
   F[Return cached results]
   G[Claim job in Redis]
   H{Large job?}
-  I[Dispatch to Celery worker]
-  J[Process synchronously]
-  K[Detect clashes (clash_detector.py)]
+  I[To Celery worker]
+  J[Process sync]
+  K[Detect clashes]
   L[Store results in Redis]
-  M[Return job ID to user]
-  N[User polls for results (GET /api/v1/results/{job_id})]
-  O[API returns results from Redis]
+  M[Return job ID]
+  N[User polls for results]<br>GET
+  O[API returns results]
 
   A --> B --> C --> D --> E
   E -- Yes --> F --> M
@@ -87,6 +88,10 @@ flowchart TD
   K --> L --> M
   M --> N --> O
 ```
+
+**Legend:**
+- **POST**: Submit buildings for clash detection (was `/api/v1/detect-clashes`)
+- **GET**: Poll for results (was `/api/v1/results/{job_id}`)
 
 ## Project Structure
 
