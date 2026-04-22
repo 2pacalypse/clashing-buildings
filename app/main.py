@@ -71,7 +71,3 @@ async def openapi():
         description="Detect overlapping buildings in 3D space",
         routes=app.routes
     )
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "redis": settings.REDIS_HOST}
