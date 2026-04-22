@@ -61,6 +61,24 @@
                 .sample-row-single .copy-btn:hover {
                     color: #0078d4;
                 }
+                #ready-actions .copy-field-group .copy-btn {
+                    position: absolute;
+                    right: 2px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    padding: 4px 8px;
+                    font-size: 1.1em;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    line-height: 1;
+                    color: #333;
+                    transition: color 0.15s;
+                    z-index: 2;
+                }
+                #ready-actions .copy-field-group .copy-btn:hover {
+                    color: #0078d4;
+                }
         /* Hourglass shake/vibration animation during polling */
         @keyframes shake-hourglass {
             0%, 100% { transform: translateX(0); }
@@ -117,28 +135,28 @@
                     <div class="sample-row-single">
                         <button class="sample-btn" data-sample="sampleInputOne" onclick="loadSample('sampleInputOne')">Input 1</button>
                         <div class="copy-field-group">
-                            <input type="text" class="copy-field" id="copy-input-sampleInputOne" readonly value="" />
+                            <textarea class="copy-field" id="copy-input-sampleInputOne" readonly></textarea>
                             <button class="copy-btn" onclick="copySample('sampleInputOne', 'input')" title="Copy Input" tabindex="-1">📋</button>
                         </div>
                     </div>
                     <div class="sample-row-single">
                         <button class="sample-btn" data-sample="sampleOutputOne" onclick="loadSample('sampleOutputOne')">Output 1</button>
                         <div class="copy-field-group">
-                            <input type="text" class="copy-field" id="copy-input-sampleOutputOne" readonly value="" />
+                            <textarea class="copy-field" id="copy-input-sampleOutputOne" readonly></textarea>
                             <button class="copy-btn" onclick="copySample('sampleOutputOne', 'output')" title="Copy Output" tabindex="-1">📋</button>
                         </div>
                     </div>
                     <div class="sample-row-single">
                         <button class="sample-btn" data-sample="sampleInputTwo" onclick="loadSample('sampleInputTwo')">Input 2</button>
                         <div class="copy-field-group">
-                            <input type="text" class="copy-field" id="copy-input-sampleInputTwo" readonly value="" />
+                            <textarea class="copy-field" id="copy-input-sampleInputTwo" readonly></textarea>
                             <button class="copy-btn" onclick="copySample('sampleInputTwo', 'input')" title="Copy Input" tabindex="-1">📋</button>
                         </div>
                     </div>
                     <div class="sample-row-single">
                         <button class="sample-btn" data-sample="sampleOutputTwo" onclick="loadSample('sampleOutputTwo')">Output 2</button>
                         <div class="copy-field-group">
-                            <input type="text" class="copy-field" id="copy-input-sampleOutputTwo" readonly value="" />
+                            <textarea class="copy-field" id="copy-input-sampleOutputTwo" readonly></textarea>
                             <button class="copy-btn" onclick="copySample('sampleOutputTwo', 'output')" title="Copy Output" tabindex="-1">📋</button>
                         </div>
                     </div>
@@ -171,8 +189,8 @@
                     <button class="sample-btn" data-sample="ready_XXXL" onclick="selectReadySample('ready_XXXL')">XXXL (3000)</button>
                 </div>
                 <div id="ready-actions">
-                    <div class="copy-row" style="margin-bottom: 8px;">
-                        <input type="text" class="copy-field" id="copy-input-ready-single" readonly value="" />
+                    <div class="copy-field-group" style="margin-bottom: 8px; position: relative; display: flex; align-items: center;">
+                        <textarea class="copy-field" id="copy-input-ready-single" readonly style="flex: 1 1 0; min-width: 0; padding: 4px 32px 4px 6px;"></textarea>
                         <button class="copy-btn" id="copy-btn-ready-single" title="Copy Input">📋</button>
                     </div>
                     <div class="btn-row" style="gap: 8px;">
