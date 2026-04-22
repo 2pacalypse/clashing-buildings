@@ -64,7 +64,7 @@ docker-compose up --build
 
 ```mermaid
 flowchart TD
-  A[User submits buildings]<br>POST
+  A[User submits buildings (POST)]
   B[API receives request]
   C[Generate job ID]
   D[Check Redis cache]
@@ -77,7 +77,7 @@ flowchart TD
   K[Detect clashes]
   L[Store results in Redis]
   M[Return job ID]
-  N[User polls for results]<br>GET
+  N[User polls for results (GET)]
   O[API returns results]
 
   A --> B --> C --> D --> E
