@@ -262,13 +262,13 @@
                         flashField(field, 'Copied!');
                     }).catch(() => {
                         field.select();
-                        field.setSelectionRange(0, 99999);
+                        field.setSelectionRange(0, field.value.length);
                         document.execCommand('copy');
                         flashField(field, 'Copied!');
                     });
                 } else {
                     field.select();
-                    field.setSelectionRange(0, 99999);
+                    field.setSelectionRange(0, field.value.length);
                     document.execCommand('copy');
                     flashField(field, 'Copied!');
                 }
@@ -451,7 +451,7 @@
                 try {
                     field.value = text;
                     field.select();
-                    field.setSelectionRange(0, 99999);
+                    field.setSelectionRange(0, field.value.length);
                     document.execCommand('copy');
                 } catch (e) {}
                 field.blur();
@@ -461,7 +461,7 @@
             try {
                 field.value = text;
                 field.select();
-                field.setSelectionRange(0, 99999);
+                field.setSelectionRange(0, field.value.length);
                 document.execCommand('copy');
             } catch (e) {}
             field.blur();
