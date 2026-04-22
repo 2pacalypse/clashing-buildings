@@ -64,29 +64,38 @@ docker-compose up --build
 
 ```mermaid
 flowchart TD
-  A[User submits buildings (POST)]
-  B[API receives request]
-  C[Generate job ID]
-  D[Check Redis cache]
-  E{Job exists?}
-  F[Return cached results]
-  G[Claim job in Redis]
-  H{Large job?}
-  I[To Celery worker]
-  J[Process sync]
-  K[Detect clashes]
-  L[Store results in Redis]
-  M[Return job ID]
-  N[User polls for results (GET)]
-  O[API returns results]
+  A["User submits buildings\nPOST /api/v1/detect-clashes"]
+  B["API receives request"]
+  C["Generate canonical job ID"]
+  D["Check Redis cache"]
+  E{"Job already exists?"}
+  F["Return existing job ID"]
+  G["Claim job in Redis"]
+  H{"Large job?"}
+  I["Queue Celery worker"]
+  J["Process synchronously"]
+  K["Detect clashes"]
+  L["Store status and results in Redis"]
+  M["Return job ID"]
+  N["User polls results\nGET /api/v1/results/{job_id}"]
+  O["API returns job status/results"]
 
-  A --> B --> C --> D --> E
-  E -- Yes --> F --> M
-  E -- No --> G --> H
-  H -- Yes --> I --> K
-  H -- No --> J --> K
-  K --> L --> M
-  M --> N --> O
+  A --> B
+  B --> C
+  C --> D
+  D --> E
+  E -- Yes --> F
+  F --> M
+  E -- No --> G
+  G --> H
+  H -- Yes --> I
+  H -- No --> J
+  I --> K
+  J --> K
+  K --> L
+  L --> M
+  M --> N
+  N --> O
 ```
 
 **Legend:**
