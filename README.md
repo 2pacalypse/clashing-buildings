@@ -58,6 +58,36 @@ docker-compose up --build
 - **Color Coding** - Each building gets a unique color
 - **Hover Info** - Click on buildings to see details
 
+
+## System Flow Diagram
+
+```mermaid
+flowchart TD
+  A[User submits buildings (POST /api/v1/detect-clashes)]
+  B[API receives request]
+  C[Generate canonical job ID]
+  D[Check Redis cache for job ID]
+  E{Job exists?}
+  F[Return cached results]
+  G[Claim job in Redis]
+  H{Large job?}
+  I[Dispatch to Celery worker]
+  J[Process synchronously]
+  K[Detect clashes (clash_detector.py)]
+  L[Store results in Redis]
+  M[Return job ID to user]
+  N[User polls for results (GET /api/v1/results/{job_id})]
+  O[API returns results from Redis]
+
+  A --> B --> C --> D --> E
+  E -- Yes --> F --> M
+  E -- No --> G --> H
+  H -- Yes --> I --> K
+  H -- No --> J --> K
+  K --> L --> M
+  M --> N --> O
+```
+
 ## Project Structure
 
 ## Challenges and Resolutions
