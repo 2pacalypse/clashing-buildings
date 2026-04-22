@@ -315,14 +315,8 @@ window.sendInputFromForm = async function() {
     const sendBtn = document.getElementById('send-btn');
     if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Sending...'; }
     if (statusEl) { statusEl.textContent = ''; }
-    let parsed;
-    try {
-        parsed = JSON.parse(ta.value);
-        if (!parsed || !parsed.features) throw new Error('Not a FeatureCollection');
-    } catch (err) {
-        if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
-        return;
-    }
+
+    const parsed = ta.value;
 
     // Determine next input sample index (count existing sampleInputN keys)
     let idx = 3;
