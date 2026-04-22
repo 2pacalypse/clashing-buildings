@@ -315,13 +315,12 @@ window.sendInputFromForm = async function() {
     const sendBtn = document.getElementById('send-btn');
     if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Sending...'; }
     if (statusEl) { statusEl.textContent = ''; }
+    const rawValue = ta.value;
     let parsed;
     try {
-        parsed = JSON.parse(ta.value);
-        if (!parsed || !parsed.features) throw new Error('Not a FeatureCollection');
+        parsed = JSON.parse(rawValue);
     } catch (err) {
-        if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send'; }
-        return;
+        parsed = null;
     }
 
     // Determine next input sample index (count existing sampleInputN keys)
@@ -330,78 +329,80 @@ window.sendInputFromForm = async function() {
     const key = 'sampleInput' + idx;
     let outKey;
     let inBtn, outBtn;
-    try {
-        samples[key] = parsed;
-        outKey = 'sampleOutput' + idx;
-        // create a dummy empty FeatureCollection for the paired output
-        samples[outKey] = { type: 'FeatureCollection', features: [] };
+    if (parsed) {
+        try {
+            samples[key] = parsed;
+            outKey = 'sampleOutput' + idx;
+            // create a dummy empty FeatureCollection for the paired output
+            samples[outKey] = { type: 'FeatureCollection', features: [] };
 
-        // Insert input and output as separate rows in the .sample-list (vertical, like static rows)
-        const sampleList = document.querySelector('#sample-section .sample-list');
-        if (sampleList) {
-            // --- Input row ---
-            const inRow = document.createElement('div');
-            inRow.className = 'sample-row-single';
-            // Button (left)
-            inBtn = document.createElement('button');
-            inBtn.className = 'sample-btn';
-            inBtn.dataset.sample = key;
-            inBtn.textContent = window.getSampleButtonLabel ? window.getSampleButtonLabel(key) : ('Input ' + idx);
-            inBtn.onclick = () => loadSample(key);
-            // Copy field group (right)
-            const inGroup = document.createElement('div');
-            inGroup.className = 'copy-field-group';
-            const inCopyField = document.createElement('input');
-            inCopyField.type = 'text';
-            inCopyField.className = 'copy-field';
-            inCopyField.id = 'copy-input-' + key;
-            inCopyField.readOnly = true;
-            inCopyField.value = samples[key] ? JSON.stringify(samples[key]) : '';
-            const inCopyBtn = document.createElement('button');
-            inCopyBtn.className = 'copy-btn';
-            inCopyBtn.title = 'Copy Input';
-            inCopyBtn.tabIndex = -1;
-            inCopyBtn.innerHTML = copyIconSvg;
-            inCopyBtn.onclick = () => copySample(key, 'input');
-            inGroup.appendChild(inCopyField);
-            inGroup.appendChild(inCopyBtn);
-            inRow.appendChild(inBtn);
-            inRow.appendChild(inGroup);
-            sampleList.appendChild(inRow);
+            // Insert input and output as separate rows in the .sample-list (vertical, like static rows)
+            const sampleList = document.querySelector('#sample-section .sample-list');
+            if (sampleList) {
+                // --- Input row ---
+                const inRow = document.createElement('div');
+                inRow.className = 'sample-row-single';
+                // Button (left)
+                inBtn = document.createElement('button');
+                inBtn.className = 'sample-btn';
+                inBtn.dataset.sample = key;
+                inBtn.textContent = window.getSampleButtonLabel ? window.getSampleButtonLabel(key) : ('Input ' + idx);
+                inBtn.onclick = () => loadSample(key);
+                // Copy field group (right)
+                const inGroup = document.createElement('div');
+                inGroup.className = 'copy-field-group';
+                const inCopyField = document.createElement('input');
+                inCopyField.type = 'text';
+                inCopyField.className = 'copy-field';
+                inCopyField.id = 'copy-input-' + key;
+                inCopyField.readOnly = true;
+                inCopyField.value = samples[key] ? JSON.stringify(samples[key]) : '';
+                const inCopyBtn = document.createElement('button');
+                inCopyBtn.className = 'copy-btn';
+                inCopyBtn.title = 'Copy Input';
+                inCopyBtn.tabIndex = -1;
+                inCopyBtn.innerHTML = copyIconSvg;
+                inCopyBtn.onclick = () => copySample(key, 'input');
+                inGroup.appendChild(inCopyField);
+                inGroup.appendChild(inCopyBtn);
+                inRow.appendChild(inBtn);
+                inRow.appendChild(inGroup);
+                sampleList.appendChild(inRow);
 
-            // --- Output row ---
-            const outRow = document.createElement('div');
-            outRow.className = 'sample-row-single';
-            // Button (left)
-            const initialIcon = statusIconFor('pending');
-            outBtn = document.createElement('button');
-            outBtn.className = 'sample-btn status-pending';
-            outBtn.dataset.sample = outKey;
-            outBtn.innerHTML = `${initialIcon} ` + (window.getSampleButtonLabel ? window.getSampleButtonLabel(outKey) : ('Output ' + idx));
-            outBtn.onclick = () => loadSample(outKey);
-            // Copy field group (right)
-            const outGroup = document.createElement('div');
-            outGroup.className = 'copy-field-group';
-            const outCopyField = document.createElement('input');
-            outCopyField.type = 'text';
-            outCopyField.className = 'copy-field';
-            outCopyField.id = 'copy-input-' + outKey;
-            outCopyField.readOnly = true;
-            outCopyField.value = samples[outKey] ? JSON.stringify(samples[outKey]) : '';
-            const outCopyBtn = document.createElement('button');
-            outCopyBtn.className = 'copy-btn';
-            outCopyBtn.title = 'Copy Output';
-            outCopyBtn.tabIndex = -1;
-            outCopyBtn.innerHTML = copyIconSvg;
-            outCopyBtn.onclick = () => copySample(outKey, 'output');
-            outGroup.appendChild(outCopyField);
-            outGroup.appendChild(outCopyBtn);
-            outRow.appendChild(outBtn);
-            outRow.appendChild(outGroup);
-            sampleList.appendChild(outRow);
+                // --- Output row ---
+                const outRow = document.createElement('div');
+                outRow.className = 'sample-row-single';
+                // Button (left)
+                const initialIcon = statusIconFor('pending');
+                outBtn = document.createElement('button');
+                outBtn.className = 'sample-btn status-pending';
+                outBtn.dataset.sample = outKey;
+                outBtn.innerHTML = `${initialIcon} ` + (window.getSampleButtonLabel ? window.getSampleButtonLabel(outKey) : ('Output ' + idx));
+                outBtn.onclick = () => loadSample(outKey);
+                // Copy field group (right)
+                const outGroup = document.createElement('div');
+                outGroup.className = 'copy-field-group';
+                const outCopyField = document.createElement('input');
+                outCopyField.type = 'text';
+                outCopyField.className = 'copy-field';
+                outCopyField.id = 'copy-input-' + outKey;
+                outCopyField.readOnly = true;
+                outCopyField.value = samples[outKey] ? JSON.stringify(samples[outKey]) : '';
+                const outCopyBtn = document.createElement('button');
+                outCopyBtn.className = 'copy-btn';
+                outCopyBtn.title = 'Copy Output';
+                outCopyBtn.tabIndex = -1;
+                outCopyBtn.innerHTML = copyIconSvg;
+                outCopyBtn.onclick = () => copySample(outKey, 'output');
+                outGroup.appendChild(outCopyField);
+                outGroup.appendChild(outCopyBtn);
+                outRow.appendChild(outBtn);
+                outRow.appendChild(outGroup);
+                sampleList.appendChild(outRow);
+            }
+        } catch (e) {
+            console.error('Failed to register new sample:', e);
         }
-    } catch (e) {
-        console.error('Failed to register new sample:', e);
     }
 
     // Capture request start time BEFORE making the POST request
@@ -429,7 +430,7 @@ window.sendInputFromForm = async function() {
     // Send to backend (fire-and-log). Update status UI with result.
     if (window.postInputToServer) {
         try {
-            const resp = await window.postInputToServer(parsed);
+            const resp = await window.postInputToServer(rawValue);
             console.log('Backend response for detect-clashes:', resp);
             // Replace the dummy output sample with the server response when available
             try {

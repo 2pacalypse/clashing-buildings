@@ -2,10 +2,11 @@
 export async function postInputToServer(geojson) {
     const url = '/api/v1/detect-clashes';
     try {
+        const body = typeof geojson === 'string' ? geojson : JSON.stringify(geojson);
         const resp = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(geojson)
+            body
         });
 
         if (!resp.ok) {
