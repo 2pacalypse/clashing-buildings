@@ -2,6 +2,16 @@
 
 Backend service to detect 3D spatial overlaps between buildings with a 3D visualization frontend.
 
+## Public Demo & API Docs
+
+- **Minimal frontend for using the API:**
+  - [http://ec2-13-61-127-143.eu-north-1.compute.amazonaws.com/](http://ec2-13-61-127-143.eu-north-1.compute.amazonaws.com/)
+- **API docs:**
+  - [http://ec2-13-61-127-143.eu-north-1.compute.amazonaws.com/docs](http://ec2-13-61-127-143.eu-north-1.compute.amazonaws.com/docs)
+
+**If the above links are not accessible, try the direct IP address:**
+- [http://13.61.127.143/](http://13.61.127.143/)
+
 ## Quick Start
 
 ```bash
@@ -62,7 +72,6 @@ docker-compose up --build
 - **POST**: Submit buildings for clash detection (was `/api/v1/detect-clashes`)
 - **GET**: Poll for results (was `/api/v1/results/{job_id}`)
 
-## Project Structure
 
 ## Challenges and Resolutions
 

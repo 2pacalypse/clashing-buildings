@@ -1,10 +1,3 @@
-def quantize_z(value: float) -> int:
-    """Quantize a z-axis value (elevation or height) to integer using SCALE."""
-    return int(round(value * SCALE))
-
-def unquantize_z(value: int) -> float:
-    """Convert quantized z-axis value back to float."""
-    return value / SCALE
 from shapely.geometry import Polygon
 from typing import List, Tuple
 
@@ -26,6 +19,13 @@ from app.models.clash_detection_response import (
 from app.models.job_status import JobStatus
 from app.core.constants import SCALE
 
+def quantize_z(value: float) -> int:
+    """Quantize a z-axis value (elevation or height) to integer using SCALE."""
+    return int(round(value * SCALE))
+
+def unquantize_z(value: int) -> float:
+    """Convert quantized z-axis value back to float."""
+    return value / SCALE
 
 def map_coordinate_to_canonical(coord: tuple[float, float]) -> tuple[int, int]:
     x, y = coord

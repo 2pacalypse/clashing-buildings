@@ -53,6 +53,23 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content=error_response.model_dump(exclude_none=True)
     )
 
+import logging
+from fastapi import status
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    # Log the exception details for debugging (not exposed to client)
+    logging.exception("Unhandled exception occurred")
+    error_response = ErrorResponse(
+        code="INTERNAL_SERVER_ERROR",
+        message="An unexpected error occurred.",
+        details=None  # Optionally, add {"error": str(exc)} for debugging, but avoid in production
+    )
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content=error_response.model_dump(exclude_none=True)
+    )
+
 app.include_router(router, prefix="/api/v1")
 
 # Custom Swagger UI endpoint
