@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter
 from app.models.clash_detection_response import ClashDetectionResponse
 from app.models.clash_detection_request import ClashDetectionRequest
@@ -19,15 +18,15 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
     return await clash_service.process_clash_detection(request)
 
 @router.get(
-    "/results/{job_id}",
+    "/results/{request_id}",
     response_model=ClashDetectionResponse,
     responses={
         404: {"model": ErrorResponse, "description": "Not Found - code: JOB_NOT_FOUND"},
         422: {"model": ErrorResponse, "description": "Unprocessable Entity - code: VALIDATION_ERROR"}
     }
 )
-async def get_results(job_id: str):
-    return await clash_service.get_results(job_id)
+async def get_results(request_id: str):
+    return await clash_service.get_results(request_id)
 
 
 

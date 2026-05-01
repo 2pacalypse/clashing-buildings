@@ -22,8 +22,8 @@ export async function postInputToServer(geojson) {
     }
 }
 
-export async function getResults(jobId) {
-    const url = `/api/v1/results/${jobId}`;
+export async function getResults(requestId) {
+    const url = `/api/v1/results/${requestId}`;
     try {
         const resp = await fetch(url);
 

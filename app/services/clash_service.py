@@ -1,4 +1,3 @@
-
 from app.exceptions import AppException
 from app.core.error_codes import JOB_NOT_FOUND_CODE, COMPLEXITY_LIMIT_EXCEEDED_CODE
 from app.services.clash_cache import (
@@ -50,7 +49,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
         return map_collisions_to_response(
             collisions=collisions,
             buildings=buildings,
-            job_id=job_id,
+            request_id=job_id,
         )
     
     if suitable_for_sync_process:
@@ -67,7 +66,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
         return map_collisions_to_response(
             collisions=collisions,
             buildings=buildings,
-            job_id=job_id,
+            request_id=job_id,
         )
         
 
@@ -76,7 +75,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
     if not claimed:
         # Another process is already working on this job, return PENDING
         return ClashDetectionResponse(
-            job_id=job_id,
+            request_id=job_id,
             status=JobStatus.PENDING,
             result=None,
         )
@@ -90,7 +89,7 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
     detect_clashes_task.apply_async(args=[building_dump, job_id])
 
     # return PENDING immediately
-    return ClashDetectionResponse(job_id=job_id, status=JobStatus.PENDING, result=None)
+    return ClashDetectionResponse(request_id=job_id, status=JobStatus.PENDING, result=None)
 
 
 
@@ -100,7 +99,7 @@ async def get_results(job_id: str) -> ClashDetectionResponse:
     if cached is not None:
         building_names = await get_canonical_building_names(job_id)
         buildings = [[building_names[i] for i in c.building_ids] for c in cached]
-        return map_collisions_to_response(collisions=cached, buildings=buildings, job_id=job_id)
+        return map_collisions_to_response(collisions=cached, buildings=buildings, request_id=job_id)
 
     # Check if job exists (was ever claimed/submitted)
     exists = await job_exists(job_id)
@@ -113,4 +112,4 @@ async def get_results(job_id: str) -> ClashDetectionResponse:
         )
 
     # Results not cached yet — job is still queued/processing
-    return ClashDetectionResponse(job_id=job_id, status=JobStatus.PENDING, result=None)
+    return ClashDetectionResponse(request_id=job_id, status=JobStatus.PENDING, result=None)

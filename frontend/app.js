@@ -435,7 +435,7 @@ window.sendInputFromForm = async function() {
             // Replace the dummy output sample with the server response when available
             try {
                 if (resp && outKey) {
-                    const status = resp.status || (resp.result ? 'completed' : (resp.job_id ? 'processing' : 'failed'));
+                    const status = resp.status || (resp.result ? 'completed' : (resp.request_id ? 'processing' : 'failed'));
                     const icon = statusIconFor(status);
                     
                     if (resp.result) {
@@ -480,17 +480,17 @@ window.sendInputFromForm = async function() {
                             outBtn.disabled = false;
                             outBtn.innerHTML = `${icon} Output ${idx}`;
                         }
-                        outBtn.title = resp.job_id ? `Job ${resp.job_id} — ${status}` : `${status}`;
+                        outBtn.title = resp.request_id ? `Request ${resp.request_id} — ${status}` : `${status}`;
                     }
 
                     // Start polling if job is pending or processing
-                    if ((status === 'pending' || status === 'processing') && resp.job_id) {
+                    if ((status === 'pending' || status === 'processing') && resp.request_id) {
                         if (outBtn) {
                             outBtn.disabled = true;
                             outBtn.classList.add('polling');
                         }
                         const outCopyField = document.getElementById('copy-input-' + outKey);
-                        pollForResults(resp.job_id, outBtn, outKey, outCopyField, requestStartTime);
+                        pollForResults(resp.request_id, outBtn, outKey, outCopyField, requestStartTime);
                     }
                 }
             } catch (e) {

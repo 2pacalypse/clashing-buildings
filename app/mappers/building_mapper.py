@@ -78,7 +78,7 @@ def map_request_to_canonical(request: ClashDetectionRequest) -> tuple[CanonicalB
 def map_collisions_to_response(
     collisions: List[CanonicalBuildingIntersection],
     buildings: List[List[str]],
-    job_id: str,
+    request_id: str,
 ) -> ClashDetectionResponse:
     """Map list of canonical collisions to a ClashDetectionResponse (GeoJSON FeatureCollection).
 
@@ -86,7 +86,7 @@ def map_collisions_to_response(
         collisions: list of CanonicalBuildingIntersection objects returned by detector
         request: original ClashDetectionRequest (for mapping back building ids)
         original_indices: mapping from canonical ordering back to original feature indices
-        job_id: server-side job id
+        request_id: server-side request id
 
     Returns:
         ClashDetectionResponse containing GeoJSON FeatureCollection of clashes.
@@ -121,7 +121,7 @@ def map_collisions_to_response(
     result = ClashResultFeatureCollection(features=clash_features)
 
     return ClashDetectionResponse(
-        job_id=job_id,
+        request_id=request_id,
         status=JobStatus.COMPLETED,
         result=result,
     )

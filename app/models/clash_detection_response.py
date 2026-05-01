@@ -22,6 +22,6 @@ class ClashResultFeatureCollection(BaseModel):
     features: List[ClashFeature]
 
 class ClashDetectionResponse(BaseModel):
-    job_id: str
+    request_id: str
     status: JobStatus
     result: Optional[ClashResultFeatureCollection] = None
