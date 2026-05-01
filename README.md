@@ -54,17 +54,6 @@ We could have considered using libraries such as **pydantic-geojson** or similar
 | ⚠️ | It would require extra validations to reject GeoJSON types we don't support.. |
 
 
-## Frontend Features
-
-- **3D Visualization** - View buildings in 3D with actual height/elevation
-- **Interactive Controls** - Rotate (left drag), Pan (right drag), Zoom (scroll)
-- **View Presets** - Reset Camera, Top-Down View, Side View
-- **Color Coding** - Each building gets a unique color
-- **Hover Info** - Click on buildings to see details
-
-**Legend:**
-- **POST**: Submit buildings for clash detection (was `/api/v1/detect-clashes`)
-- **GET**: Poll for results (was `/api/v1/results/{job_id}`)
 
 
 ## Challenges and Resolutions
