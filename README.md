@@ -36,27 +36,23 @@ docker-compose up --build
 
 ## Input Format
 
-```json
-{
-  "buildings": {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "id": "building_0",
-        "properties": {
-          "height": 4,
-          "elevation": 0
-        },
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [[[20, 0], [20, 60], [0, 60], [0, 0], [20, 0]]]
-        }
-      }
-    ]
-  }
-}
-```
+---
+
+<!-- TODO: Expand this section with more details on input validations and schema requirements. -->
+
+The API accepts as input a strict subset of the [RFC 7946](https://datatracker.ietf.org/doc/html/rfc7946) GeoJSON standard, with additional custom mandatory properties. Refer to the [API docs](http://localhost:8000/docs) for the full request schema.
+
+
+###  Reflection 🤔
+We could have considered using libraries such as **pydantic-geojson** or similar to handle GeoJSON schema enforcement more robustly. 
+
+
+|    | Reflection |
+|----|------------|
+| ✅ | It would reduce boilerplate for standard GeoJSON structures. |
+| ⚠️ | It would add noise to the schema. |
+| ⚠️ | It would require extra validations to reject GeoJSON types we don't support.. |
+
 
 ## Frontend Features
 
