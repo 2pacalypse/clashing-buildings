@@ -26,7 +26,6 @@ docker-compose up --build
 | API | http://localhost:8000 | REST API for clash detection |
 | API Docs | http://localhost:8000/docs | Swagger documentation |
 | Frontend | http://localhost:8080 | 3D visualization |
-| Redis | localhost:6379 | Cache and message broker |
 
 ## API Endpoints
 
