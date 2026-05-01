@@ -33,7 +33,6 @@ docker-compose up --build
 |--------|----------|-------------|
 | POST | `/api/v1/detect-clashes` | Submit buildings for clash detection |
 | GET | `/api/v1/results/{job_id}` | Poll for async results |
-| GET | `/health` | Health check |
 
 ## Input Format
 
