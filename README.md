@@ -117,22 +117,19 @@ python -m pylint app/
 
 **Format before committing** to keep the codebase clean and consistent.
 
-## Environment Variables
+## Testing
 
-Key configuration variables (see `app/core/config.py` for full list):
+Run tests inside the container to ensure all dependencies are available:
 
 ```bash
-# Redis
-REDIS_URL=redis://localhost:6379
+# Run all tests
+docker-compose run --rm api pytest tests/
 
-# Performance tuning
-SYNC_CLASH_COMPLEXITY_THRESHOLD=100000      # Threshold for sync processing
-MAX_CLASH_COMPLEXITY_THRESHOLD=1000000      # Absolute complexity limit
-CACHE_TTL=3600                              # Result cache TTL in seconds
+# Run tests with verbose output
+docker-compose run --rm api pytest tests/ -v
 
-# Celery
-CELERY_BROKER_URL=redis://localhost:6379
-CELERY_RESULT_BACKEND=redis://localhost:6379
+# Run a specific test file
+docker-compose run --rm api pytest tests/test_detect_clashes.py
 ```
 
 ## Challenges and Resolutions
