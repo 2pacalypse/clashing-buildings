@@ -1,5 +1,6 @@
 import hashlib
 import json
+
 from app.models.canonical import CanonicalBuildingSet
 
 

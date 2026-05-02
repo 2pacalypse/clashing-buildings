@@ -1,8 +1,8 @@
 from typing import Optional, List
+from pydantic import BaseModel, Field
 
 from app.models.job_status import JobStatus
 from app.models.polygon_geometry import PolygonGeometry
-from pydantic import BaseModel, Field
 
 
 class ClashProperties(BaseModel):

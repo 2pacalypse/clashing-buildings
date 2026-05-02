@@ -1,6 +1,5 @@
+from typing import List
 from shapely.geometry import Polygon
-from typing import List, Tuple
-
 from app.models.canonical import (
     CanonicalBuilding,
     CanonicalBuildingSet,
