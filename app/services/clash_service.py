@@ -2,8 +2,10 @@ import uuid
 from app.exceptions import AppException
 from app.core.error_codes import JOB_NOT_FOUND_CODE, REQUEST_NOT_FOUND_CODE, COMPLEXITY_LIMIT_EXCEEDED_CODE
 from app.services.clash_cache import (
-    get_clash_results, set_clash_results, claim_job, set_canonical_building_names, get_canonical_building_names, job_exists,
-    get_request_job_id,get_request_building_names, set_request_job_id, set_request_building_names, set_request_original_indices, get_request_original_indices
+    get_clash_results, set_clash_results, claim_job, job_exists
+)
+from app.services.request_cache import (
+    get_request_job_id, get_request_building_names, set_request_job_id, set_request_building_names
 )
 from app.mappers.building_mapper import map_request_to_canonical, map_collisions_to_response
 from app.models.clash_detection_request import ClashDetectionRequest
@@ -42,7 +44,6 @@ async def process_clash_detection(request: ClashDetectionRequest) -> ClashDetect
 
     # Store the mapping in cache
     await set_request_job_id(request_id, job_id)
-    #await set_request_original_indices(request_id, original_indices)
     await set_request_building_names(request_id, original_building_names)
 
 
