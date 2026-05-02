@@ -1,8 +1,9 @@
-import json
+from typing import Optional
 import redis.asyncio as redis
 import redis as redis_sync
-from typing import Any, Optional
 from app.core.config import settings
+
+
 
 redis_client: Optional[redis.Redis] = None
 
