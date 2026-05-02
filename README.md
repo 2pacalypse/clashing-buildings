@@ -54,7 +54,7 @@ python -m pylint app/
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/v1/detect-clashes` | Submit buildings for clash detection |
-| GET | `/api/v1/results/{job_id}` | Poll for async results |
+| GET | `/api/v1/results/{request_id}` | Poll for async results |
 
 ## Input Format
 
