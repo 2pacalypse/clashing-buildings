@@ -1,13 +1,15 @@
+import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
+from fastapi import status
 from app.api.routes import router
-from app.core.config import settings
 from app.exceptions import AppException
 from app.models.error_response import ErrorResponse
 from app.core.error_codes import VALIDATION_ERROR_CODE
+
 
 app = FastAPI(
     title="Building Clashes Detection API",
@@ -52,10 +54,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=422, content=error_response.model_dump(exclude_none=True)
     )
-
-
-import logging
-from fastapi import status
 
 
 @app.exception_handler(Exception)
