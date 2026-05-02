@@ -19,28 +19,6 @@ Backend service to detect 3D spatial overlaps between buildings with a 3D visual
 docker-compose up --build
 ```
 
-## Development
-
-### Setting up Linters
-
-To maintain code quality and consistency, this project uses **Pylint** and **Black** for linting and formatting.
-
-**Install development dependencies:**
-```bash
-pip install -r requirements-dev.txt
-```
-
-**Run the linters:**
-```bash
-# Format code with Black
-python -m black app/ tests/
-
-# Check for linting issues with Pylint
-python -m pylint app/
-```
-
-**Format before committing** to keep the codebase clean and consistent.
-
 ## Services
 
 | Service | URL | Description |
@@ -89,6 +67,73 @@ We could have considered using libraries such as **pydantic-geojson** or similar
 
 ### Data Model
 ![Cache Deduplication](docs/diagrams/erd.png)
+
+## Technology Stack
+
+- **Backend**: Python, FastAPI
+- **Async Processing**: Celery, Redis
+- **Geospatial**: Shapely, Pydantic
+- **Frontend**: JavaScript (Three.js for 3D visualization)
+- **Deployment**: Docker, Docker Compose, Nginx
+
+## Project Structure
+
+```
+app/                    # Main application
+├── algorithms/         # Clash detection logic
+├── api/                # REST API endpoints
+├── core/               # Configuration, caching, constants
+├── mappers/            # Data transformation (GeoJSON ↔ Canonical)
+├── models/             # Pydantic data models
+├── services/           # Business logic layer
+├── tasks/              # Celery async tasks
+└── utils/              # Helper utilities
+
+tests/                  # Test suite
+frontend/               # 3D visualization UI
+nginx/                  # Reverse proxy configuration
+docker-compose.yml      # Multi-container orchestration
+```
+
+## Development
+
+### Setting up Linters
+
+To maintain code quality and consistency, this project uses **Pylint** and **Black** for linting and formatting.
+
+**Install development dependencies:**
+```bash
+pip install -r requirements-dev.txt
+```
+
+**Run the linters:**
+```bash
+# Format code with Black
+python -m black app/ tests/
+
+# Check for linting issues with Pylint
+python -m pylint app/
+```
+
+**Format before committing** to keep the codebase clean and consistent.
+
+## Environment Variables
+
+Key configuration variables (see `app/core/config.py` for full list):
+
+```bash
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# Performance tuning
+SYNC_CLASH_COMPLEXITY_THRESHOLD=100000      # Threshold for sync processing
+MAX_CLASH_COMPLEXITY_THRESHOLD=1000000      # Absolute complexity limit
+CACHE_TTL=3600                              # Result cache TTL in seconds
+
+# Celery
+CELERY_BROKER_URL=redis://localhost:6379
+CELERY_RESULT_BACKEND=redis://localhost:6379
+```
 
 ## Challenges and Resolutions
 
