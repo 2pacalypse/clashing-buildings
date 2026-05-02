@@ -19,13 +19,16 @@ from app.models.clash_detection_response import (
 from app.models.job_status import JobStatus
 from app.core.constants import SCALE
 
+
 def quantize_z(value: float) -> int:
     """Quantize a z-axis value (elevation or height) to integer using SCALE."""
     return int(round(value * SCALE))
 
+
 def unquantize_z(value: int) -> float:
     """Convert quantized z-axis value back to float."""
     return value / SCALE
+
 
 def map_coordinate_to_canonical(coord: tuple[float, float]) -> tuple[int, int]:
     x, y = coord
@@ -53,20 +56,29 @@ def map_building_to_canonical(building: GeoJSONFeature) -> CanonicalBuilding:
     )
 
 
-def map_request_to_canonical(request: ClashDetectionRequest) -> tuple[CanonicalBuildingSet, tuple[int, ...]]:
+def map_request_to_canonical(
+    request: ClashDetectionRequest,
+) -> tuple[CanonicalBuildingSet, tuple[int, ...]]:
     """Map incoming clash detection request to canonical building set.
 
     Returns:
-        A tuple of (canonical_building_set, indices) where indices[i] is the 
+        A tuple of (canonical_building_set, indices) where indices[i] is the
         original input index of the i-th building in the canonical set.
     """
     # Create list of (building, original_index) tuples
     buildings_with_indices = [
-        (map_building_to_canonical(feat), idx) for idx, feat in enumerate(request.features)
+        (map_building_to_canonical(feat), idx)
+        for idx, feat in enumerate(request.features)
     ]
 
     # Sort by elevation, then height, keeping track of original indices
-    buildings_with_indices.sort(key=lambda x: (x[0].elevation, x[0].height, tuple(x[0].base.polygon.exterior.coords)))
+    buildings_with_indices.sort(
+        key=lambda x: (
+            x[0].elevation,
+            x[0].height,
+            tuple(x[0].base.polygon.exterior.coords),
+        )
+    )
 
     # Extract sorted buildings and their original indices
     sorted_buildings = [building for building, _ in buildings_with_indices]
@@ -92,17 +104,17 @@ def map_collisions_to_response(
         ClashDetectionResponse containing GeoJSON FeatureCollection of clashes.
     """
 
-
     def _unquantize_coords(coords):
         return [(x / SCALE, y / SCALE) for x, y in coords]
 
     def _unquantize_z(z):
         return unquantize_z(z)
 
-
     clash_features: List[ClashFeature] = []
     for c, b in zip(collisions, buildings):
-        intersection_coords = _unquantize_coords(c.intersection.base.polygon.exterior.coords)
+        intersection_coords = _unquantize_coords(
+            c.intersection.base.polygon.exterior.coords
+        )
         clash_features.append(
             ClashFeature(
                 type="Feature",

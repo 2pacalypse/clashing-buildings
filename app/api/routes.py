@@ -6,28 +6,35 @@ from app.services import clash_service
 
 router = APIRouter()
 
+
 @router.post(
     "/detect-clashes",
     response_model=ClashDetectionResponse,
     responses={
-        400: {"model": ErrorResponse, "description": "Bad Request - code: COMPLEXITY_LIMIT_EXCEEDED"},
-        422: {"model": ErrorResponse, "description": "Unprocessable Entity - code: VALIDATION_ERROR"}
-    }
+        400: {
+            "model": ErrorResponse,
+            "description": "Bad Request - code: COMPLEXITY_LIMIT_EXCEEDED",
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Unprocessable Entity - code: VALIDATION_ERROR",
+        },
+    },
 )
 async def detect_clashes_endpoint(request: ClashDetectionRequest):
     return await clash_service.process_clash_detection(request)
+
 
 @router.get(
     "/results/{request_id}",
     response_model=ClashDetectionResponse,
     responses={
         404: {"model": ErrorResponse, "description": "Not Found - code: JOB_NOT_FOUND"},
-        422: {"model": ErrorResponse, "description": "Unprocessable Entity - code: VALIDATION_ERROR"}
-    }
+        422: {
+            "model": ErrorResponse,
+            "description": "Unprocessable Entity - code: VALIDATION_ERROR",
+        },
+    },
 )
 async def get_results(request_id: str):
     return await clash_service.get_results(request_id)
-
-
-
-

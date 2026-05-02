@@ -14,21 +14,20 @@ app = FastAPI(
     description="Detect overlapping buildings in 3D space",
     version="1.0.0",
     docs_url=None,  # Disable default Swagger UI
-    redoc_url=None  # Disable default ReDoc
+    redoc_url=None,  # Disable default ReDoc
 )
+
 
 # Exception handlers for structured error responses
 @app.exception_handler(AppException)
 async def app_exception_handler(request: Request, exc: AppException):
     """Handle custom application exceptions."""
     error_response = ErrorResponse(
-        code=exc.code,
-        message=exc.message,
-        details=exc.details if exc.details else None
+        code=exc.code, message=exc.message, details=exc.details if exc.details else None
     )
     return JSONResponse(
         status_code=exc.status_code,
-        content=error_response.model_dump(exclude_none=True)
+        content=error_response.model_dump(exclude_none=True),
     )
 
 
@@ -37,24 +36,27 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     """Handle Pydantic validation errors."""
     errors = []
     for error in exc.errors():
-        errors.append({
-            "field": ".".join(str(x) for x in error["loc"][1:]),
-            "message": error["msg"],
-            "type": error["type"]
-        })
-    
+        errors.append(
+            {
+                "field": ".".join(str(x) for x in error["loc"][1:]),
+                "message": error["msg"],
+                "type": error["type"],
+            }
+        )
+
     error_response = ErrorResponse(
         code=VALIDATION_ERROR_CODE,
         message="Request validation failed",
-        details={"errors": errors}
+        details={"errors": errors},
     )
     return JSONResponse(
-        status_code=422,
-        content=error_response.model_dump(exclude_none=True)
+        status_code=422, content=error_response.model_dump(exclude_none=True)
     )
+
 
 import logging
 from fastapi import status
+
 
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception):
@@ -63,22 +65,24 @@ async def generic_exception_handler(request: Request, exc: Exception):
     error_response = ErrorResponse(
         code="INTERNAL_SERVER_ERROR",
         message="An unexpected error occurred.",
-        details=None  # Optionally, add {"error": str(exc)} for debugging, but avoid in production
+        details=None,  # Optionally, add {"error": str(exc)} for debugging, but avoid in production
     )
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=error_response.model_dump(exclude_none=True)
+        content=error_response.model_dump(exclude_none=True),
     )
 
+
 app.include_router(router, prefix="/api/v1")
+
 
 # Custom Swagger UI endpoint
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
     return get_swagger_ui_html(
-        openapi_url="/openapi.json",
-        title="Building Clashes Detection API"
+        openapi_url="/openapi.json", title="Building Clashes Detection API"
     )
+
 
 @app.get("/openapi.json", include_in_schema=False)
 async def openapi():
@@ -86,5 +90,5 @@ async def openapi():
         title="Building Clashes Detection API",
         version="1.0.0",
         description="Detect overlapping buildings in 3D space",
-        routes=app.routes
+        routes=app.routes,
     )

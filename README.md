@@ -19,6 +19,28 @@ Backend service to detect 3D spatial overlaps between buildings with a 3D visual
 docker-compose up --build
 ```
 
+## Development
+
+### Setting up Linters
+
+To maintain code quality and consistency, this project uses **Pylint** and **Black** for linting and formatting.
+
+**Install development dependencies:**
+```bash
+pip install -r requirements-dev.txt
+```
+
+**Run the linters:**
+```bash
+# Format code with Black
+python -m black app/ tests/
+
+# Check for linting issues with Pylint
+python -m pylint app/
+```
+
+**Format before committing** to keep the codebase clean and consistent.
+
 ## Services
 
 | Service | URL | Description |
