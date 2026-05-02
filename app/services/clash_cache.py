@@ -60,3 +60,45 @@ async def job_exists(job_id: str) -> bool:
     client = await get_redis()
     status = await client.get(f"job:{job_id}:status")
     return status is not None
+
+
+async def get_request_job_id(request_id: str) -> Optional[str]:
+    """Get the job_id mapped to a request_id from cache."""
+    client = await get_redis()
+    val = await client.get(f"requestId:{request_id}:jobId")
+    return val if val else None
+
+
+async def set_request_job_id(request_id: str, job_id: str, ttl: int = None) -> None:
+    """Set the job_id for a request_id in cache."""
+    client = await get_redis()
+    ttl = ttl or settings.CACHE_TTL
+    await client.setex(f"requestId:{request_id}:jobId", ttl, job_id)
+
+
+async def set_request_original_indices(request_id: str, original_indices: list, ttl: int = None) -> None:
+    """Store the original indices for a request_id in cache."""
+    client = await get_redis()
+    ttl = ttl or settings.CACHE_TTL
+    await client.setex(f"requestId:{request_id}:originalIndices", ttl, json.dumps(original_indices))
+
+
+async def get_request_original_indices(request_id: str) -> list:
+    """Retrieve the original indices for a request_id from cache."""
+    client = await get_redis()
+    val = await client.get(f"requestId:{request_id}:originalIndices")
+    return json.loads(val) if val else None
+
+
+async def set_request_building_names(request_id: str, building_names: list, ttl: int = None) -> None:
+    """Store the building names for a request_id in cache."""
+    client = await get_redis()
+    ttl = ttl or settings.CACHE_TTL
+    await client.setex(f"requestId:{request_id}:buildingNames", ttl, json.dumps(building_names))
+
+
+async def get_request_building_names(request_id: str) -> list:
+    """Retrieve the building names for a request_id from cache."""
+    client = await get_redis()
+    val = await client.get(f"requestId:{request_id}:buildingNames")
+    return json.loads(val) if val else None
