@@ -1,4 +1,4 @@
-from typing import List, Annotated, Literal
+from typing import List
 from pydantic import BaseModel, Field, field_validator
 from app.models.polygon_geometry import PolygonGeometry
 
