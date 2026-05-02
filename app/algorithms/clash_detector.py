@@ -1,5 +1,5 @@
-from typing import Dict, Any, List
-from shapely.geometry import Polygon, mapping
+from typing import List
+from shapely.geometry import Polygon
 from app.models.canonical import (
     CanonicalBuilding,
     CanonicalBuildingSet,
