@@ -24,11 +24,11 @@ def detect_clashes(
         top1 = b1.elevation + b1.height
         for j in range(i + 1, buildings_len):
             b2 = buildings[j]
-            # Check 2D intersection
-            if b1.base.polygon.intersects(b2.base.polygon):
-                # Check 3D overlap (elevation ranges)
-                top2 = b2.elevation + b2.height
-                if not (top1 < b2.elevation or top2 < b1.elevation):
+            top2 = b2.elevation + b2.height
+            # Check 3D overlap (elevation ranges) first
+            if not (top1 < b2.elevation or top2 < b1.elevation):
+                # Check 2D intersection
+                if b1.base.polygon.intersects(b2.base.polygon):
                     intersection_geom = b1.base.polygon.intersection(b2.base.polygon)
                     clash_elevation = max(b1.elevation, b2.elevation)
                     clash_top = min(top1, top2)
