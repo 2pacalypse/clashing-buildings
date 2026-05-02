@@ -19,24 +19,27 @@ from app.models.job_status import JobStatus
 from app.core.constants import SCALE
 
 
-def quantize_z(value: float) -> int:
+def _quantize_z(value: float) -> int:
     """Quantize a z-axis value (elevation or height) to integer using SCALE."""
     return int(round(value * SCALE))
 
 
-def unquantize_z(value: int) -> float:
+def _unquantize_z(value: int) -> float:
     """Convert quantized z-axis value back to float."""
     return value / SCALE
 
 
-def map_coordinate_to_canonical(coord: tuple[float, float]) -> tuple[int, int]:
+def _quantize_coords(coord: tuple[float, float]) -> tuple[int, int]:
     x, y = coord
     return (int(round(x * SCALE)), int(round(y * SCALE)))
 
 
+def _unquantize_coords(coords):
+    return [(x / SCALE, y / SCALE) for x, y in coords]
+
 def map_polygon_to_canonical(geometry: PolygonGeometry) -> CanonicalPolygon:
     coords = geometry.coordinates[0]
-    coords_t = [map_coordinate_to_canonical(tuple(c)) for c in coords]
+    coords_t = [_quantize_coords(tuple(c)) for c in coords]
 
     # Create shapely polygon and normalize it
     shapely_polygon = Polygon(coords_t).normalize()
@@ -46,8 +49,8 @@ def map_polygon_to_canonical(geometry: PolygonGeometry) -> CanonicalPolygon:
 def map_building_to_canonical(building: GeoJSONFeature) -> CanonicalBuilding:
     """Map incoming building data to canonical format."""
     # Quantize elevation and height for canonical representation
-    elevation_q = quantize_z(building.properties.elevation)
-    height_q = quantize_z(building.properties.height)
+    elevation_q = _quantize_z(building.properties.elevation)
+    height_q = _quantize_z(building.properties.height)
     return CanonicalBuilding(
         elevation=elevation_q,
         height=height_q,
@@ -103,11 +106,6 @@ def map_collisions_to_response(
         ClashDetectionResponse containing GeoJSON FeatureCollection of clashes.
     """
 
-    def _unquantize_coords(coords):
-        return [(x / SCALE, y / SCALE) for x, y in coords]
-
-    def _unquantize_z(z):
-        return unquantize_z(z)
 
     clash_features: List[ClashFeature] = []
     for c, b in zip(collisions, buildings):
