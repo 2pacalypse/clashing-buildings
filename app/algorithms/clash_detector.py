@@ -18,9 +18,12 @@ def detect_clashes(
     """
     collisions = []
     buildings = building_set.buildings
-    for i, b1 in enumerate(buildings):
+    buildings_len = len(buildings)
+    for i in range(buildings_len):
+        b1 = buildings[i]
         top1 = b1.elevation + b1.height
-        for j, b2 in enumerate(buildings[i + 1 :], start=i + 1):
+        for j in range(i + 1, buildings_len):
+            b2 = buildings[j]
             # Check 2D intersection
             if b1.base.polygon.intersects(b2.base.polygon):
                 # Check 3D overlap (elevation ranges)
