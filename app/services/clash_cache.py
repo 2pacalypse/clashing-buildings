@@ -23,24 +23,22 @@ async def get_clash_results(
 
 async def set_clash_results(
     job_id: str, collisions: List[CanonicalBuildingIntersection], ttl: int = None
-) -> bool:
+) -> None:
     """Serialize and cache clash results."""
     client = await get_redis()
     ttl = ttl or settings.CACHE_TTL
     serialized = [c.model_dump() for c in collisions]
     await client.setex(job_id, ttl, json.dumps(serialized))
-    return True
 
 
 def set_clash_results_sync(
     job_id: str, collisions: List[CanonicalBuildingIntersection], ttl: int = None
-) -> bool:
+) -> None:
     """Sync version: Serialize and cache clash results."""
     client = get_sync_redis()
     ttl = ttl or settings.CACHE_TTL
     serialized = [c.model_dump() for c in collisions]
     client.setex(job_id, ttl, json.dumps(serialized))
-    return True
 
 
 async def claim_job(job_id: str, ttl: int = None) -> bool:
