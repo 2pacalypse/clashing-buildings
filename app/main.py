@@ -9,6 +9,7 @@ from app.api.routes import router
 from app.exceptions import AppException
 from app.models.error_response import ErrorResponse
 from app.core.error_codes import VALIDATION_ERROR_CODE
+from app.core.constants import API_PREFIX
 
 
 app = FastAPI(
@@ -71,7 +72,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
     )
 
 
-app.include_router(router, prefix="/api/v1")
+app.include_router(router, prefix=API_PREFIX)
 
 
 # Custom Swagger UI endpoint

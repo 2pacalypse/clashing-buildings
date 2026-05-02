@@ -1,5 +1,8 @@
 # Constants for the application
 
+# API versioning
+API_PREFIX = "/api/v1"
+
 SCALE = 10**6  # Used for floating point to integer quantization
 
 # Threshold for sync clash detection (n_buildings * n_vertices)
