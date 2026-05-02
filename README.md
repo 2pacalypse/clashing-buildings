@@ -76,7 +76,19 @@ We could have considered using libraries such as **pydantic-geojson** or similar
 | ⚠️ | It would require extra validations to reject GeoJSON types we don't support.. |
 
 
+## Architecture
 
+### System Overview
+![System Diagram](docs/diagrams/system-architecture.png)
+
+### POST Flow
+![Clash Detection Flow](docs/diagrams/post-flow.png)
+
+### GET Flow
+![Results Polling Flow](docs/diagrams/poll-flow.png)
+
+### Data Model
+![Cache Deduplication](docs/diagrams/erd.png)
 
 ## Challenges and Resolutions
 
