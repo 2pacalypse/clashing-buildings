@@ -41,6 +41,10 @@ async def process_clash_detection(
     request: ClashDetectionRequest,
     redis_client: redis.Redis,
 ) -> ClashDetectionResponse:
+    """
+    Process a clash detection request by calculating complexity, checking thresholds,
+    and dispatching the detection task if allowed. Returns a ClashDetectionResponse.
+    """
     # Calculate the complexity
     n_buildings = len(request.features)
     n_vertices = sum(len(f.geometry.coordinates[0]) for f in request.features)
