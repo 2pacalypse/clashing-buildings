@@ -15,6 +15,9 @@ class CanonicalPolygon(BaseModel):
 
     @field_serializer("polygon")
     def serialize_polygon(self, polygon: Polygon) -> list:
+        """
+        Serialize the shapely Polygon object to a list of exterior coordinates for output.
+        """
         return list(polygon.exterior.coords)
 
     @field_validator("polygon", mode="before")
