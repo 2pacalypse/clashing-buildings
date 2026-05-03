@@ -19,6 +19,21 @@ Backend service to detect 3D spatial overlaps between buildings with a 3D visual
 docker-compose up --build
 ```
 
+## Resetting All Docker Containers and Volumes
+
+If you want to clear all containers, networks, and volumes and start fresh:
+
+```bash
+# Stop and remove all running containers, networks, and volumes defined in docker-compose
+docker-compose down
+
+# (Optional) Remove all stopped containers, unused networks, images, and volumes
+docker system prune -af --volumes
+
+# Rebuild and start all services
+docker-compose up --build
+```
+
 ## Services
 
 | Service | URL | Description |
