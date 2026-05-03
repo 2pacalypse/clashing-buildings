@@ -29,7 +29,11 @@ from app.models.canonical import CanonicalBuildingIntersection
 from app.models.job_status import JobStatus
 from app.utils.job_id_generator import generate_job_id
 
-from app.core.constants import MAX_CLASH_COMPLEXITY_THRESHOLD, POLL_TIMEOUT_SECONDS, POLL_INTERVAL_SECONDS
+from app.core.constants import (
+    MAX_CLASH_COMPLEXITY_THRESHOLD,
+    POLL_TIMEOUT_SECONDS,
+    POLL_INTERVAL_SECONDS,
+)
 from app.tasks.celery_worker import detect_clashes_task, celery_app
 
 
@@ -70,7 +74,7 @@ async def process_clash_detection(
 
     # Try to claim the job atomically (only first request succeeds)
     claimed = await try_claim_job(redis_client, job_id)
-    
+
     if claimed:
         # We got the lock - dispatch the task
         building_dump = building_set.model_dump()
@@ -96,7 +100,10 @@ async def process_clash_detection(
             # Task completed - retrieve results from Celery backend
             collisions_data = task_result.get()
             # Deserialize from dicts back to models
-            collisions = [CanonicalBuildingIntersection.model_validate(item) for item in collisions_data]
+            collisions = [
+                CanonicalBuildingIntersection.model_validate(item)
+                for item in collisions_data
+            ]
 
             buildings = [
                 [request.features[original_indices[i]].id for i in c.building_ids]
@@ -153,7 +160,10 @@ async def get_results(
         # Task completed - retrieve results from Celery backend
         collisions_data = task_result.get()
         # Deserialize from dicts back to models
-        collisions = [CanonicalBuildingIntersection.model_validate(item) for item in collisions_data]
+        collisions = [
+            CanonicalBuildingIntersection.model_validate(item)
+            for item in collisions_data
+        ]
 
         building_names = await get_request_building_names(redis_client, request_id)
         buildings = [[building_names[i] for i in c.building_ids] for c in collisions]

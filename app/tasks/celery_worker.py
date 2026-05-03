@@ -25,6 +25,6 @@ def detect_clashes_task(buildings_dump: dict):
     # Reconstruct canonical model and compute collisions
     building_set = CanonicalBuildingSet.model_validate(buildings_dump)
     collisions = detect_clashes(building_set)
-    
+
     # Serialize to dicts for JSON serialization by Celery
     return [c.model_dump() for c in collisions]

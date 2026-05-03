@@ -17,7 +17,9 @@ async def try_claim_job(client: redis.Redis, job_id: str, ttl: int = None) -> bo
     return await client.set(f"job:{job_id}:task_id", "processing", nx=True, ex=ttl)
 
 
-async def store_task_id(client: redis.Redis, job_id: str, task_id: str, ttl: int = None) -> None:
+async def store_task_id(
+    client: redis.Redis, job_id: str, task_id: str, ttl: int = None
+) -> None:
     """Store the actual task_id after claiming (overwrites the placeholder)."""
     ttl = ttl or settings.CACHE_TTL
     await client.setex(f"job:{job_id}:task_id", ttl, task_id)
