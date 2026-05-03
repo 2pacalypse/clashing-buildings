@@ -10,3 +10,7 @@ SYNC_CLASH_COMPLEXITY_THRESHOLD = 100_000
 
 # Absolute maximum complexity allowed (applies to both sync and async jobs)
 MAX_CLASH_COMPLEXITY_THRESHOLD = 20_000_000
+
+# Polling configuration for async task results
+POLL_TIMEOUT_SECONDS = 5  # Max time to poll for results in POST request
+POLL_INTERVAL_SECONDS = 1  # Interval between polls

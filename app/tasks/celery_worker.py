@@ -1,6 +1,5 @@
 from celery import Celery
 from app.algorithms.clash_detector import detect_clashes
-from app.services.clash_cache import set_clash_results_sync
 from app.core.config import settings
 from app.models.canonical import CanonicalBuildingSet
 
@@ -21,12 +20,11 @@ celery_app.conf.update(
 
 
 @celery_app.task(name="detect_clashes_task")
-def detect_clashes_task(buildings_dump: dict, job_id: str):
-    """Async task for clash detection."""
-
+def detect_clashes_task(buildings_dump: dict):
+    """Async task for clash detection. Celery stores results automatically."""
     # Reconstruct canonical model and compute collisions
     building_set = CanonicalBuildingSet.model_validate(buildings_dump)
     collisions = detect_clashes(building_set)
-
-    # Cache the results
-    set_clash_results_sync(job_id, collisions)
+    
+    # Serialize to dicts for JSON serialization by Celery
+    return [c.model_dump() for c in collisions]

@@ -1,55 +1,23 @@
-"""Clash detection caching layer with domain-specific logic and key patterns."""
+"""Task ID deduplication layer for input-based caching."""
 
-import json
-from typing import List, Optional
+from typing import Optional
 import redis.asyncio as redis
 from app.core.config import settings
-from app.models.canonical import CanonicalBuildingIntersection
 
 
-async def get_clash_results(
-    client: redis.Redis,
-    job_id: str,
-) -> Optional[List[CanonicalBuildingIntersection]]:
-    """Get cached clash results and deserialize to models."""
-    data = await client.get(job_id)
-    if data:
-        cached_data = json.loads(data)
-        return [
-            CanonicalBuildingIntersection.model_validate(item) for item in cached_data
-        ]
-    return None
+async def get_task_id(client: redis.Redis, job_id: str) -> Optional[str]:
+    """Get the Celery task_id for a job_id. Returns None if no task exists."""
+    return await client.get(f"job:{job_id}:task_id")
 
 
-async def set_clash_results(
-    client: redis.Redis,
-    job_id: str,
-    collisions: List[CanonicalBuildingIntersection],
-    ttl: int = None,
-) -> None:
-    """Serialize and cache clash results."""
+async def try_claim_job(client: redis.Redis, job_id: str, ttl: int = None) -> bool:
+    """Atomically claim a job for processing. Returns True if claimed, False if already claimed."""
     ttl = ttl or settings.CACHE_TTL
-    serialized = [c.model_dump() for c in collisions]
-    await client.setex(job_id, ttl, json.dumps(serialized))
+    # Try to set a placeholder - only succeeds if key doesn't exist
+    return await client.set(f"job:{job_id}:task_id", "processing", nx=True, ex=ttl)
 
 
-def set_clash_results_sync(
-    job_id: str, collisions: List[CanonicalBuildingIntersection], ttl: int = None
-) -> None:
-    """Sync version: Serialize and cache clash results."""
-    client = get_sync_redis()
+async def store_task_id(client: redis.Redis, job_id: str, task_id: str, ttl: int = None) -> None:
+    """Store the actual task_id after claiming (overwrites the placeholder)."""
     ttl = ttl or settings.CACHE_TTL
-    serialized = [c.model_dump() for c in collisions]
-    client.setex(job_id, ttl, json.dumps(serialized))
-
-
-async def claim_job(client: redis.Redis, job_id: str, ttl: int = None) -> bool:
-    """Try to claim a job for processing. Returns True if claimed, False if already claimed."""
-    ttl = ttl or settings.CACHE_TTL
-    return await client.set(f"job:{job_id}:status", "processing", nx=True, ex=ttl)
-
-
-async def job_exists(client: redis.Redis, job_id: str) -> bool:
-    """Check if a job has been claimed (submitted for processing)."""
-    status = await client.get(f"job:{job_id}:status")
-    return status is not None
+    await client.setex(f"job:{job_id}:task_id", ttl, task_id)
