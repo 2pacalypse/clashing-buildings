@@ -119,7 +119,6 @@ python -m pylint app/
 
 ## Testing
 
-Run tests inside the container to ensure all dependencies are available:
 
 ```bash
 # Run all tests
