@@ -87,7 +87,7 @@ async def process_clash_detection(
         task_id = await get_task_id(redis_client, job_id)
 
     # Poll for results up to POLL_TIMEOUT_SECONDS
-    for attempt in range(POLL_TIMEOUT_SECONDS):
+    for _ in range(POLL_TIMEOUT_SECONDS):
         # If task_id is "processing" placeholder, job was claimed but task not dispatched yet
         if task_id == "processing":
             # Task ID not ready yet, wait and retry
@@ -128,6 +128,11 @@ async def process_clash_detection(
 async def get_results(
     request_id: str, redis_client: redis.Redis
 ) -> ClashDetectionResponse:
+    """
+    Retrieve clash detection results for a given request ID from Redis.
+    Returns a ClashDetectionResponse with the job status and result if available.
+    Raises AppException if the request or job is not found.
+    """
     # Check if there is a job for this request
     job_id = await get_request_job_id(redis_client, request_id)
     if job_id is None:
