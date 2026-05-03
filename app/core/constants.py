@@ -1,3 +1,6 @@
+"""
+Constants for API versioning, quantization, complexity thresholds, and polling configuration.
+"""
 # Constants for the application
 
 # API versioning

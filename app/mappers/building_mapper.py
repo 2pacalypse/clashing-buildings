@@ -1,3 +1,6 @@
+"""
+Mapping utilities for converting building and polygon data to canonical models.
+"""
 from typing import List
 from shapely.geometry import Polygon
 from app.models.canonical import (
@@ -48,7 +51,10 @@ def map_polygon_to_canonical(geometry: PolygonGeometry) -> CanonicalPolygon:
 
 
 def map_building_to_canonical(building: GeoJSONFeature) -> CanonicalBuilding:
-    """Map incoming building data to canonical format."""
+    """
+    Map incoming building data to canonical format for internal processing.
+    Quantizes elevation and height, and converts the base polygon to canonical form.
+    """
     # Quantize elevation and height for canonical representation
     elevation_q = _quantize_z(building.properties.elevation)
     height_q = _quantize_z(building.properties.height)
