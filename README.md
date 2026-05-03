@@ -194,6 +194,5 @@ This project encountered several practical challenges during development; below 
 
 - **Known limitations / Future work:**
   - MultiPolygon and GeometryCollection results are currently ignored (only simple area Polygons are returned). Expanding support for complex geometries would reduce dropped-but-relevant results.
-  - Add a small epsilon tolerance for `clash_height` comparisons to avoid dropping intersections due to tiny negative values from floating-point rounding.
   - For very large datasets, consider spatial indexing (STRtree), tiling/streaming, or using a geometry backend optimized for large-scale vector operations to avoid O(n^2) work.
   - **Task routing by complexity:** Currently all tasks use a single Celery queue. For future scaling, consider implementing Celery task routing to separate small and large jobs into dedicated queues with tailored worker pool sizes. This would prevent large jobs from starving small jobs and enable fine-grained resource allocation. See [Celery task routing docs](https://docs.celeryproject.org/en/stable/userguide/routing.html) for implementation details.
