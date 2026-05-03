@@ -2,6 +2,7 @@
 API route definitions for clash detection endpoints.
 Includes endpoints for detecting clashes and retrieving results.
 """
+
 from fastapi import APIRouter, Depends
 import redis.asyncio as redis
 from app.models.clash_detection_response import ClashDetectionResponse

@@ -1,6 +1,7 @@
 """
 Mapping utilities for converting building and polygon data to canonical models.
 """
+
 from typing import List
 from shapely.geometry import Polygon
 from app.models.canonical import (

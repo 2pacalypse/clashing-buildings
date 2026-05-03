@@ -1,6 +1,7 @@
 """
 Pydantic models for representing GeoJSON Polygon geometry with validation.
 """
+
 from typing import List, Annotated
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Literal
@@ -14,6 +15,7 @@ class PolygonGeometry(BaseModel):
     """
     GeoJSON Polygon geometry model with validation for single-ring polygons.
     """
+
     type: Literal["Polygon"] = "Polygon"
     coordinates: List[List[Coordinate]]
 

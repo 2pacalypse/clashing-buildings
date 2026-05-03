@@ -1,6 +1,7 @@
 """
 Enum for representing the status of a clash detection job.
 """
+
 from enum import Enum
 
 

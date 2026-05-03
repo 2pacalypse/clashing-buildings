@@ -1,6 +1,7 @@
 """
 Canonical models for building geometry and intersections, with polygon serialization and validation.
 """
+
 from typing import Tuple
 from pydantic import BaseModel, field_validator, ConfigDict, field_serializer
 from shapely.geometry import Polygon
