@@ -170,9 +170,8 @@ This project encountered several practical challenges during development; below 
   - Resolution: Canonical models serialize polygons to coordinate lists via Pydantic field serializers; we use `model_dump()` / `model_validate()` and JSON for safe transport/storage. Celery is configured to use JSON serializer on the worker side. See [app/models/canonical.py](app/models/canonical.py) and [tasks/celery_worker.py](tasks/celery_worker.py).
 
 - **Performance & scaling:**
-  - Challenge: Naïve pairwise checks are O(n^2) and expensive for polygons with many vertices (tests include very large vertex counts to stress the system).
-  - Resolution: We dispatch large jobs to background workers (Celery) and process small jobs synchronously. We also cache results using a canonical job id to avoid recomputation. See [app/services/clash_service.py](app/services/clash_service.py) and [app/utils/job_id_generator.py](app/utils/job_id_generator.py).
-  - Note: There is a comment/code mismatch on the synchronous threshold (comment mentions 640,000 but the code uses 100,000) — you may want to tune this threshold for your environment.
+  - Challenge: Naïve pairwise checks are O(n²) and become very expensive as the number of buildings and polygon vertices increases (stress tests include very large vertex counts).
+  - Resolution: All requests are checked for complexity ($n_{buildings} \times n_{vertices}$). If the complexity exceeds the maximum allowed threshold (currently 20,000,000), the request is rejected. Otherwise, the job is dispatched to a Celery worker for async processing. Results are cached using a canonical job id to avoid recomputation. See [app/services/clash_service.py](app/services/clash_service.py), [app/core/constants.py](app/core/constants.py), and [app/utils/job_id_generator.py](app/utils/job_id_generator.py).
 
 - **Caching & duplicate-job prevention:**
   - Challenge: Multiple identical requests should not trigger duplicate heavy processing.
