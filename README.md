@@ -192,10 +192,16 @@ This project encountered several practical challenges during development; below 
   - Challenge: Multiple identical requests should not trigger duplicate heavy processing.
   - Resolution: We generate a canonical SHA256 job id for the normalized building set and use Redis keys (NX) to claim and dedupe jobs; original input IDs are stored so results can be mapped back to the caller.
 
-- **Known limitations / Future work:**
-  - MultiPolygon and GeometryCollection results are currently ignored (only simple area Polygons are returned). Expanding support for complex geometries would reduce dropped-but-relevant results.
 
-  - For very large datasets, consider the following scaling strategies:
-    - **Parallelized naive (multi-core CPU):** The current O(n²) algorithm can be parallelized across CPU cores to improve throughput for moderate dataset sizes. This approach divides the pairwise checks among workers but does not reduce the total number of comparisons.
-    - **3D R-tree GPU-accelerated spatial join:** For very large datasets, a more scalable approach is to use a spatial index (such as a 3D R-tree) to quickly filter candidate building pairs whose bounding boxes overlap. The remaining candidate pairs are then checked for true intersection using massively parallel GPU kernels. This approach dramatically reduces the number of expensive geometry checks and leverages GPU hardware for high throughput. Libraries such as RAPIDS cuSpatial or custom CUDA implementations can be used for this purpose.
-  - **Task routing by complexity:** Currently all tasks use a single Celery queue. For future scaling, consider implementing Celery task routing to separate small and large jobs into dedicated queues with tailored worker pool sizes. This would prevent large jobs from starving small jobs and enable fine-grained resource allocation. See [Celery task routing docs](https://docs.celeryproject.org/en/stable/userguide/routing.html) for implementation details.
+**Known limitations / Future work:**
+
+- **Complex geometry support:**
+  MultiPolygon and GeometryCollection results are currently ignored (only simple area Polygons are returned). Expanding support for complex geometries would reduce dropped-but-relevant results.
+
+- **Scalability for large datasets:**
+  For very large datasets, consider the following strategies:
+  - Parallelized naive (multi-core CPU): The current O(n²) algorithm can be parallelized across CPU cores to improve throughput for moderate dataset sizes. This divides the pairwise checks among workers but does not reduce the total number of comparisons.
+  - 3D R-tree GPU-accelerated spatial join: For very large datasets, a more scalable approach is to use a spatial index (such as a 3D R-tree) to quickly filter candidate building pairs whose bounding boxes overlap. The remaining candidate pairs are then checked for true intersection using massively parallel GPU kernels. This dramatically reduces the number of expensive geometry checks and leverages GPU hardware for high throughput. Libraries such as RAPIDS cuSpatial or custom CUDA implementations can be used for this purpose.
+
+- **Task routing by complexity:**
+  Currently all tasks use a single Celery queue. For future scaling, consider implementing Celery task routing to separate small and large jobs into dedicated queues with tailored worker pool sizes. This would prevent large jobs from starving small jobs and enable fine-grained resource allocation. See [Celery task routing docs](https://docs.celeryproject.org/en/stable/userguide/routing.html) for implementation details.
