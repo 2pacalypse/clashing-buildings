@@ -4,7 +4,7 @@ from app.models.clash_detection_response import ClashDetectionResponse
 from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.error_response import ErrorResponse
 from app.services import clash_service
-from app.core.cache import get_redis
+from app.api.dependencies import get_redis
 
 router = APIRouter()
 
