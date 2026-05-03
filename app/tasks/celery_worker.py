@@ -1,3 +1,6 @@
+"""
+Celery worker setup for background clash detection tasks.
+"""
 from celery import Celery
 from app.algorithms.clash_detector import detect_clashes
 from app.core.config import settings
