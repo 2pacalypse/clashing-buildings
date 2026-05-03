@@ -132,6 +132,25 @@ docker-compose run --rm api pytest tests/ -v
 docker-compose run --rm api pytest tests/test_detect_clashes.py
 ```
 
+## Benchmarking
+
+Run performance benchmarks to compare algorithms at different scales:
+
+```bash
+docker-compose run --rm api pytest tests/benchmark.py -v --benchmark-only
+```
+
+The benchmarks test chain-overlap scenarios with:
+- **Naive Algorithm (O(n²))**: Pairwise comparison of all building polygons
+- **STRtree Algorithm**: Spatial index-based optimization using Shapely's STRtree
+- **Scales**: 500 and 1000 buildings to measure algorithmic efficiency
+
+**Sample output:**
+
+![Clash Detection Flow](docs/diagrams/benchmark.png)
+
+
+
 ## Challenges and Resolutions
 
 This project encountered several practical challenges during development; below is a concise summary and how we addressed each.
