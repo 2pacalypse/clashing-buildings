@@ -128,8 +128,11 @@ docker-compose run --rm api pytest tests/
 # Run tests with verbose output
 docker-compose run --rm api pytest tests/ -v
 
-# Run a specific test file
-docker-compose run --rm api pytest tests/test_detect_clashes.py
+# Run functional tests
+docker-compose run --rm api pytest tests/test_functional.py -v
+
+# Run stress tests
+docker-compose run --rm api pytest tests/test_stress.py -v
 ```
 
 ## Benchmarking
@@ -137,7 +140,7 @@ docker-compose run --rm api pytest tests/test_detect_clashes.py
 Run performance benchmarks to compare algorithms at different scales:
 
 ```bash
-docker-compose run --rm api pytest tests/benchmark.py -v --benchmark-only
+docker-compose run --rm api pytest tests/test_benchmark.py -v --benchmark-only
 ```
 
 The benchmarks test chain-overlap scenarios with:
