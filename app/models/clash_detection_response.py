@@ -1,3 +1,6 @@
+"""
+Models for clash detection API responses, including result feature collections and response schemas.
+"""
 from typing import Optional, List
 from pydantic import BaseModel, Field
 
@@ -31,6 +34,10 @@ class ClashResultFeatureCollection(BaseModel):
 
 
 class ClashDetectionResponse(BaseModel):
+    """
+    API response model for clash detection requests.
+    Contains the request ID, job status, and optional result feature collection.
+    """
     request_id: str
     status: JobStatus
     result: Optional[ClashResultFeatureCollection] = None
