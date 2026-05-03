@@ -1,3 +1,7 @@
+"""
+API route definitions for clash detection endpoints.
+Includes endpoints for detecting clashes and retrieving results.
+"""
 from fastapi import APIRouter, Depends
 import redis.asyncio as redis
 from app.models.clash_detection_response import ClashDetectionResponse
@@ -26,6 +30,10 @@ router = APIRouter()
 async def detect_clashes_endpoint(
     request: ClashDetectionRequest, redis_client: redis.Redis = Depends(get_redis)
 ):
+    """
+    Endpoint to process a clash detection request.
+    Accepts a ClashDetectionRequest and returns a ClashDetectionResponse.
+    """
     return await clash_service.process_clash_detection(request, redis_client)
 
 
@@ -41,4 +49,8 @@ async def detect_clashes_endpoint(
     },
 )
 async def get_results(request_id: str, redis_client: redis.Redis = Depends(get_redis)):
+    """
+    Endpoint to retrieve clash detection results for a given request ID.
+    Returns a ClashDetectionResponse with the job status and result if available.
+    """
     return await clash_service.get_results(request_id, redis_client)
