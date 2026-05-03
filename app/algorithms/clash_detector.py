@@ -1,3 +1,6 @@
+"""
+Algorithms for detecting geometric clashes between buildings using canonical models.
+"""
 from typing import List
 from shapely.geometry import Polygon
 from app.models.canonical import (
