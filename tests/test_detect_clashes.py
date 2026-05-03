@@ -9,11 +9,15 @@ from app.models.canonical import (
     CanonicalBuildingIntersection,
 )
 
+
 class TestDetectClashes:
-    @pytest.mark.parametrize("num_vertices", [5000, 10000, 20000, 30000, 100000, 200000, 300000, 400000, 500000])
+
+    @pytest.mark.parametrize(
+        "num_vertices",
+        [5000, 10000, 20000, 30000, 100000, 200000, 300000, 400000, 500000],
+    )
     def test_two_buildings_large_polygon_vertices(self, num_vertices):
         """Test clash detection with overlapping circular polygons with varying vertex counts."""
-
 
         def make_circle_polygon(center_x, center_y, radius, num_vertices):
             return [
@@ -37,13 +41,16 @@ class TestDetectClashes:
         assert len(clashes) == 1
         assert not clashes[0].intersection.base.polygon.is_empty
 
-    @pytest.mark.parametrize("num_buildings,expected_clashes", [
-        (100, 4950),   # 100 * 99 / 2
-        (200, 19900),  # 200 * 199 / 2
-        (300, 44850),  # 300 * 299 / 2
-        (400, 79800),  # 400 * 399 / 2
-        (500, 124750), # 500 * 499 / 2
-    ])
+    @pytest.mark.parametrize(
+        "num_buildings,expected_clashes",
+        [
+            (100, 4950),  # 100 * 99 / 2
+            (200, 19900),  # 200 * 199 / 2
+            (300, 44850),  # 300 * 299 / 2
+            (400, 79800),  # 400 * 399 / 2
+            (500, 124750),  # 500 * 499 / 2
+        ],
+    )
     def test_fully_overlapping_buildings(self, num_buildings, expected_clashes):
         """Test clash detection with fully overlapping buildings at different scales."""
         buildings = [
