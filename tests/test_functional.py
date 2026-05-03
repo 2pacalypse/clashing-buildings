@@ -53,46 +53,50 @@ def test_empty_building_set_no_clash():
     assert len(clashes) == 0
 
 
-# edge case
-def test_touching_boundaries_no_clash():
-    """Test that buildings touching at boundaries produce no clash."""
+# edge case - degenerate geometry
+def test_point_intersection_corner_touch_no_clash():
+    """Test that two rectangles touching at a single corner point produce no clash."""
     # Building 1: (0,0) to (10,10)
     building1 = CanonicalBuilding(
         elevation=0,
         height=10,
         base=CanonicalPolygon(polygon=Polygon([(0, 0), (10, 0), (10, 10), (0, 10)])),
     )
-    # Building 2: (10,0) to (20,10) - touching at edge
+    # Building 2: (10,10) to (20,20) - only touches building1 at corner (10,10)
     building2 = CanonicalBuilding(
         elevation=0,
         height=10,
-        base=CanonicalPolygon(polygon=Polygon([(10, 0), (20, 0), (20, 10), (10, 10)])),
+        base=CanonicalPolygon(polygon=Polygon([(10, 10), (20, 10), (20, 20), (10, 20)])),
     )
     building_set = CanonicalBuildingSet(buildings=(building1, building2))
 
     clashes = detect_clashes(building_set)
-    # Touching at boundary should not create a clash (intersection area is 0)
+    # Point intersection (area=0) should not produce a clash
     assert len(clashes) == 0
 
 
-# edge case
-def test_zero_height_clash_not_reported():
-    """Test that clashes with zero height overlap are not reported."""
-    # Building 1: 0-10
+# edge case - degenerate geometry
+def test_line_segment_intersection_no_clash():
+    """Test that a line segment intersection (1D) produces no clash.
+    
+    Two triangles sharing only an edge - their intersection is a line segment.
+    """
+    # Triangle building 1
     building1 = CanonicalBuilding(
         elevation=0,
         height=10,
-        base=CanonicalPolygon(polygon=Polygon([(0, 0), (10, 0), (10, 10), (0, 10)])),
+        base=CanonicalPolygon(polygon=Polygon([(0, 0), (10, 0), (5, 10)])),
     )
-    # Building 2: 10-20 (touches at top, no volume overlap)
+    # Building 2: triangle sharing edge from (5,10) to (10,0) with building1
     building2 = CanonicalBuilding(
-        elevation=10,
+        elevation=0,
         height=10,
-        base=CanonicalPolygon(polygon=Polygon([(5, 5), (15, 5), (15, 15), (5, 15)])),
+        base=CanonicalPolygon(polygon=Polygon([(5, 10), (10, 0), (15, 10)])),
     )
     building_set = CanonicalBuildingSet(buildings=(building1, building2))
 
     clashes = detect_clashes(building_set)
+    # Line segment intersection (area=0, length>0) should not produce a clash
     assert len(clashes) == 0
 
 
