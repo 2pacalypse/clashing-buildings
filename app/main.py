@@ -1,3 +1,6 @@
+"""
+Main FastAPI application setup, including routes, error handling, and Redis lifecycle management.
+"""
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
