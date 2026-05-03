@@ -301,3 +301,35 @@ def test_complex_polygon_shapes():
     clashes = detect_clashes(building_set)
     assert len(clashes) == 1
     assert not clashes[0].intersection.base.polygon.is_empty
+
+
+# property
+def test_non_convex_polygon_overlap():
+    """Test clash detection with non-convex (concave) polygon shapes.
+    
+    Non-convex polygons have at least one interior angle > 180 degrees.
+    Tests L-shaped building overlapping with rectangle.
+    """
+    # L-shaped building: horizontal bar (0,0)-(15,5), vertical bar (0,5)-(5,15)
+    building1 = CanonicalBuilding(
+        elevation=0,
+        height=10,
+        base=CanonicalPolygon(
+            polygon=Polygon([(0, 0), (15, 0), (15, 5), (5, 5), (5, 15), (0, 15)])
+        ),
+    )
+    # Rectangle overlapping the corner of the L-shape
+    building2 = CanonicalBuilding(
+        elevation=0,
+        height=10,
+        base=CanonicalPolygon(
+            polygon=Polygon([(3, 3), (10, 3), (10, 8), (3, 8)])
+        ),
+    )
+    building_set = CanonicalBuildingSet(buildings=(building1, building2))
+
+    clashes = detect_clashes(building_set)
+    assert len(clashes) == 1
+    # Intersection should be the overlap region in the horizontal bar
+    intersection_area = clashes[0].intersection.base.polygon.area
+    assert intersection_area > 0  # Non-zero area overlap
