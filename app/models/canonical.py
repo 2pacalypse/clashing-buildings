@@ -1,3 +1,6 @@
+"""
+Canonical models for building geometry and intersections, with polygon serialization and validation.
+"""
 from typing import Tuple
 from pydantic import BaseModel, field_validator, ConfigDict, field_serializer
 from shapely.geometry import Polygon
@@ -16,6 +19,10 @@ class CanonicalPolygon(BaseModel):
 
     @field_validator("polygon", mode="before")
     def _parse_polygon(cls, v):
+        """
+        Parse and convert input data to a shapely Polygon instance if needed.
+        Accepts lists or tuples and handles different polygon input formats.
+        """
         if isinstance(v, (list, tuple)):
             # handle either [ [ (x,y),... ] ] or [ (x,y), ... ]
             coords = v[0] if v and isinstance(v[0][0], (list, tuple)) else v

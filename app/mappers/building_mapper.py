@@ -42,6 +42,10 @@ def _unquantize_coords(coords):
 
 
 def map_polygon_to_canonical(geometry: PolygonGeometry) -> CanonicalPolygon:
+    """
+    Convert a PolygonGeometry object to a CanonicalPolygon by quantizing coordinates
+    and normalizing the polygon using shapely.
+    """
     coords = geometry.coordinates[0]
     coords_t = [_quantize_coords(tuple(c)) for c in coords]
 
