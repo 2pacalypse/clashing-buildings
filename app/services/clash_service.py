@@ -1,3 +1,7 @@
+"""
+Service layer for clash detection logic, job management, and result retrieval.
+Handles complexity checks, task dispatching, and response formatting.
+"""
 import uuid
 import asyncio
 import redis.asyncio as redis
