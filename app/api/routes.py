@@ -1,8 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+import redis.asyncio as redis
 from app.models.clash_detection_response import ClashDetectionResponse
 from app.models.clash_detection_request import ClashDetectionRequest
 from app.models.error_response import ErrorResponse
 from app.services import clash_service
+from app.core.cache import get_redis
 
 router = APIRouter()
 
@@ -21,8 +23,10 @@ router = APIRouter()
         },
     },
 )
-async def detect_clashes_endpoint(request: ClashDetectionRequest):
-    return await clash_service.process_clash_detection(request)
+async def detect_clashes_endpoint(
+    request: ClashDetectionRequest, redis_client: redis.Redis = Depends(get_redis)
+):
+    return await clash_service.process_clash_detection(request, redis_client)
 
 
 @router.get(
@@ -36,5 +40,5 @@ async def detect_clashes_endpoint(request: ClashDetectionRequest):
         },
     },
 )
-async def get_results(request_id: str):
-    return await clash_service.get_results(request_id)
+async def get_results(request_id: str, redis_client: redis.Redis = Depends(get_redis)):
+    return await clash_service.get_results(request_id, redis_client)

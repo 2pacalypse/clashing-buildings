@@ -1,4 +1,5 @@
 import uuid
+import redis.asyncio as redis
 from app.exceptions import AppException
 from app.core.error_codes import (
     JOB_NOT_FOUND_CODE,
@@ -36,6 +37,7 @@ from app.tasks.celery_worker import detect_clashes_task
 
 async def process_clash_detection(
     request: ClashDetectionRequest,
+    redis_client: redis.Redis,
 ) -> ClashDetectionResponse:
     # Calculate the complexity
     n_buildings = len(request.features)
@@ -65,11 +67,11 @@ async def process_clash_detection(
     job_id = generate_job_id(building_set)
 
     # Store the mapping in cache
-    await set_request_job_id(request_id, job_id)
-    await set_request_building_names(request_id, original_building_names)
+    await set_request_job_id(redis_client, request_id, job_id)
+    await set_request_building_names(redis_client, request_id, original_building_names)
 
     # Check cache first for canonical collisions
-    cached_collisions = await get_clash_results(job_id)
+    cached_collisions = await get_clash_results(redis_client, job_id)
     if cached_collisions is not None:
         # Retrieve original building IDs for the collisions
         buildings = [
@@ -90,7 +92,7 @@ async def process_clash_detection(
         collisions = detect_clashes(building_set)
 
         # Store results in cache for retrieval via results endpoint
-        await set_clash_results(job_id, collisions)
+        await set_clash_results(redis_client, job_id, collisions)
 
         buildings = [
             [request.features[original_indices[i]].id for i in c.building_ids]
@@ -107,7 +109,7 @@ async def process_clash_detection(
     # Request not in cache and too big for sync processing
 
     # Claim job for async processing
-    claimed = await claim_job(job_id)
+    claimed = await claim_job(redis_client, job_id)
 
     if not claimed:
         # Another process is already working on this job, return PENDING
@@ -127,9 +129,11 @@ async def process_clash_detection(
     )
 
 
-async def get_results(request_id: str) -> ClashDetectionResponse:
+async def get_results(
+    request_id: str, redis_client: redis.Redis
+) -> ClashDetectionResponse:
     # Check if there is a job for this request
-    job_id = await get_request_job_id(request_id)
+    job_id = await get_request_job_id(redis_client, request_id)
     if job_id is None:
         raise AppException(
             code=REQUEST_NOT_FOUND_CODE,
@@ -139,10 +143,10 @@ async def get_results(request_id: str) -> ClashDetectionResponse:
         )
 
     # Check if results are cached
-    cached = await get_clash_results(job_id)
+    cached = await get_clash_results(redis_client, job_id)
     if cached is not None:
         # original_indices = await get_request_original_indices(request_id)
-        building_names = await get_request_building_names(request_id)
+        building_names = await get_request_building_names(redis_client, request_id)
 
         buildings = [[building_names[i] for i in c.building_ids] for c in cached]
         return map_collisions_to_response(
@@ -150,7 +154,7 @@ async def get_results(request_id: str) -> ClashDetectionResponse:
         )
 
     # Check if job exists (was ever claimed/submitted)
-    exists = await job_exists(job_id)
+    exists = await job_exists(redis_client, job_id)
     if not exists:
         raise AppException(
             code=JOB_NOT_FOUND_CODE,

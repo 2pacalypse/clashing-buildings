@@ -2,6 +2,7 @@ from typing import List
 from pydantic import BaseModel, Field, field_validator
 from app.models.polygon_geometry import PolygonGeometry
 
+
 class BuildingProperties(BaseModel):
     height: float = Field(gt=0, description="Building height in meters")
     elevation: float = Field(ge=0, description="Building base elevation in meters")
@@ -28,4 +29,5 @@ class GeoJSONFeatureCollection(BaseModel):
 
 class ClashDetectionRequest(GeoJSONFeatureCollection):
     """Request schema for clash detection - accepts GeoJSON FeatureCollection directly."""
+
     pass

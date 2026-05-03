@@ -1,15 +1,34 @@
 import logging
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi import status
+import redis.asyncio as redis
 from app.api.routes import router
 from app.exceptions import AppException
 from app.models.error_response import ErrorResponse
 from app.core.error_codes import VALIDATION_ERROR_CODE
 from app.core.constants import API_PREFIX
+from app.core.config import settings
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage Redis connection lifecycle."""
+    # Startup: Initialize Redis connection
+    app.state.redis = await redis.Redis(
+        host=settings.REDIS_HOST,
+        port=settings.REDIS_PORT,
+        db=settings.REDIS_DB,
+        decode_responses=True,
+    )
+    yield
+    # Shutdown: Close Redis connection
+    if hasattr(app.state, "redis"):
+        await app.state.redis.close()
 
 
 app = FastAPI(
@@ -18,6 +37,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url=None,  # Disable default Swagger UI
     redoc_url=None,  # Disable default ReDoc
+    lifespan=lifespan,
 )
 
 

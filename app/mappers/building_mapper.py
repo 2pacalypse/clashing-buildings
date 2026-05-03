@@ -37,6 +37,7 @@ def _quantize_coords(coord: tuple[float, float]) -> tuple[int, int]:
 def _unquantize_coords(coords):
     return [(x / SCALE, y / SCALE) for x, y in coords]
 
+
 def map_polygon_to_canonical(geometry: PolygonGeometry) -> CanonicalPolygon:
     coords = geometry.coordinates[0]
     coords_t = [_quantize_coords(tuple(c)) for c in coords]
@@ -105,7 +106,6 @@ def map_collisions_to_response(
     Returns:
         ClashDetectionResponse containing GeoJSON FeatureCollection of clashes.
     """
-
 
     clash_features: List[ClashFeature] = []
     for c, b in zip(collisions, buildings):
