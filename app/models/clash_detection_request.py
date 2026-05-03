@@ -4,6 +4,7 @@ Models for clash detection request payloads, including GeoJSON features and vali
 
 from typing import List
 from pydantic import BaseModel, Field, field_validator
+from typing_extensions import Literal
 from app.models.polygon_geometry import PolygonGeometry
 
 
@@ -21,7 +22,7 @@ class GeoJSONFeature(BaseModel):
     GeoJSON Feature representing a building with properties and geometry.
     """
 
-    type: str = "Feature"
+    type: Literal["Feature"] = "Feature"
     id: str
     properties: BuildingProperties
     geometry: PolygonGeometry
@@ -32,7 +33,7 @@ class GeoJSONFeatureCollection(BaseModel):
     GeoJSON FeatureCollection containing a list of building features.
     """
 
-    type: str = "FeatureCollection"
+    type: Literal["FeatureCollection"] = "FeatureCollection"
     features: List[GeoJSONFeature]
 
     @field_validator("features")
