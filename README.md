@@ -193,7 +193,7 @@ This project encountered several practical challenges during development; below 
   - Resolution: We generate a canonical SHA256 job id for the normalized building set and use Redis keys (NX) to claim and dedupe jobs; original input IDs are stored so results can be mapped back to the caller.
 
 
-**Known limitations / Future work:**
+## Known limitations / Future work
 
 - **Complex geometry support:**
   MultiPolygon and GeometryCollection results are currently ignored (only simple area Polygons are returned). Expanding support for complex geometries would reduce dropped-but-relevant results.
