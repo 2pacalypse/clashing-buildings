@@ -24,7 +24,7 @@ class STRtreeClashDetection(ClashDetectionStrategy):
     ) -> List[CanonicalBuildingIntersection]:
         """
         Detect 3D clashes using spatial indexing for 2D candidate filtering.
-        
+
         Strategy:
         1. Build STRtree from all building footprints.
         2. For each building, query the tree to find candidates with overlapping bounding boxes.
@@ -38,33 +38,33 @@ class STRtreeClashDetection(ClashDetectionStrategy):
         # Build spatial index from all polygon footprints
         polygons = [b.base.polygon for b in buildings]
         tree = STRtree(polygons)
-        
+
         collisions = []
-        
+
         for i, b1 in enumerate(buildings):
             top1 = b1.elevation + b1.height
-            
+
             # Query the tree for candidate indices that have overlapping bounding boxes
             candidate_indices = tree.query(b1.base.polygon)
-            
+
             for j in candidate_indices:
                 # Skip if this is a self-pair or duplicate pair (j should be > i)
                 if j <= i:
                     continue
-                
+
                 b2 = buildings[j]
                 top2 = b2.elevation + b2.height
-                
+
                 # Check 3D overlap (elevation ranges)
                 if not (top1 < b2.elevation or top2 < b1.elevation):
                     # Compute the 2D intersection geometry
                     intersection_geom = b1.base.polygon.intersection(b2.base.polygon)
-                    
+
                     # Compute clash elevation and height
                     clash_elevation = max(b1.elevation, b2.elevation)
                     clash_top = min(top1, top2)
                     clash_height = clash_top - clash_elevation
-                    
+
                     # Only record if there is positive volume and valid geometry
                     if (
                         clash_height > 0
@@ -81,5 +81,5 @@ class STRtreeClashDetection(ClashDetectionStrategy):
                             intersection=intersection_building,
                         )
                         collisions.append(intersection)
-        
+
         return collisions

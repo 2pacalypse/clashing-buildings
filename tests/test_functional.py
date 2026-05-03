@@ -66,7 +66,9 @@ def test_point_intersection_corner_touch_no_clash():
     building2 = CanonicalBuilding(
         elevation=0,
         height=10,
-        base=CanonicalPolygon(polygon=Polygon([(10, 10), (20, 10), (20, 20), (10, 20)])),
+        base=CanonicalPolygon(
+            polygon=Polygon([(10, 10), (20, 10), (20, 20), (10, 20)])
+        ),
     )
     building_set = CanonicalBuildingSet(buildings=(building1, building2))
 
@@ -78,7 +80,7 @@ def test_point_intersection_corner_touch_no_clash():
 # edge case - degenerate geometry
 def test_line_segment_intersection_no_clash():
     """Test that a line segment intersection (1D) produces no clash.
-    
+
     Two triangles sharing only an edge - their intersection is a line segment.
     """
     # Triangle building 1
@@ -306,7 +308,7 @@ def test_complex_polygon_shapes():
 # property
 def test_non_convex_polygon_overlap():
     """Test clash detection with non-convex (concave) polygon shapes.
-    
+
     Non-convex polygons have at least one interior angle > 180 degrees.
     Tests L-shaped building overlapping with rectangle.
     """
@@ -322,9 +324,7 @@ def test_non_convex_polygon_overlap():
     building2 = CanonicalBuilding(
         elevation=0,
         height=10,
-        base=CanonicalPolygon(
-            polygon=Polygon([(3, 3), (10, 3), (10, 8), (3, 8)])
-        ),
+        base=CanonicalPolygon(polygon=Polygon([(3, 3), (10, 3), (10, 8), (3, 8)])),
     )
     building_set = CanonicalBuildingSet(buildings=(building1, building2))
 

@@ -229,7 +229,9 @@ class TestFeatureCollectionValidation:
                     properties=BuildingProperties(height=15, elevation=5),
                     geometry=PolygonGeometry(
                         type="Polygon",
-                        coordinates=[[(20, 20), (30, 20), (30, 30), (20, 30), (20, 20)]],
+                        coordinates=[
+                            [(20, 20), (30, 20), (30, 30), (20, 30), (20, 20)]
+                        ],
                     ),
                 ),
             ],
@@ -280,7 +282,9 @@ class TestClashDetectionRequestValidation:
                     GeoJSONFeature(
                         type="Feature",
                         id="building1",
-                        properties=BuildingProperties(height=-5, elevation=0),  # Invalid
+                        properties=BuildingProperties(
+                            height=-5, elevation=0
+                        ),  # Invalid
                         geometry=PolygonGeometry(
                             type="Polygon",
                             coordinates=[[(0, 0), (10, 0), (10, 10), (0, 10), (0, 0)]],

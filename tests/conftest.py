@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 def client(monkeypatch):
     """
     TestClient with mocked Redis.
-    
+
     Mocks redis.asyncio.Redis to prevent connecting to actual Redis during
     app startup. Pydantic validation rejects invalid requests before reaching
     the service layer, so no service stubbing is needed.

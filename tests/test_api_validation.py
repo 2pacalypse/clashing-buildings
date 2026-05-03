@@ -94,7 +94,9 @@ def test_api_polygon_not_closed_returns_422(client):
                     "properties": {"height": 10, "elevation": 0},
                     "geometry": {
                         "type": "Polygon",
-                        "coordinates": [[(0, 0), (10, 0), (10, 10), (0, 10)]],  # Not closed
+                        "coordinates": [
+                            [(0, 0), (10, 0), (10, 10), (0, 10)]
+                        ],  # Not closed
                     },
                 },
             ],
@@ -140,7 +142,13 @@ def test_api_polygon_with_hole_returns_422(client):
                         "type": "Polygon",
                         "coordinates": [
                             [(0, 0), (20, 0), (20, 20), (0, 20), (0, 0)],  # Exterior
-                            [(5, 5), (15, 5), (15, 15), (5, 15), (5, 5)],  # Interior hole
+                            [
+                                (5, 5),
+                                (15, 5),
+                                (15, 15),
+                                (5, 15),
+                                (5, 5),
+                            ],  # Interior hole
                         ],
                     },
                 },
@@ -391,7 +399,9 @@ def test_api_multiple_features_one_invalid_returns_422(client):
                     "properties": {"height": -5, "elevation": 0},  # Invalid height
                     "geometry": {
                         "type": "Polygon",
-                        "coordinates": [[(20, 20), (30, 20), (30, 30), (20, 30), (20, 20)]],
+                        "coordinates": [
+                            [(20, 20), (30, 20), (30, 30), (20, 30), (20, 20)]
+                        ],
                     },
                 },
             ],
