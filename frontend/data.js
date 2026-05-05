@@ -70,7 +70,7 @@ export const sampleInputOne = {
     features: [
         {
             type: "Feature",
-            id: "building_0",
+            id: "b0",
             properties: { height: 4, elevation: 0 },
             geometry: {
                 type: "Polygon",
@@ -79,7 +79,7 @@ export const sampleInputOne = {
         },
         {
             type: "Feature",
-            id: "building_1",
+            id: "b1",
             properties: { height: 4, elevation: 2 },
             geometry: {
                 type: "Polygon",
@@ -88,7 +88,7 @@ export const sampleInputOne = {
         },
         {
             type: "Feature",
-            id: "building_2",
+            id: "b2",
             properties: { height: 4, elevation: 4 },
             geometry: {
                 type: "Polygon",
@@ -97,7 +97,7 @@ export const sampleInputOne = {
         },
         {
             type: "Feature",
-            id: "building_3",
+            id: "b3",
             properties: { height: 4, elevation: 6 },
             geometry: {
                 type: "Polygon",
@@ -112,7 +112,7 @@ export const sampleInputTwo = {
   "features": [
     {
       "type": "Feature",
-      "id": "building_0",
+      "id": "b0",
       "properties": {
         "height": 4,
         "elevation": 0
@@ -147,7 +147,7 @@ export const sampleInputTwo = {
     },
     {
       "type": "Feature",
-      "id": "building_1",
+      "id": "b1",
       "properties": {
         "height": 4,
         "elevation": 0
@@ -182,7 +182,7 @@ export const sampleInputTwo = {
     },
     {
       "type": "Feature",
-      "id": "building_2",
+      "id": "b2",
       "properties": {
         "height": 4,
         "elevation": 0
@@ -226,7 +226,7 @@ export const sampleOutputOne = {
       "properties": {
         "elevation": 2,
         "height": 2,
-        "buildings": ["building_0", "building_1"]
+        "buildings": ["b0", "b1"]
       },
       "geometry": {
         "type": "Polygon",
@@ -246,7 +246,7 @@ export const sampleOutputOne = {
       "properties": {
         "elevation": 4,
         "height": 2,
-        "buildings": ["building_1", "building_2"]
+        "buildings": ["b1", "b2"]
       },
       "geometry": {
         "type": "Polygon",
@@ -266,7 +266,7 @@ export const sampleOutputOne = {
       "properties": {
         "elevation": 6,
         "height": 2,
-        "buildings": ["building_2", "building_3"]
+        "buildings": ["b2", "b3"]
       },
       "geometry": {
         "type": "Polygon",
@@ -292,7 +292,7 @@ export const sampleOutputTwo = {
       "properties": {
         "elevation": 0,
         "height": 4,
-        "buildings": ["building_0", "building_1"]
+        "buildings": ["b0", "b1"]
       },
       "geometry": {
         "type": "Polygon",
@@ -312,7 +312,7 @@ export const sampleOutputTwo = {
       "properties": {
         "elevation": 0,
         "height": 4,
-        "buildings": ["building_0", "building_2"]
+        "buildings": ["b0", "b2"]
       },
       "geometry": {
         "type": "Polygon",
@@ -332,7 +332,7 @@ export const sampleOutputTwo = {
       "properties": {
         "elevation": 0,
         "height": 4,
-        "buildings": ["building_1", "building_2"]
+        "buildings": ["b1", "b2"]
       },
       "geometry": {
         "type": "Polygon",
